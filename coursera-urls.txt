@@ -1,0 +1,85 @@
+Coursera Course
+Lecture 0 
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part1-introduction%20%5B5c67f616%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part2-instructors%20%5B4ee98a88%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part3-motivation%20%5Ba558373b%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part4-syllabus%20%5Bd2e81c75%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part5-final-project%20%5B9d0fc656%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part6-final-project-teams%20%5B47276e27%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture0-v2-part7-collab-summary%20%5Bdce04434%5D%20.mp4
+
+Lecture 1
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part1-what-are-startups%20%5B33b88896%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part2-startups-past%20%5B5f5387bd%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part3-startups-present%20%5B0da5ff02%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part4-fall-of-ussr%20%5B7c49e540%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part5-nsf-aup-repeal%20%5B91138f14%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part6-features-of-internet-startups%20%5B9e2e82c8%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part7-mobility-decentralization%20%5B2bc69b95%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part8-startup-engineering-tech%20%5B2c0505b2%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part9-design-marketing-sales-v2%281%29.51c34634c3d18.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part10-versatility%20%5B848ffb83%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture1-part11-mobile-html5%20%5B1140c3dc%5D%20.mp4
+
+Lecture 2
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part1-your-first-webapp%281%29.51c322c698aa6.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part2-mac-terminal%20%5B4c762ca5%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part3-windows-terminal%20%5Be8e697ad%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part4-aws-signup%20%5B26f40c12%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part5-github-gravatar-heroku%20%5B8de93161%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part6-initialize-aws%20%5Be02044e4%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part7-ec2-mac%20%5Bff55ff3e%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part8-ec2-win%20%5B93b036fc%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part9-security-groups%20%5B9ca7cb4f%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part10-remote-vs-local%20%5B64fc3850%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part11-heroku-deploy%20%5B6a41a83d%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture2-part12-summary%20%5B893b5157%5D%20.mp4
+
+Lecture 3
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part1-overview-key-features%20%5B6f785e3a%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part2-vms%20%5Bf4434a9e%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part3-cloud-iaas-paas-saas%20%5B78bac92f%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part4-linux-basics%20%5Bc069c34b%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part5-filesystem-basics%20%5B8dcac063%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part6-env-path-home%20%5B81563a5a%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part7-which-path-debug%20%5B8a0d2ac7%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part8-ssh%20%5B074cf74c%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part9-scp%20%5Ba4ba71a5%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part10-bash%20%5Bb76db3de%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part11-node-npm%20%5Bf76b5049%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part12-editing-hello%20%5B4102fb06%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part13-hello2%20%5B8b85fbc1%5D%20.mp4
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture3-v2-part14-fibonacci%20%5B4202e7c4%5D%20.mp4
+
+Lecture 4a
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part1-intro.51d19cf5c052a.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part2-stdin-stdout-stderr.51d19cfec9dec.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part3-navigation-filesystem.51d19d08169b2.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part4-downloading-syncing.51d19d1b167b2.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part5-basic-text-processing.51d19d4a3afb6.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part6-help-system-process.51d19d54e26a5.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part7-superuser.51d19d5c57918.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part8-storage-location.51d19d63566fe.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part9-intermediate-text-processing.51d19d6d5a0c0.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part10-bash-keyboard-shortcuts.51d19d740dd0c.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part11-intermediate-bash.51d19d7beb516.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part12-summary%281%29.51d1eb0570b60.webm
+
+Lecture 4b
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part1-introduction.51d350e6e493a.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part2-screen-motivation%281%29.51d3620ca4082.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part3-screen-tabs-navigation%281%29.51d36239079ce.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part4-screen-copy-paste.51d35105c868a.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part5-screen-detach-reattach%281%29.51d3624adba7c.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part6-emacs-intro.51d35114ea570.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part7-emacs-control-meta%281%29.51d364d9df049.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part8-emacs-install-setup%281%29.51d364e1a7842.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part9-emacs-help-with-tutorial%281%29.51d364edaf56a.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part10-emacs-repl%281%29.51d364f5bbf18.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part11-emacs-jshint%281%29.51d364fe10584.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part12-emacs-summary%281%29.51d36571bb512.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part13-git-dvcs%281%29.51d367dd47a04.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part14-git-sha1%281%29.51d367e4b791f.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part15-git-session%281%29.51d367ecc7163.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part16-git-pushing-to-github%281%29.51d367f3e7805.webm
+http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4b-part17-setup-dotfiles%281%29.51d367faa94bf.webm
