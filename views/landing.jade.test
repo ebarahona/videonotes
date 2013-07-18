@@ -1,0 +1,369 @@
+!!! 5
+html(lang='en')
+ head
+  meta(charset='utf-8')
+  title SocialTube
+  script(src='/javascripts/bootstrap/jquery.js')
+  script(src='/javascripts/bootstrap/bootstrap.js')
+  script(src='/javascripts/bootstrap/bootstrap-switch.js')
+  script(type='text/javascript')
+    var ytHt, ytWd;
+
+    function getScreenRes() {
+      //alert(screen.width == '1920');
+      if (screen.width == '1280') {
+        ytHt = '240';
+        ytWd = '384';
+      } else if (screen.width == '1920') {
+        ytHt = '320';
+        ytWd = '512';
+      }
+    }
+
+    function processNote() {
+      var elem = document.getElementById("commentTxt");
+      displayNote(elem.value);
+      submitNote(elem.value);
+      elem.value = "";
+    }
+    
+    function setListeners() {
+      if(document.addEventListener){ //code for Moz
+        document.addEventListener("keypress",keyCapt,false);
+      }else{
+        document.attachEvent("onkeypress",keyCapt); 
+      }
+    }
+
+    function submitNote(text) {
+      timenow = Math.round(parseFloat(player.getCurrentTime()));
+      $("#t_elapse").val(timenow);
+      uId = $("#uId").val();
+      vId = $("#vId").val();
+      $.ajax({
+           type: 'POST',
+           url: '/submitNote',
+           data: {googleId: uId, videoURL: vId, comments: text, noteId: new Date().getTime(), instant: timenow, ispublic: false},
+           success: function(data) { 
+             var lielem = document.getElementById("commentList").firstChild;
+             lielem.setAttribute('id', 'li' + data.noteId);
+             lielem.firstChild.setAttribute('href', 'javascript:deleteNote("' + data.noteId + '")');
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });      
+    }
+
+    function keyCapt(e){
+      if(typeof window.event!="undefined"){
+        e=window.event;//code for IE
+      }
+      if(e.type=="keypress"){
+        if (e.keyCode == "13" && $('#enterSubmitSwitch').bootstrapSwitch('status')){
+          processNote();
+          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
+            player.playVideo();
+          }
+        }else{
+          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
+            player.pauseVideo();
+          }
+        }
+      }
+    }
+
+    function showSubscriptions(data) {
+
+      var subHeader = data.subHeader;
+      var vals = data.vals";
+      document.getElementById('uId').value = "#{googleId}";
+      var subs = vals.split("},{");
+
+      var elem = document.getElementById('navlist');
+      if (elem) {
+        while (elem.firstChild) {
+          elem.removeChild(elem.firstChild);
+        }
+      }
+      document.getElementById('navlist').innerHTML = "";
+      
+      var headerli = document.createElement('li');
+      headerli.setAttribute('class', 'nav-header');
+      headerli.innerHTML = subHeader;
+      elem.appendChild(headerli);
+      
+      for(i=0; i<subs.length; i++) {
+        var listli = document.createElement('li');
+        subs[i] = subs[i].replace(/[{}']/g,"");
+        var namevals = subs[i].split(",");
+        var name = namevals[0].replace("title:","").trim();
+        var url = namevals[2].replace("url:","").trim();
+
+        listli.setAttribute('id', 'li'+i);
+        if (i == 0)
+          listli.setAttribute('class','active');
+        var a1 = document.createElement('a');
+        a1.setAttribute('href',url);
+        a1.setAttribute('onClick','itemClicked(\'' + url + '\')');
+        a1.innerHTML = name;
+        listli.appendChild(a1);
+        elem.appendChild(listli);
+      }
+    }
+    
+    onload = function(req, res) {
+      alert('calling onload');
+
+      $.ajax({
+           type: 'GET',
+           url: '/subscriptions',
+           success: function(data) { 
+             showSubscriptions(data); 
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });
+      
+      setListeners();   
+    }
+
+    displayNote = function(text) {
+      var lst = document.getElementById("commentList");
+      var listli = document.createElement('li');
+      listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text ;
+      lst.insertBefore(listli, lst.firstChild);
+    }
+
+    function loadNotesInFrame(data) {
+      var elem = $('#commentList');
+      if (elem) {
+        while (elem.firstChild) {
+          elem.removeChild(elem.firstChild);
+        }
+      }
+      var lst = document.getElementById("commentList");
+
+      for(i=0; i<data.length; i++) {
+        
+        var listli = document.createElement('li');
+        listli.setAttribute('id', 'li' + data[i].noteId);
+        var aelem = document.createElement('a');
+        aelem.setAttribute();
+        listli.innerHTML = '<a alt="Delete" href=javascript:deleteNote("' + data[i].noteId + '")><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + data[i].comments;
+        lst.insertBefore(listli, lst.firstChild);        
+      }
+    }    
+
+    loadNotes = function() {
+      googleId = $('#uId').val();
+      temp = document.getElementById('player').src;
+      temp = temp.substring(0, temp.indexOf('?'));
+      videoId = temp.substring(temp.lastIndexOf('/')+1);
+      document.getElementById('vId').value = videoId;
+      uId = $("#uId").val();
+      vId = $("#vId").val();
+      $.ajax({
+           type: 'GET',
+           url: '/getNotes',
+           data: {googleId: uId, videoURL: vId},
+           success: function(data) { 
+             loadNotesInFrame(data); 
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });      
+
+    }
+
+    deleteNote = function(liId) {
+      googleId = $('#uId').val();
+      vId = $('#vId').val();
+      
+      $.ajax({
+           type: 'GET',
+           url: '/deleteNote',
+           data: {googleId: uId, videoURL: vId, noteId: liId},
+           success: function(data) { 
+             $('li#li' + liId ).remove();
+           },
+           error: function (xhr, error) {
+             alert(error);
+           }, 
+           dataType: "text"
+      });      
+    } 
+
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var player;
+    
+    
+    function onYouTubeIframeAPIReady() {
+      getScreenRes();
+      player = new YT.Player('player', {
+        height: ytHt,
+        width: ytWd,
+        videoId: 'M7lc1UVf-VE',
+        origin: 'http://localhost:3000', //ASHISH changed
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      loadNotes();
+      //event.target.playVideo();
+    }
+
+    var done = false;
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING && !done) {
+        //setTimeout(stopVideo, 6000);
+        //done = true;
+      }
+    }
+    function stopVideo() {
+      player.stopVideo();
+    }
+
+
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  meta(name='description', content='')
+  meta(name='author', content='')
+  link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+  style(type='text/css')
+    body {
+          padding-top: 60px;
+          padding-bottom: 40px;
+         }
+         .sidebar-nav {
+          padding: 9px 0;
+         }
+         @media (max-width: 980px) {
+          /* Enable use of floated navbar text */
+           .navbar-text.pull-right {
+            float: none;
+            padding-left: 5px;
+            padding-right: 5px;
+           }
+         }
+         .notes2{
+          height: 330px;
+          float: left;
+          overflow: auto;
+          overflow-x:hidden;
+         }
+  link(href='/stylesheets/bootstrap-responsive.css', rel='stylesheet')
+  link(href='/stylesheets/bootstrap-switch.css', rel='stylesheet')
+  link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/stylesheets/apple-touch-icon-144-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/stylesheets/apple-touch-icon-114-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/stylesheets/apple-touch-icon-72-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', href='/stylesheets/apple-touch-icon-57-precomposed.png')
+  link(rel='shortcut icon', href='/stylesheets/favicon.png')
+
+ body
+ .navbar.navbar-inverse.navbar-fixed-top
+  .navbar-inner
+   .container-fluid
+     button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+     a.brand(href='/landing') SocialTube
+      .nav-collapse.collapse
+        p.navbar-text.pull-right
+          //| Logged in as
+          a.navbar-link(href='/logout') Log out
+        ul.nav
+          li.active
+            a(href='#') Home
+          li
+            a(href='mailto:mehrotraashish@gmail.com') Contact 
+        form.navbar-form.pull-right
+          input.search-query(type='text', placeholder='Search')
+          button.btn(type='submit') Search
+        //
+         /.nav-collapse
+
+.container-fluid
+    .row-fluid
+      .span3
+        .well.sidebar-nav
+         ul.nav.nav-list#navlist 
+          
+          //
+            /.well 
+        //
+          /span
+      .span9
+          .hero-unit
+            .row-fluid
+              .span4
+                #player
+              .span1                
+              .span3#notes
+                label
+                  input#uId(type='hidden')
+                  input#vId(type='hidden')
+                  input#t_elapse(type='hidden')
+                  .span1
+                  label(for='pauseVideoWhenTyping') Pause On Typing
+                   .switch.switch-mini#pauseTypeSwitch
+                    input#pauseVideoWhenTyping(type='checkbox', checked=true) 
+                  label(for='submitOnEnter') Submit On Enter
+                   .switch.switch-mini#enterSubmitSwitch
+                    input#submitOnEnter(type='checkbox', checked=true)                                       
+                 textarea#commentTxt(placeholder='Type your comment here...', style='width: 100%; min-height: 200px;')
+                
+                input#submitComment(type='button', value='Comment Now')
+
+              .span4.notes2#notes2
+                label Lecture Notes
+                p
+                ul#commentList(style='list-style-type: none')  
+          .row-fluid
+            .span4
+              h2 Heading
+              p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+              p
+                a.btn(href='#') View details »
+            //
+              /span
+            .span4
+              h2 Heading
+              p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+              p
+                a.btn(href='#') View details »
+            //
+              /span
+            .span4
+              h2 Heading
+              p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+              p
+                a.btn(href='#') View details »
+            //
+              /span
+          //
+            /row
+        //
+          /span
+
+      //
+        /row
+      hr
+      footer
+        p © SocialTube 2013    
+           a.brand(href='mailto:mehrotraashish@gmail.com') Contact
+
+    //
+      /.fluid-container
