@@ -12,10 +12,34 @@ var getConnection = function() {
 
   conn = mongoose.connect("mongodb://localhost/local");
   loadSchemas();
+  testRefDataExists();
+}
+
+testRefDataExists = function() {
+  Course_Video.find({}).exec(
+         function(err, data) {
+          if (err) {
+            console.log(err);
+          }else{
+            if (data.length == 0) {
+              createRefData();
+            }
+            console.log("Reference Data already created");
+          }
+         });
+}
+
+createRefData = function() {
+  console.log("Starting to create reference data");
+  courses = require('./refdata/courses');
+  courses.createCourses();  
+  course_videos = require('./refdata/course_videos');
+  course_videos.createCourseVideos();  
+  console.log("... reference data Created!");
 }
 
 loadSchemas = function() {
-  //console.log("about to load schemas");
+  console.log("about to load schemas");
   if (conn == null) { //
     conn = getConnection();
   }
@@ -58,8 +82,6 @@ loadSchemas = function() {
   mongoose.model('Course', CourseSchema);
   Course = mongoose.model('Course');
   module.exports = Course;
-  courses = require('./refdata/courses');
-  courses.createCourses();
 
   var CourseVideoSchema = new mongoose.Schema({
     courseId: String
@@ -76,8 +98,7 @@ loadSchemas = function() {
   mongoose.model('Course_Video', CourseVideoSchema);
   Course_Video = mongoose.model('Course_Video');
   module.exports = Course_Video;
-  courses = require('./refdata/course_videos');
-  courses.createCourseVideos();
+  console.log("... schemas loaded");
 } 
 
 
