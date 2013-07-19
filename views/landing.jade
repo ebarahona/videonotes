@@ -14,7 +14,6 @@ html(lang='en')
     var ytHt, ytWd;
 
     function getScreenRes() {
-      //alert(screen.width == '1920');
       if (screen.width == '1280') {
         ytHt = '240';
         ytWd = '384';
@@ -30,8 +29,10 @@ html(lang='en')
 
     function processNote() {
       var elem = document.getElementById("commentTxt");
-      displayNote(elem.value);
-      submitNote(elem.value);
+      text = elem.value.replace(/\n/g, '<br>').trim();
+      instant = vjPlayer.currentTime();
+      displayNote(text, instant);
+      submitNote(text);
       elem.value = "";
     }
     
@@ -43,11 +44,12 @@ html(lang='en')
       }
     }
 
-    function submitNote(text) {
-      timenow = Math.round(parseFloat(player.getCurrentTime()));
+    function submitNote(text) {    
+      timenow = Math.round(parseFloat(vjPlayer.currentTime()));
       $("#t_elapse").val(timenow);
       uId = $("#uId").val();
       vId = $("#vId").val();
+      text = text.replace(/\n/g, '<br>').trim();
       $.ajax({
            type: 'POST',
            url: '/submitNote',
@@ -71,94 +73,15 @@ html(lang='en')
         if (e.keyCode == "13" && $('#enterSubmitSwitch').bootstrapSwitch('status')){
           processNote();
           if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
-            player.playVideo();
+            vjPlayer.play();
           }
         }else{
           if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
-            player.pauseVideo();
+            vjPlayer.pause();
           }
         }
       }
-    }
-
-    function showSubscriptions(data) {
-      var jsObj = JSON.parse(data);
-      var subHeader = jsObj.subHeader;
-      document.getElementById('uId').value = jsObj.googleId;
-
-      //cleanup
-      var elem = document.getElementById('navlist');
-      if (elem) {
-        while (elem.firstChild) {
-          elem.removeChild(elem.firstChild);
-        }
-      }
-      document.getElementById('navlist').innerHTML = "";
-
-      //set header
-      var headerli = document.createElement('li');
-      headerli.setAttribute('class', 'nav-header');
-      headerli.innerHTML = subHeader;
-      elem.appendChild(headerli);
-
-      var vals = jsObj.vals;
-    
-      for (i=0; i< vals.length; i++) {
-        var name = vals[i].title.trim();
-        var url = vals[i].url.trim();
-
-        var listli = document.createElement('li');        
-        listli.setAttribute('id', 'li'+i);
-        if (i == 0)
-          listli.setAttribute('class','active');
-        var a1 = document.createElement('a');
-        a1.setAttribute('href',url);
-        a1.setAttribute('onClick','itemClicked(\'' + url + '\')');
-        a1.innerHTML = name;
-        listli.appendChild(a1);
-        elem.appendChild(listli);
-      }
-    }
-
-    function showHistory(data) {
-      
-      var subHeader = data.subHeader;
-
-      //cleanup
-      var elem = document.getElementById('historylist');
-      if (elem) {
-        while (elem.firstChild) {
-          elem.removeChild(elem.firstChild);
-        }
-      }
-      document.getElementById('historylist').innerHTML = "";
-
-      //set header
-      var headerli = document.createElement('li');
-      headerli.setAttribute('class', 'nav-header');
-      headerli.innerHTML = subHeader;
-      elem.appendChild(headerli);
-
-      var vals = data.vals;
-    
-      for (i=0; i< vals.length; i++) {
-        var name = vals[i].title.trim();
-        var url = vals[i].url.trim();
-        vidId = url.substring(url.indexOf('watch?v=')+8, url.indexOf('&'));
-        url = "javascript:playVideo('" + vidId + "');";
-
-        var listli = document.createElement('li');        
-        listli.setAttribute('id', 'li'+i);
-        if (i == 0)
-          listli.setAttribute('class','active');
-        var a1 = document.createElement('a');
-        a1.setAttribute('href',url);
-        a1.setAttribute('onClick','itemClicked(\'' + url + '\')');
-        a1.innerHTML = name;
-        listli.appendChild(a1);
-        elem.appendChild(listli);
-      }
-    }    
+    }   
 
     function showCourseVideos(data) {
       //cleanup
@@ -177,29 +100,38 @@ html(lang='en')
       elem.appendChild(headerli);
 
       document.getElementById('uId').value = data.googleId;
-
-      data = data.data; 
+      data = data.data;
+      document.getElementById('vId').value = data[0].courseId + '_' + data[0].groupId + '_' + data[0].videoId;
+      document.getElementById('vURL').value = data[0].url;
+      vjPlayer = videojs("vid1_html5_api");
+      vjPlayer.src(document.getElementById('vURL').value)
+      vjPlayer.ready(function(){
+        vjPlayer = this;
+        vjPlayer.play();
+      });
+      
       var lgrpId = '';
+
       for (i=0; i< data.length; i++) {
         var name = data[i].videoName.trim();
         var url = data[i].url.trim();
         var lectGrpId = data[i].lectureGroup.trim();
-        //createa group header
+        //create a group header
         if (lectGrpId != lgrpId) {
           var headerli = document.createElement('li');        
-          headerli.setAttribute('id', 'li'+lectGrpId);
+          headerli.setAttribute('id', 'li' + data[i].courseId + '_' + data[i].groupId);
           headerli.innerHTML = "<h4>" + lectGrpId + "</h4>";
           elem.appendChild(headerli);
           lgrpId = lectGrpId;
         }
 
         var listli = document.createElement('li');        
-        listli.setAttribute('id', 'li'+i);
+        idVal = data[i].courseId + '_' + data[i].groupId + '_' + data[i].videoId;
+        listli.setAttribute('id', idVal);
         if (i == 0)
           listli.setAttribute('class','active');
         var a1 = document.createElement('a');
-        a1.setAttribute('href',url);
-        a1.setAttribute('onClick','itemClicked(\'' + url + '\')');
+        a1.setAttribute('href','javascript:playVideo("' + idVal + '", "' + url + '")');
         a1.innerHTML = name;
         listli.appendChild(a1);
         elem.appendChild(listli);
@@ -208,60 +140,65 @@ html(lang='en')
     
     //keep the onload as light as possible and make async requests to load the page
     onload = function(req, res) {
-      /*
-      $.ajax({
-           type: 'GET',
-           url: '/subscriptions',
-           success: function(data) { 
-             showSubscriptions(data); 
-           },
-           error: function (xhr, error) {
-           }, 
-           dataType: "json"
-      });
-
-      $.ajax({
-           type: 'GET',
-           url: '/watch_history',
-           success: function(data) { 
-             showHistory(data); 
-           },
-           error: function (xhr, error) {
-           }, 
-           dataType: "json"
-      });
-      */
-
       $.ajax({
            type: 'GET',
            url: '/get_course_videos',
            data: {cId: "startup-001"},
            success: function(data) { 
              showCourseVideos(data); 
+             loadNotes(); //has to be done after loading the videos
            },
            error: function (xhr, error) {
            }, 
            dataType: "json"
       });
       
-      setListeners();   
+      setListeners();        
+      getScreenRes();
+      $("#vid1").width(ytWd).height(ytHt);
+      
+
     }
 
-    displayNote = function(text) {
+    playVideo = function(vid, url) {
+      oldvid = document.getElementById('vId').value;
+      document.getElementById('vURL').value = url;
+      document.getElementById('vId').value = vid;
+      setVideoAndPlay();
+      loadNotes();
+      $('#'+oldvid).removeAttr('class');
+      $('#'+vid).attr('class', 'active');
+    }
+
+    setVideoAndPlay = function(){
+      vjPlayer.src(document.getElementById('vURL').value);
+      vjPlayer.ready(function(){
+        vjPlayer = this;
+        vjPlayer.play();
+      });
+    }
+
+    moveTo = function(instant) {
+      vjPlayer.currentTime(instant);
+    }
+
+    displayNote = function(text, instant) {
+      instant = Math.round(parseFloat(instant));
       var lst = document.getElementById("commentList");
       var listli = document.createElement('li');
-      listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text ;
+      listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
       lst.insertBefore(listli, lst.firstChild);
     }
 
     function loadNotesInFrame(data) {
-      var elem = $('#commentList');
+      var elem = document.getElementById('commentList');
       if (elem) {
         while (elem.firstChild) {
           elem.removeChild(elem.firstChild);
         }
       }
-      var lst = document.getElementById("commentList");
+      if (data == null || data.length == 0)
+        return;
 
       for(i=0; i<data.length; i++) {
         
@@ -269,17 +206,15 @@ html(lang='en')
         listli.setAttribute('id', 'li' + data[i].noteId);
         var aelem = document.createElement('a');
         aelem.setAttribute();
+        instant = data[i].instant;
         listli.innerHTML = '<a alt="Delete" href=javascript:deleteNote("' + data[i].noteId + '")><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + data[i].comments;
-        lst.insertBefore(listli, lst.firstChild);        
+        listli.innerHTML += '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
+        elem.insertBefore(listli, elem.firstChild);        
       }
     }    
 
+    //has to be called after the course videos have been loaded. The first video of the course would be played.
     loadNotes = function() {
-      googleId = $('#uId').val();
-      temp = document.getElementById('player').src;
-      temp = temp.substring(0, temp.indexOf('?'));
-      videoId = temp.substring(temp.lastIndexOf('/')+1);
-      document.getElementById('vId').value = videoId;
       uId = $("#uId").val();
       vId = $("#vId").val();
       $.ajax({
@@ -314,52 +249,14 @@ html(lang='en')
       });      
     }
 
-    function playVideo (id) {
-      $('#player').attr('src','http://www.youtube.com/embed/' + id + '?enablejsapi=1&origin=http%3A%2F%2Flocalhost%3A3000');
-      player.playVideo();
-    } 
-
     var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    var player;
     var vjPlayer;
-    
-    
-    function onYouTubeIframeAPIReady() {
-      getScreenRes();
-      player = new YT.Player('player', {
-        height: ytHt,
-        width: ytWd,
-        videoId: 'M7lc1UVf-VE',
-        origin: 'http://localhost:3000', //ASHISH changed
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
-      
-      $("#vid1").width(ytWd).height(ytHt);
-      vjPlayer = videojs("vid1_html5_api");
-      
-    }
-
-    function onPlayerReady(event) {
-      loadNotes();
-      //event.target.playVideo();
-    }
-
+        
     var done = false;
-    function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.PLAYING && !done) {
-        //setTimeout(stopVideo, 6000);
-
-        //done = true;
-      }
-    }
     function stopVideo() {
-      player.stopVideo();
+      vjPlayer.stopVideo();
     }
 
 
@@ -400,6 +297,10 @@ html(lang='en')
   link(rel='shortcut icon', href='/stylesheets/favicon.png')
 
  body
+ input#uId(type='hidden')
+ input#vId(type='hidden')
+ input#vURL(type='hidden')
+ input#t_elapse(type='hidden')
  .navbar.navbar-inverse.navbar-fixed-top
   .navbar-inner
    .container-fluid
@@ -437,7 +338,6 @@ html(lang='en')
           .hero-unit
             .row-fluid
               .span4
-                #player
                 video#vid1.video-js.vjs-default-skin(controls='controls', preload='auto', width='640', height='264', poster='http://video-js.zencoder.com/oceans-clip.png', data-setup='{}')
                  source(src='http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part1-intro.51d19cf5c052a.webm', type='video/mp4')
                  source(src='http://video-js.zencoder.com/oceans-clip.webm', type='video/webm')
@@ -447,9 +347,6 @@ html(lang='en')
               .span1                
               .span3#notes
                 label
-                  input#uId(type='hidden')
-                  input#vId(type='hidden')
-                  input#t_elapse(type='hidden')
                   .span1
                   label(for='pauseVideoWhenTyping') Pause On Typing
                    .switch.switch-mini#pauseTypeSwitch
@@ -466,38 +363,7 @@ html(lang='en')
                 label Lecture Notes
                 p
                 ul#commentList(style='list-style-type: none')  
-          .row-fluid
-            .span4
-              h2 Heading
-              p
-                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-              p
-                a.btn(href='#') View details »
-            //
-              /span
-            .span4
-              h2 Heading
-              p
-                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-              p
-                a.btn(href='#') View details »
-            //
-              /span
-            .span4
-              h2 Heading
-              p
-                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-              p
-                a.btn(href='#') View details »
-            //
-              /span
-          //
-            /row
-        //
-          /span
 
-      //
-        /row
       hr
       footer
         p © SocialTube 2013    
