@@ -100,7 +100,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-    
+
 
 youtube.httpProtocol = 'https';
 var vals = "";
@@ -155,6 +155,24 @@ app.get('/subscriptions', function (req, res) {
                       console.log("subscriptions returned successfully");
     }
   });  
+});
+
+app.get('/get_course_videos', function (req, res) {
+  cId = req.query.cId.trim();
+  var usr = req._passport.session.user;
+
+  Course_Video.find({courseId : cId}).sort({groupId: 1, videoId: 1}).exec(
+         function(err, data) {
+          if (err) 
+            return console.log(err);
+          else{
+            res.writeHead(200, {'content-type': 'text/json' });
+            vals = '{"data": ' + JSON.stringify(data) + ',"googleId": "' + usr.googleId + '"}';
+            res.write( vals );
+            res.end('\n');
+            console.log("got the course videos successfully");
+          }
+         }); 
 });
 
 app.get('/watch_history', function (req, res) {

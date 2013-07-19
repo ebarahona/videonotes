@@ -7,7 +7,10 @@ html(lang='en')
   script(src='/javascripts/bootstrap/bootstrap.js')
   script(src='/javascripts/bootstrap/bootstrap-switch.js')
   script(src='/javascripts/bootstrap/bootstrap-wysiwyg.js')
+  script(src='/javascripts/video.js/source-loader.js')
   script(type='text/javascript')
+
+    vjs.options.flash.swf = '/swf/video-js.swf';
     var ytHt, ytWd;
 
     function getScreenRes() {
@@ -156,10 +159,56 @@ html(lang='en')
         elem.appendChild(listli);
       }
     }    
+
+    function showCourseVideos(data) {
+      //cleanup
+      var elem = document.getElementById('navlist');
+      if (elem) {
+        while (elem.firstChild) {
+          elem.removeChild(elem.firstChild);
+        }
+      }
+      document.getElementById('navlist').innerHTML = "";
+
+      //set header
+      var headerli = document.createElement('li');
+      headerli.setAttribute('class', 'nav-header');
+      headerli.innerHTML = "Startup Engineering";
+      elem.appendChild(headerli);
+
+      document.getElementById('uId').value = data.googleId;
+
+      data = data.data; 
+      var lgrpId = '';
+      for (i=0; i< data.length; i++) {
+        var name = data[i].videoName.trim();
+        var url = data[i].url.trim();
+        var lectGrpId = data[i].lectureGroup.trim();
+        //createa group header
+        if (lectGrpId != lgrpId) {
+          var headerli = document.createElement('li');        
+          headerli.setAttribute('id', 'li'+lectGrpId);
+          headerli.innerHTML = "<h4>" + lectGrpId + "</h4>";
+          elem.appendChild(headerli);
+          lgrpId = lectGrpId;
+        }
+
+        var listli = document.createElement('li');        
+        listli.setAttribute('id', 'li'+i);
+        if (i == 0)
+          listli.setAttribute('class','active');
+        var a1 = document.createElement('a');
+        a1.setAttribute('href',url);
+        a1.setAttribute('onClick','itemClicked(\'' + url + '\')');
+        a1.innerHTML = name;
+        listli.appendChild(a1);
+        elem.appendChild(listli);
+      }
+    }    
     
     //keep the onload as light as possible and make async requests to load the page
     onload = function(req, res) {
-
+      /*
       $.ajax({
            type: 'GET',
            url: '/subscriptions',
@@ -176,6 +225,19 @@ html(lang='en')
            url: '/watch_history',
            success: function(data) { 
              showHistory(data); 
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });
+      */
+
+      $.ajax({
+           type: 'GET',
+           url: '/get_course_videos',
+           data: {cId: "startup-001"},
+           success: function(data) { 
+             showCourseVideos(data); 
            },
            error: function (xhr, error) {
            }, 
@@ -262,6 +324,7 @@ html(lang='en')
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     var player;
+    var vjPlayer;
     
     
     function onYouTubeIframeAPIReady() {
@@ -276,6 +339,10 @@ html(lang='en')
           'onStateChange': onPlayerStateChange
         }
       });
+      
+      $("#vid1").width(ytWd).height(ytHt);
+      vjPlayer = videojs("vid1_html5_api");
+      
     }
 
     function onPlayerReady(event) {
@@ -325,6 +392,7 @@ html(lang='en')
   link(href='/stylesheets/bootstrap-responsive.css', rel='stylesheet')
   link(href='/stylesheets/bootstrap-switch.css', rel='stylesheet')
   link(href='/stylesheets/bootstrap-wysiwyg.css', rel='stylesheet')
+  link(href='/stylesheets/video.js/css/video-js.css', rel='stylesheet')
   link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/stylesheets/apple-touch-icon-144-precomposed.png')
   link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/stylesheets/apple-touch-icon-114-precomposed.png')
   link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/stylesheets/apple-touch-icon-72-precomposed.png')
@@ -361,9 +429,6 @@ html(lang='en')
         .well.sidebar-nav
          ul.nav.nav-list#navlist 
           
-        .well.sidebar-nav
-         ul.nav.nav-list#historylist 
-
           //
             /.well 
         //
@@ -373,6 +438,12 @@ html(lang='en')
             .row-fluid
               .span4
                 #player
+                video#vid1.video-js.vjs-default-skin(controls='controls', preload='auto', width='640', height='264', poster='http://video-js.zencoder.com/oceans-clip.png', data-setup='{}')
+                 source(src='http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part1-intro.51d19cf5c052a.webm', type='video/mp4')
+                 source(src='http://video-js.zencoder.com/oceans-clip.webm', type='video/webm')
+                 source(src='http://video-js.zencoder.com/oceans-clip.ogv', type='video/ogg')
+                 track(kind='captions', src='../build/demo-files/demo.captions.vtt', srclang='en', label='English')
+                 p Video Playback Not Supported
               .span1                
               .span3#notes
                 label
@@ -434,3 +505,7 @@ html(lang='en')
 
     //
       /.fluid-container
+  
+  script(type='text/javascript')
+   vid = document.getElementById("vid1");
+
