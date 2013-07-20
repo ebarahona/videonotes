@@ -77,8 +77,8 @@ var conn = dbutils();
 
 
 // all environments
-//app.set('port', process.env.PORT || 3000);
-app.set('port', 80);
+app.set('port', process.env.PORT || 3000);
+//app.set('port', 80);
 app.set('host', 'localhost');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
