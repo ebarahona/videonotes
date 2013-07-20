@@ -2,21 +2,29 @@
 /**
  * Module dependencies.
  * req._passport.user._json gives the json format of the user stored in the passport session
+
+ To be able to use a mongolab connection, the client has to be deployed in AWS cloud or heroku with a mongolab add-on. 
+ RULE- if the mongolab instance has been created in AWS cloud, you have to connect it frmo a machine in AWS cloud.
+connecting it from the macbook (even with login and password) won't work. So, the code has to be ported to an AWS instance first
  */
 
  //start google API info
 
- //LOCAL INFO
-//var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
-//var GOOGLE_CLIENT_SECRET = "0neorTALhqcfKXxa8BT-YLaR";
-//var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
-//var REDIRECT_URL = "http://localhost:3000/oauth2callback";
+//LOCAL INFO
+/*
+var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "0neorTALhqcfKXxa8BT-YLaR";
+var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
+var REDIRECT_URL = "http://localhost:3000/oauth2callback";
+var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
+*/
 
 //heroku deployment info
 var GOOGLE_CLIENT_ID = "89641588136.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var API_KEY = "AIzaSyDfT0Vr9CAE12ZUuKSzaaKSFINx1b5ivnw";
 var REDIRECT_URL = "http://playnnote.herokuapp.com/oauth2callback";
+var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 
 
 var express = require('express')
@@ -33,8 +41,7 @@ var express = require('express')
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    //callbackURL: 'http://localhost:3000/auth/google/return',
-    callbackURL: 'http://playnnote.herokuapp.com/auth/google/return',
+    callbackURL: CALLBACK_URL,
     authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
     tokenURL: 'https://accounts.google.com/o/oauth2/token'
   },
