@@ -5,10 +5,18 @@
  */
 
  //start google API info
-var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "0neorTALhqcfKXxa8BT-YLaR";
-var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
-var REDIRECT_URL = "http://localhost:3000/oauth2callback";
+
+ //LOCAL INFO
+//var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
+//var GOOGLE_CLIENT_SECRET = "0neorTALhqcfKXxa8BT-YLaR";
+//var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
+//var REDIRECT_URL = "http://localhost:3000/oauth2callback";
+
+//heroku deployment info
+var GOOGLE_CLIENT_ID = "89641588136.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
+var API_KEY = "AIzaSyDfT0Vr9CAE12ZUuKSzaaKSFINx1b5ivnw";
+var REDIRECT_URL = "http://playnnote.herokuapp.com/oauth2callback";
 
 
 var express = require('express')
@@ -25,7 +33,8 @@ var express = require('express')
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/auth/google/return',
+    //callbackURL: 'http://localhost:3000/auth/google/return',
+    callbackURL: 'http://playnnote.herokuapp.com/auth/google/return',
     authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
     tokenURL: 'https://accounts.google.com/o/oauth2/token'
   },
@@ -68,7 +77,8 @@ var conn = dbutils();
 
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+//app.set('port', process.env.PORT || 3000);
+app.set('port', 80);
 app.set('host', 'localhost');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -79,8 +89,6 @@ app.use(express.bodyParser());
 app.use(express.cookieParser()); //if this is not added, this error is thrown - Cannot read property 'connect.sid' of undefined
 app.use(express.methodOverride());
 app.use(express.session({secret: 'nodetube'}));
-
-var local_db_name = "local";
 
 //TODO: Passport login sessions should be saved in a database. 
 //These functions should be invoked --
