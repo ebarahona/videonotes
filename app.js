@@ -110,12 +110,11 @@ app.get('/landing', function (req, res) {
   var usr; 
   try {
     usr = req._passport.session.user
-    if (usr != undefined && usr != null) 
+    if (usr != undefined && usr != null) {
       res.render('landing', {googleId: usr.googleId}); 
-  } catch (e) {
-      res.render('index', { title: 'Sign in · Social Tube1', signin: 'Please sign in' });
-  }
-  
+    }
+  } catch (e) {}
+  res.redirect('/');
 });
 
 app.get('/subscriptions', function (req, res) {
@@ -300,6 +299,7 @@ app.get('/logout', function(req, res){
   res.clearCookie('connect.sid');
   req.logout();
   res.redirect('/');
+  conn.closeConnection();
 });
 
 http.createServer(app).listen(app.get('port'), function(){

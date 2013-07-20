@@ -5,14 +5,26 @@ var mongodb = require('mongodb')
 var conn;
 //collections would be an array of all model files. The names here are same as the model files
 var collections = ["User", "User_Note"];
+var MONGO_DB_USERNAME = "playnnote";
+var MONGO_DB_PASSWORD = "H1m4l4y4";
+var MONGO_DB_INSTANCE = "courseranotes";
+var MONGO_DB_LOCATION = "ds035448.mongolab.com:35448";
 
 var getConnection = function() {
 
   console.log("Running mongoose version " + mongoose.version);
 
   conn = mongoose.connect("mongodb://localhost/local");
+
+  //conn = mongoose.connect("mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes");
   loadSchemas();
   testRefDataExists();
+}
+
+var closeConnection = function() {
+  conn.close(function() {
+    console.log("Connection to mongodb closed");
+  });
 }
 
 testRefDataExists = function() {
@@ -100,6 +112,7 @@ loadSchemas = function() {
   module.exports = Course_Video;
   console.log("... schemas loaded");
 } 
+
 
 
 exports = module.exports = getConnection;

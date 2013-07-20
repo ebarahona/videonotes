@@ -29,7 +29,8 @@ html(lang='en')
 
     function processNote() {
       var elem = document.getElementById("commentTxt");
-      text = elem.value.replace(/\n/g, '<br>').trim();
+      text = elem.value.trim();
+      text = text.replace(/\n/g, '<br>').trim();
       instant = vjPlayer.currentTime();
       displayNote(text, instant);
       submitNote(text);
@@ -317,7 +318,7 @@ html(lang='en')
           li.active
             a(href='#') Home
           li
-            a(href='mailto:mehrotraashish@gmail.com') Contact 
+            a(href='mailto:playnnote@gmail.com') Contact 
         form.navbar-form.pull-right
           input.search-query(type='text', placeholder='Search')
           button.btn(type='submit') Search
