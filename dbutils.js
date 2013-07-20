@@ -14,9 +14,10 @@ var getConnection = function() {
 
   console.log("Running mongoose version " + mongoose.version);
 
-  conn = mongoose.connect("mongodb://localhost/local");
+  //conn = mongoose.connect("mongodb://localhost/local");
 
-  //conn = mongoose.connect("mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes");
+  conn = mongoose.connect("mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes");
+  console.log("connecting to mongolab mongo db");
   loadSchemas();
   testRefDataExists();
 }
