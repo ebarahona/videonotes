@@ -13,13 +13,13 @@ html(lang='en')
     vjs.options.flash.swf = '/swf/video-js.swf';
     var ytHt, ytWd;
 
-    function getScreenRes() {
-      if (screen.width == '1280') {
-        ytHt = '240';
-        ytWd = '384';
-      } else if (screen.width == '1920') {
+   function getScreenRes() {
+      if (screen.width == '1920') {
         ytHt = '320';
         ytWd = '512';
+      } else  {
+        ytHt = '240';
+        ytWd = '384';
       }
     }
 
