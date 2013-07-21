@@ -139,7 +139,7 @@ app.get('/auth/google/return',
   
 //app.get('/', routes.index);
 app.get('/', function (req, res) {
-  res.render('index', { title: 'Sign in · Social Tube1', signin: 'Please Sign In', user: req.user });
+  res.render('index', { title: 'Play-n-Note - Play Videos · Take Notes', signin: 'Please Sign In', user: req.user });
 });
 
 app.get('/logout', function(req, res){
