@@ -7,7 +7,7 @@ var conn;
 var collections = ["User", "User_Note"];
 //var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
 
-var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes";
+var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds037358.mongolab.com:37358/courseranotes";
 
 var getConnection = function() {
 
