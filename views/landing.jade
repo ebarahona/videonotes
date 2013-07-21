@@ -14,14 +14,14 @@ html(lang='en')
     var ytHt, ytWd;
 
    function getScreenRes() {
-      if (screen.width == '1920') {
-        ytHt = '320';
-        ytWd = '512';
-      } else  {
-        ytHt = '240';
-        ytWd = '384';
-      }
-    }
+     if (screen.width == '1920') {
+       ytHt = '320';
+       ytWd = '512';
+     } else  {
+       ytHt = '240';
+       ytWd = '384';
+     }
+   }
 
     $('#enterSubmitSwitch').on('switch-change', function (e, data) {
        alert(data);
