@@ -6,22 +6,18 @@
     "start": "node app.js"
   },
   "engines": {
-    "node": "0.10.12",
-    "npm": "1.2.30"
+    "node": "0.10.13",
+    "npm": "1.3.2"
   },
   "dependencies": {
-    "disqus":"0.1.0",    
     "express": "3.2.6",
     "googleapis":"0.2.12-alpha",    
     "jade": "0.31.2",
     "mongodb":"1.3.10",
     "mongoose":"3.6.13",
-    "node-inspector":"*",
-    "openid":"0.5.2",
+    "node-inspector":"0.3.1",
     "passport":"0.1.17",
-    "passport-google":"0.3.0",
     "passport-google-oauth":"0.1.5",
-    "sessions": "0.0.2",
     "youtube-feeds":"2.2.1"
   }
 }

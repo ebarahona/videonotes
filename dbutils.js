@@ -5,29 +5,33 @@ var mongodb = require('mongodb')
 var conn;
 //collections would be an array of all model files. The names here are same as the model files
 var collections = ["User", "User_Note"];
-var MONGO_DB_USERNAME = "playnnote";
-var MONGO_DB_PASSWORD = "H1m4l4y4";
-var MONGO_DB_INSTANCE = "courseranotes";
-var MONGO_DB_LOCATION = "ds035448.mongolab.com:35448";
+//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
+
+var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes";
 
 var getConnection = function() {
 
   console.log("Running mongoose version " + mongoose.version);
 
-  //conn = mongoose.connect("mongodb://localhost/local");
-
-  conn = mongoose.connect("mongodb://playnnote:H1m4l4y4@ds035448.mongolab.com:35448/courseranotes");
-  console.log("connecting to mongolab mongo db");
+  try{
+    conn = mongoose.connect(MONGO_CONNECTION, function(err) {
+      if (err) 
+        throw (err);
+    });
+  } catch (e) {
+    console.log("UNABLE TO CONNECT: " + e);
+  }
+  console.log("connecting to " + MONGO_CONNECTION);
   loadSchemas();
   testRefDataExists();
 }
-
+/*
 var closeConnection = function() {
-  conn.close(function() {
+  conn.disconnect(function() {
     console.log("Connection to mongodb closed");
   });
 }
-
+*/
 testRefDataExists = function() {
   Course_Video.find({}).exec(
          function(err, data) {

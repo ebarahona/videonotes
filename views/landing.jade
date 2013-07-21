@@ -100,7 +100,6 @@ html(lang='en')
       headerli.innerHTML = "Startup Engineering";
       elem.appendChild(headerli);
 
-      document.getElementById('uId').value = data.googleId;
       data = data.data;
       document.getElementById('vId').value = data[0].courseId + '_' + data[0].groupId + '_' + data[0].videoId;
       document.getElementById('vURL').value = data[0].url;
@@ -153,7 +152,8 @@ html(lang='en')
            }, 
            dataType: "json"
       });
-      
+      document.getElementById('uId').value = '#{googleId}';
+
       setListeners();        
       getScreenRes();
       $("#vid1").width(ytWd).height(ytHt);
@@ -298,10 +298,10 @@ html(lang='en')
   link(rel='shortcut icon', href='/stylesheets/favicon.png')
 
  body
- input#uId(type='hidden')
- input#vId(type='hidden')
- input#vURL(type='hidden')
- input#t_elapse(type='hidden')
+ input#uId(type='hidden', value='')
+ input#vId(type='hidden', value='')
+ input#vURL(type='hidden', value='')
+ input#t_elapse(type='hidden', value='')
  .navbar.navbar-inverse.navbar-fixed-top
   .navbar-inner
    .container-fluid
