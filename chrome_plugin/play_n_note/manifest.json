@@ -1,0 +1,40 @@
+{
+  "name": "Play n Note",
+  "version": "1.0",
+  "description": "Take Notes as you watch Coursera Videos.",
+  "background": { 
+    "scripts": [
+      "chrome_ex_oauthsimple.js",
+      "chrome_ex_oauth.js",
+      "jquery.js",
+      "background.js"
+    ] 
+  },
+ "browser_action": {
+    "default_title": "",
+    "default_icon": "icon-19.png"
+  },
+  "permissions" : [
+    "tabs",
+    "webNavigation",
+    "activeTab",
+    "storage",
+    "http://localhost:3000/getNotes",
+    "http://localhost:3000/getNotes/*",
+    "http://playnnote.herokuapp.com/getNotes",
+    "http://playnnote.herokuapp.com/getNotes/*",
+    "https://class.coursera.org/*",
+    "https://www.googleapis.com/oauth2/v2/userinfo",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.google.com/accounts/OAuthGetRequestToken",
+    "https://www.google.com/accounts/OAuthAuthorizeToken",
+    "https://www.google.com/accounts/OAuthGetAccessToken"
+  ],
+  "icons" : {
+    "48" : "icon-48.png",
+    "128" : "icon-128.png"
+  },
+  "manifest_version": 2
+}

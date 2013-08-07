@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="en">
+<head><meta charset="utf-8"><title>Play-n-Note - Play Videos · Take Notes</title>
+  <script src="javascripts/bootstrap/jquery.js"></script>
+  <script src="javascripts/bootstrap/bootstrap.js"></script>
+  <script src="javascripts/bootstrap/bootstrap-switch.js"></script>
+  <script type="text/javascript">
+    var ytHt, ytWd;
+
+    function keyCapt(e){
+      if(typeof window.event!="undefined"){
+        e=window.event;//code for IE
+      }
+      if(e.type=="keypress"){
+        if (e.keyCode == "13" && $('#enterSubmitSwitch').bootstrapSwitch('status')){
+          alert('enter');
+        }
+      }
+    }   
+
+    //keep the onload as light as possible and make async requests to load the page
+    onload = function(req, res) {
+      document.getElementById('uId').value = '116344056495429556007';
+      document.getElementById('commentTxt').value = '123';
+      $('#commentTxt').val('456');
+      //vjPlayer = window.QL_Player;
+      
+    }
+
+    moveTo = function(instant) {
+      vjPlayer.currentTime(instant);
+    }
+
+    displayNote = function(text, instant) {
+      instant = Math.round(parseFloat(instant));
+      var lst = document.getElementById("commentList");
+      var listli = document.createElement('li');
+      listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
+      lst.insertBefore(listli, lst.firstChild);
+    }
+
+    var vjPlayer;
+
+    var done = false;
+    function stopVideo() {
+      vjPlayer.stopVideo();
+    }
+
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content=""><meta name="author" content="">
+  <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+  <style type="text/css">
+    body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }
+   .sidebar-nav {
+    padding: 9px 0;
+   }
+   @media (max-width: 980px) {
+    /* Enable use of floated navbar text */
+     .navbar-text.pull-right {
+      float: none;
+      padding-left: 5px;
+      padding-right: 5px;
+     }
+   }
+   .notes2{
+    height: 330px;
+    float: left;
+    overflow: auto;
+    overflow-x:hidden;
+   }
+  </style>
+   <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet">
+   <link href="/stylesheets/bootstrap-switch.css" rel="stylesheet">
+   <link href="/stylesheets/bootstrap-wysiwyg.css" rel="stylesheet">
+</head>
+<body>
+  <input id="uId" type="hidden" value="">
+  <input id="vId" type="hidden" value="">
+  <input id="vURL" type="hidden" value="">
+  <input id="t_elapse" type="hidden" value="">
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner"><div class="container-fluid">
+      <a href="/landing" class="brand">Play N Note
+        <div class="nav-collapse collapse">
+          <p class="navbar-text pull-right">
+            <a href="/logout" class="navbar-link">Log out</a>
+          </p>
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="mailto:playnnote@gmail.com">Contact </a></li>
+          </ul>
+          <form class="navbar-form pull-right">
+            <input type="text" placeholder="Search" class="search-query">
+            <button type="submit" class="btn">Search</button>
+          </form>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span9">
+      <div class="hero-unit"><div class="row-fluid">
+        <div id="notes" class="span3">
+          <label>
+            <div class="span1"></div>
+            <!--label for="pauseVideoWhenTyping">Pause On Typing<div id="pauseTypeSwitch" class="switch switch-mini"><input id="pauseVideoWhenTyping" type="checkbox" checked></div></label>
+            <label for="submitOnEnter">Submit On Enter<div id="enterSubmitSwitch" class="switch switch-mini"><input id="submitOnEnter" type="checkbox" checked></div></label-->
+          </label>
+          <textarea id="commentTxt" placeholder="Type your comment here..." style="width: 100%; min-height: 200px;"></textarea><input id="commentBtn" type="button" value="Create Note" onclick="javascript:alert('123'); processNote()">
+        </div>
+        <div id="notes2" class="span4 notes2">
+          <label>Lecture Notes</label>
+          <p></p>
+          <ul id="commentList" style="list-style-type: none"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
