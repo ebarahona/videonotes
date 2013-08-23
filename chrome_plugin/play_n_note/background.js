@@ -1,7 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+function injectScriptNoDelete(e,t){var n=function(e){return Object.prototype.toString.call(e)=="[object Function]"};var r=function(e){if(!e||!e.length)return e;var t=/['"<>\/]/g,n="",r=0,i;do{i=t.exec(e);n+=i?e.substring(r,t.lastIndex-1)+"\\x"+i[0].charCodeAt(0).toString(16):e.substring(r)}while(i&&(r=t.lastIndex)>0);return n.length?n:e};var i=n(e);var s=document.createElement("script");var o,u,a="";if(i){var f=[];for(var l=2;l<arguments.length;l++){var c=arguments[l];var h;if(n(c))h='eval("'+r("("+c.toString()+")")+'")';else if(Object.prototype.toString.call(c)=="[object Date]")h="(new Date("+c.getTime().toString()+"))";else if(Object.prototype.toString.call(c)=="[object RegExp]")h="(new RegExp("+c.toString()+"))";else if(typeof c==="string"||typeof c==="object")h='JSON.parse("'+r(JSON.stringify(c))+'")';else h=c.toString();f.push(h)}while(a.length<16)a+=String.fromCharCode(!a.length||Math.random()>.5?97+Math.floor(Math.random()*25):48+Math.floor(Math.random()*9));o="(function(){var value={callResult: null, throwValue: false};try{value.callResult=(("+e.toString()+")("+f.join()+"));}catch(e){value.throwValue=true;value.callResult=e;};"+"document.getElementById('"+a+"').innerText=JSON.stringify(value);})();";s.id=a}else{o=e}s.type="text/javascript";s.innerHTML=o;document.head.appendChild(s);if(i){u=JSON.parse(s.innerText);if(t==true){s.parentNode.removeChild(s);delete s}if(u.throwValue)throw u.callResult;else return u.callResult}else return s}
 function isAuthorized() {
   oauth.authorize(function() {
     //setIcon();
@@ -16,89 +13,88 @@ function isAuthorized() {
 };
 var uId;
 var dispName;
+var tabId;
 
 function saveGInfo(text, xhr) {
   var jsonResp = JSON.parse(text);
   uId = jsonResp.id;
   dispName = jsonResp.name;
   //alert(uId);
-  chrome.storage.sync.set({'gId': uId, 'displayName': dispName});
+  chrome.storage.local.set({'gId': uId, 'displayName': dispName});
   triggerGetNotes();
 }
 
 function triggerGetNotes() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        var url = tabs[0].url;
-        //alert('url: ' + url);     
-        var lastWord = url.substring(url.lastIndexOf("/") + 1);
-        //alert(lastWord);
-        if (lastWord != 'index') {
-          loadNotes(uId);
-        }
-    });
-}
-
-var notes;
-
-function loadNotes(uId) {
-  //alert('in load notes');
-  //uId = "116344056495429556007";
-  vId = "startup-001_1_1";
-  $.support.cors = true; //NOTE: without this ($.support.cors = true),  the ajax call to an external server would not work
-  $.ajax({
-       type: 'GET',
-       //url: 'http://playnnote.herokuapp.com/getNotes',
-       url: 'http://localhost:3000/getNotes',
-       data: {googleId: uId, videoURL: vId},
-       success: function(data) {
-         strData = JSON.stringify(data);
-         chrome.storage.sync.set({'currentNote': strData}, function() {
-            //alert('notes saved');
-         });
-         //alert(strData);
-         //chrome.storage.StorageArea.getBytesInUse('currentNote', function(bytesInUse) {
-         //   alert('Byes in Use:' + bytesInUse);
-         //});         
-       },
-       error: function (xhr, error) {
-         alert("Couldn't load notes from server");
-       }, 
-       dataType: "json"
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      var url = tabs[0].url;
+      var lastWord = url.substring(url.lastIndexOf("/") + 1);
+      //alert(lastWord);
+      if (lastWord != 'index') {
+        tabId = tabs[0].id;
+        loadNotes(uId, url, tabId);
+        //chrome.storage.local.set({'tabId': tabId});
+      }
   });
 }
 
-//this method is to load the notes for a given lecture in the page displayed
-function loadNotesInFrame(data) {
-    var elem = document.getElementById('commentList');
-    if (elem) {
-      while (elem.firstChild) {
-        elem.removeChild(elem.firstChild);
-      }
-    }
-    if (data == null || data.length == 0)
-      return;
+function loadNotes(uId, url, tabId) {
+  //alert(url);
+  //WARNING - dont make URL-REGEX a class var because it would be cached and .exec would give match null alternately
+  var URL_REGEX = /(http|https):\/\/class.coursera.org\/([-a-zA-Z0-9]*)\/lecture\/([1-9]*)/g; 
+  var match = URL_REGEX.exec(url); //this would match all the groups mentioned in parentheses in the regex
+  //alert(JSON.stringify(match));
+  var courseCode = match[2];
+  var lectureCode = match[3];
 
-    for(i=0; i<data.length; i++) {
-      
-      var listli = document.createElement('li');
-      listli.setAttribute('id', 'li' + data[i].noteId);
-      var aelem = document.createElement('a');
-      aelem.setAttribute();
-      instant = data[i].instant;
-      listli.innerHTML = '<a alt="Delete" href=javascript:deleteNote("' + data[i].noteId + '")><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + data[i].comments;
-      listli.innerHTML += '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
-      elem.insertBefore(listli, elem.firstChild);        
-    }
+  vId = courseCode + "_" + lectureCode;
+  //alert(vId);
+  chrome.storage.local.set({'vId': vId});
+  $.support.cors = true; //NOTE: without this ($.support.cors = true),  the ajax call to an external server would not work
+  
+  $.ajax({
+      type: 'GET',
+      //url: 'http://playnnote.herokuapp.com/getNotes',
+      url: 'http://localhost:3000/getNotesExtn',
+      data: {googleId: uId, videoURL: vId},
+      success: function(data) {
+        strData = JSON.stringify(data);
+        chrome.tabs.executeScript(tabId, {code: "var notes={notesData: '" + strData + "'};"}, function() {
+          chrome.tabs.executeScript(tabId, {file: "javascripts/shownotes.js"});
+        });
+      },
+      error: function (xhr, error) {
+        alert('failure in getting notes');
+        chrome.tabs.executeScript({file: "javascripts/shownotes.js"});
+      },
+      dataType: "json"
+  });  
 }
+
+function getCurrentTime() {
+  if (window.QL_player != null) {
+      return window.QL_player.mediaelement_media.currentTime;
+  } else if ($('me_flash_0') != null) {
+      return $('me_flash_0').currentTime();
+  }
+}
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    var time = getCurrentTime();
+    sendResponse({currTime: time});
+  }
+);
+
+//this method is to load the notes for a given lecture in the page displayed
+
 
 // Called when the url of a tab changes.
 function checkForValidUrl(tabId, changeInfo, tab) {
-  // If the letter 'g' is found in the tab's URL...
   if (tab.url.indexOf('coursera.org') > -1) {
     chrome.pageAction.show(tabId);
   }
   chrome.tabs.create({ 'url' : 'test.html'});
-};
+}
 
 var oauth = ChromeExOAuth.initBackgroundPage({
   'request_url' : 'https://www.google.com/accounts/OAuthGetRequestToken',
@@ -110,12 +106,6 @@ var oauth = ChromeExOAuth.initBackgroundPage({
   'app_name' : 'Play-n-Note - Play Videos · Take Notes'
 });
 
-//assume that as a result of authentication and authorization from Google oauth, the access tokens are stored in localstorage
-
-function getTheNotes(text, xhr) {
-  console.log(text);
-  var data = JSON.parse(text);
-}
 /*
 chrome.runtime.onConnect.addListener(function(port) {
   console.assert(port.name == "knockknock");
@@ -137,14 +127,6 @@ chrome.webNavigation.onCompleted.addListener(isAuthorized,
                                               {
                                                 url: [{hostSuffix: 'class.coursera.org'}]
                                               });
-
-chrome.browserAction.onClicked.addListener(function(tab) {
-  // No tabs or host permissions needed!
-  //alert('Turning ' + tab.url + ' red!');
-  chrome.tabs.executeScript({
-    file: "javascripts/contentscript.js"
-  });
-});
 
 
  

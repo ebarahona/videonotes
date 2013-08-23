@@ -6,13 +6,17 @@
     "scripts": [
       "chrome_ex_oauthsimple.js",
       "chrome_ex_oauth.js",
+      "javascripts/bootstrap/bootstrap.js",
       "jquery.js",
-      "background.js"
+      "jqueryui.js",
+      "background.js",
+      "popup.js"
     ] 
   },
  "browser_action": {
     "default_title": "",
-    "default_icon": "icon-19.png"
+    "default_icon": "icon-19.png",
+    "default_popup": "popup.html"
   },
   "permissions" : [
     "tabs",

@@ -1,29 +1,9 @@
-/** This file contains the code which would be injected intot the host URL playing vide and would be run within that page's context.
-This content script would be listening to the methods form the background.js and would send message to that file for communication with extension isolated space
-This code would attach itself to events of various HTML elements on the host page. 
-This script should try to control the media player based on the event messages coming from the extension file.
-In QL_player.js, mediaelement_handle = new mejs.MediaElementPlayer() OR new MediaElementPlayer
-//Thus vjPlayer can call all the methods on MediaElementPlayer from mediaelement.js (http://mediaelementjs.com/#api)
-//Methods on the player can be - play, pause, getCurrentTime, setCurrentTime, 
-	vjPlayer = window.QL_Player.mediaelement_handle;
-	vjPlayer.setSrc("http://www.youtube.com/watch?v=BZeQETah684")
-	vjPlayer.play();
-	... aftet some time, based on some event
-	vjPlayer.pause();
-*/
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright(C) 2010 Abdullah Ali, voodooattack@hotmail.com                                 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php       //
 //////////////////////////////////////////////////////////////////////////////////////////////
  
-// Injects a script into the DOM, the new script gets executed in the original page's
-// context instead of the active content-script context.
-//
-//    Parameters:
-//            source: [string/function]
-//            (2..n): Function arguments if a function was passed as the first parameter.
-
 function injectScript(source)
 {
      
@@ -116,24 +96,12 @@ function injectScript(source)
         return (elem);
 }
 
-var flashPauseStatus;
-
-function togglePlayPause() {
+function getCurrentTime() {
     if (window.QL_player != null) {
-    	if(window.QL_player.mediaelement_media.paused) {
-    		window.QL_player.mediaelement_handle.play(); 
-    	}else{
-    		window.QL_player.mediaelement_handle.pause(); 
-    	}
+        return window.QL_player.mediaelement_media.currentTime;
     } else if ($('me_flash_0') != null) {
-        if (flashPauseStatus == undefined || flashPauseStatus == true) {
-            flashPauseStatus = false;
-            $('me_flash_0').playMedia();
-        } else if (flashPauseStatus == false) {
-            flashPauseStatus = true;
-            $('me_flash_0').pauseMedia();
-        } 
+        return $('me_flash_0').currentTime();
     }
 }
-
-injectScript(playIt);
+var currtime = injectScript(getCurrentTime);
+currtime;
