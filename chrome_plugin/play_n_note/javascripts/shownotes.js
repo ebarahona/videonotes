@@ -6,7 +6,6 @@
  
 function injectScript(source)
 {
-     
     // Utilities
     var isFunction = function (arg) { 
         return (Object.prototype.toString.call(arg) == "[object Function]"); 
@@ -49,10 +48,9 @@ function injectScript(source)
                 arg = "JSON.parse(\"" + jsEscape(JSON.stringify(raw)) + "\")";
             else
                 arg = raw.toString(); // Anything else number/boolean
- 
             args.push(arg);    // push the new argument on the list
         }
- 
+
         // generate a random id string for the script block
         while (id.length < 16) id += String.fromCharCode(((!id.length || Math.random() > 0.5) ?
             0x61 + Math.floor(Math.random() * 0x19) : 0x30 + Math.floor(Math.random() * 0x9 )));
@@ -96,8 +94,7 @@ function injectScript(source)
         return (elem);
 }
 
-function showNotes(notesHTML) {
-    //delete the existing data
+function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     if ($("#dialog")) {
         $("#dialog").html('');
         $("#dialog").remove();
@@ -106,6 +103,7 @@ function showNotes(notesHTML) {
     divElem.setAttribute('id', 'dialog');
     divElem.setAttribute('title', 'Play-n-Note');
     divElem.innerHTML = notesHTML;
+
 
     if ($(".course-modal-frame")) {
         $(".course-modal-frame").after(divElem);
@@ -120,6 +118,18 @@ function showNotes(notesHTML) {
       position: [0,0],  
       zIndex: 1000000, //crucial to make the dialog box visible
       modal: false
+    });
+
+    notes = notesData.split(delimiter);
+    i=0;
+    $("tr[id^='cmt'] > td > a").each( function(index) {
+        //alert($(this).attr("href"));
+        if ($(this).attr("href").indexOf("deleteNote") > -1) {
+            //alert(notes[i]);
+            $(this).after("&nbsp;" + unescape(notes[i]) + "&nbsp;");
+            i++;
+        }
+
     });
 
     $("#dialog").dialog('open');
@@ -140,8 +150,6 @@ function showNotes(notesHTML) {
             }
             instant = Math.round(parseFloat(instant));
         }
-
-
         if (e.keyCode == 67 || e.keyCode == 70 || e.keyCode == 72 || e.keyCode == 80 || e.keyCode == 187 || e.keyCode == 189 || e.keyCode == 191) { 
             //c=67, f=70, h=72, p=80 
             if (e.keyCode == 67) {
@@ -195,24 +203,35 @@ function showNotes(notesHTML) {
             shiftOn = true;
             return false;
         } else if (e.keyCode == 13) { //Enter = 13
-            text = $("#commentsTxt").val();
-            content = '<a style="font-size:10px"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + 's</a>';
-            if ($("#notesTbl > tbody > tr").length > 0) {
-                $('<tr><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
-            } else {
-                $('<tr><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
-            }
-            $("#commentsTxt").val('');
             if (window.QL_player != null) {
-                window.QL_player.mediaelement_handle.play(); 
+                window.QL_player.mediaelement_handle.play();
             } else if ($('me_flash_0') != null) {
                 $('me_flash_0').playMedia();
             }
+            text = $("#commentsTxt").val();
+            timenow = new Date().getTime();
+            if ($.trim(text) != "") {
+                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + gId + ')"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
+                if ($("#notesTbl > tbody > tr").length > 0) {
+                    $('<tr id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                } else {
+                    $('<tr id="cmt' + timenow + '"><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
+                }
+                text = text.replace(/\n/g, '<br>').trim();
+                $.support.cors = true;
+                
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:3000/submitNote',
+                    data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false},
+                });
+            }
+            $("#commentsTxt").val('');
             shiftOn = false;
             instant = 0; //resetting the instant
             return false;
         }
-        
+        shiftOn = false;
     });
 }
 
@@ -221,16 +240,28 @@ function createTableData(data) {
     tableHeaders = "<table id='notesTbl' class='table table-striped table-bordered table-condensed'><tbody>";
     var len = data.length;
     //NOTE: escape single quote in comments to avoid JSON failure
-    for(i = len-1; i > 0; i--) {
-      tableData = tableData + "<tr id='cmt" + (len-i-1) + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a> &nbsp;" + data[i].comments + "&nbsp;<a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
+    for(i = 0; i < len; i++) {
+      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + data[i].googleId + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
     }
     tableEnd = "</tbody></table>";
     var commentHTML = "<textarea id='commentsTxt' width='100%'></textarea><p></p>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
-    //alert(tableData);
     return tableData;
 }
 
+var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
+var deleteNoteStr = "function deleteNote(noteId, uId) { uId = '' + uId; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNote',data: {gId: uId, noteId: noteId}});}";
 data = JSON.parse(notes.notesData);
 var notesHTML = createTableData(data);
-injectScript(showNotes, notesHTML);
+var delimiter = "" + Math.random().toString(36).substring(0,5);
+var dataStr = "";
+for (i=0; i<data.length; i++) {
+    if (i > 0)
+        dataStr += delimiter;
+    dataStr += data[i].comments;
+}
+
+injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, dataStr);
+var scr = document.createElement("script");
+scr.textContent = moveToStr + deleteNoteStr;
+document.head.appendChild(scr);
