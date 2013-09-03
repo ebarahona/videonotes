@@ -10,7 +10,7 @@
       "jquery.js",
       "jqueryui.js",
       "background.js",
-      "popup.js"
+      "javascripts/shownotes.js"
     ] 
   },
  "browser_action": {
@@ -23,10 +23,7 @@
     "webNavigation",
     "activeTab",
     "storage",
-    "http://localhost:3000/getNotes",
-    "http://localhost:3000/getNotes/*",
-    "http://playnnote.herokuapp.com/getNotes",
-    "http://playnnote.herokuapp.com/getNotes/*",
+    "http://playnnote.herokuapp.com/",
     "https://class.coursera.org/*",
     "https://www.googleapis.com/oauth2/v2/userinfo",
     "https://www.googleapis.com/auth/userinfo.profile",

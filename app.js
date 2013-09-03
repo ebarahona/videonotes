@@ -24,8 +24,6 @@ var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 var GOOGLE_CLIENT_ID = "89641588136.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
-//var API_KEY = "AIzaSyDfT0Vr9CAE12ZUuKSzaaKSFINx1b5ivnw";
-//var REDIRECT_URL = "http://playnnote.herokuapp.com/oauth2callback";
 
 
 var express = require('express')
@@ -217,13 +215,30 @@ app.get('/getNotes', function(req, res) {
                   }); 
 });
 
-app.get('/deleteNote', function(req, res) {
+app.get('/getNotesExtn', function(req, res) {
   
   gId = req.query.googleId.trim();
   vRL = req.query.videoURL.trim();
+
+  user_note = User_Note.find({googleId: gId, videoURL: vRL},
+                  function(err, data) {
+                    if (err) 
+                      return console.log(err);
+                    else{
+                      res.writeHead(200, {'content-type': 'text/json' });
+                      res.write( JSON.stringify(data) );
+                      res.end('\n');
+                      console.log("get notes extn successful");
+                    }
+                  }); 
+});
+
+app.get('/deleteNote', function(req, res) {
+  
+  gId = req.query.gId.trim();
   commentId = parseFloat(req.query.noteId.trim());
 
-  user_note = User_Note.findOneAndRemove({googleId : gId, videoURL : vRL, noteId: commentId}, 
+  user_note = User_Note.findOneAndRemove({googleId : gId, noteId: commentId}, 
                   function(err, docs) {
                     if (err) 
                       return console.log(err);

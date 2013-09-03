@@ -1,4 +1,8 @@
 function isAuthorized() {
+  if ($("#dialog")) {
+      $("#dialog").html('');
+      $("#dialog").remove();
+  }
   oauth.authorize(function() {
     //setIcon();
     //look at https://developers.google.com/oauthplayground/ to choose the right API.
@@ -49,8 +53,8 @@ function loadNotes(uId, url, tabId) {
 
   $.ajax({
       type: 'GET',
-      //url: 'http://playnnote.herokuapp.com/getNotes',
-      url: 'http://localhost:3000/getNotesExtn',
+      url: 'http://playnnote.herokuapp.com/getNotesExtn',
+      //url: 'http://localhost:3000/getNotesExtn',
       data: {googleId: uId, videoURL: vId},
       success: function(data) {
         strData = JSON.stringify(data);
@@ -84,16 +88,6 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-//this method is to load the notes for a given lecture in the page displayed
-
-
-// Called when the url of a tab changes.
-function checkForValidUrl(tabId, changeInfo, tab) {
-  if (tab.url.indexOf('coursera.org') > -1) {
-    chrome.pageAction.show(tabId);
-  }
-  chrome.tabs.create({ 'url' : 'test.html'});
-}
 
 var oauth = ChromeExOAuth.initBackgroundPage({
   'request_url' : 'https://www.google.com/accounts/OAuthGetRequestToken',
@@ -101,7 +95,8 @@ var oauth = ChromeExOAuth.initBackgroundPage({
   'access_url' : 'https://www.google.com/accounts/OAuthGetAccessToken',
   'consumer_key' : 'anonymous',
   'consumer_secret' : 'anonymous',
-  'scope' : 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata',
+  //'scope' : 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata',
+  'scope' : 'https://www.googleapis.com/auth/userinfo.profile',
   'app_name' : 'Play-n-Note'
 });
 

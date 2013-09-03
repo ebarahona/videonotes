@@ -25,7 +25,7 @@ function ChromeExOAuth(url_request_token, url_auth_token, url_access_token,
   this.consumer_secret = consumer_secret;
   this.oauth_scope = oauth_scope;
   this.app_name = opt_args && opt_args['app_name'] ||
-      "ChromeExOAuth Library";
+      "Play-n-Note";
   this.key_token = "oauth_token";
   this.key_token_secret = "oauth_token_secret";
   this.callback_page = opt_args && opt_args['callback_page'] ||

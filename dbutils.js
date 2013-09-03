@@ -25,13 +25,7 @@ var getConnection = function() {
   loadSchemas();
   testRefDataExists();
 }
-/*
-var closeConnection = function() {
-  conn.disconnect(function() {
-    console.log("Connection to mongodb closed");
-  });
-}
-*/
+
 testRefDataExists = function() {
   Course_Video.find({}).exec(
          function(err, data) {
@@ -77,7 +71,7 @@ loadSchemas = function() {
   var UserNoteSchema = new mongoose.Schema({
     googleId : String
     , videoURL : String
-    , courseId: String
+    , extnURL: String
     , noteId : Number
     , comments : String
     , instant: Number
@@ -103,8 +97,6 @@ loadSchemas = function() {
   var CourseVideoSchema = new mongoose.Schema({
     courseId: String
     , videoId: Number
-    , groupId: Number
-    , lectureGroup: String
     , videoName: String
     , duration: Number
     , url: String

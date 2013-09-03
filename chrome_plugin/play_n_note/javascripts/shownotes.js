@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php       //
 //////////////////////////////////////////////////////////////////////////////////////////////
- 
 function injectScript(source)
 {
     // Utilities
@@ -120,6 +119,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
       modal: false
     });
 
+
+
     notes = notesData.split(delimiter);
     i=0;
     $("tr[id^='cmt'] > td > a").each( function(index) {
@@ -133,6 +134,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     });
 
     $("#dialog").dialog('open');
+    $(".icon-remove").on('click', function(event) {$("#dialog" ).dialog('close');});
 
     var capsOn = false;
     var shiftOn = false;
@@ -211,7 +213,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             text = $("#commentsTxt").val();
             timenow = new Date().getTime();
             if ($.trim(text) != "") {
-                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + gId + ')"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
+                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + gId + ')"><img src="http://playnnote.herokuapp.com/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
                 if ($("#notesTbl > tbody > tr").length > 0) {
                     $('<tr id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
                 } else {
@@ -222,7 +224,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
                 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:3000/submitNote',
+                    url: 'http://playnnote.herokuapp.com/submitNote',
                     data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false},
                 });
             }
@@ -241,7 +243,7 @@ function createTableData(data) {
     var len = data.length;
     //NOTE: escape single quote in comments to avoid JSON failure
     for(i = 0; i < len; i++) {
-      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + data[i].googleId + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
+      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + data[i].googleId + ")'><img src='http://playnnote.herokuapp.com/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
     }
     tableEnd = "</tbody></table>";
     var commentHTML = "<textarea id='commentsTxt' width='100%'></textarea><p></p>";
@@ -250,7 +252,7 @@ function createTableData(data) {
 }
 
 var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-var deleteNoteStr = "function deleteNote(noteId, uId) { uId = '' + uId; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNote',data: {gId: uId, noteId: noteId}});}";
+var deleteNoteStr = "function deleteNote(noteId, uId) { uId = '' + uId; $.ajax({type: 'GET', url: 'http://playnnote.herokuapp.com/deleteNote',data: {gId: uId, noteId: noteId}});}";
 data = JSON.parse(notes.notesData);
 var notesHTML = createTableData(data);
 var delimiter = "" + Math.random().toString(36).substring(0,5);
