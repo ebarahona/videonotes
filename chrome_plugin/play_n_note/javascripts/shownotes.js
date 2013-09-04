@@ -213,7 +213,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             text = $("#commentsTxt").val();
             timenow = new Date().getTime();
             if ($.trim(text) != "") {
-                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + gId + ')"><img src="http://playnnote.herokuapp.com/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
+                uId = "" + gId; //put the s back together 
+                uId1 = uId.substring(1, 10);
+                uId2 = uId.substring(10, uId.length-1);
+                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + uId1  + ', ' + uId2 + ')"><img src="http://playnnote.herokuapp.com/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
                 if ($("#notesTbl > tbody > tr").length > 0) {
                     $('<tr id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
                 } else {
@@ -224,7 +227,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
                 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://playnnote.herokuapp.com/submitNote',
+                    url: 'http://playnnote.herokuapp.com/submitNoteExtn',
                     data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false},
                 });
             }
@@ -243,7 +246,10 @@ function createTableData(data) {
     var len = data.length;
     //NOTE: escape single quote in comments to avoid JSON failure
     for(i = 0; i < len; i++) {
-      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + data[i].googleId + ")'><img src='http://playnnote.herokuapp.com/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
+      uId = "s" + data[i].googleId + "s"; //put the s back together 
+      uId1 = uId.substring(1, 10);
+      uId2 = uId.substring(10, uId.length-1);
+      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://playnnote.herokuapp.com/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
     }
     tableEnd = "</tbody></table>";
     var commentHTML = "<textarea id='commentsTxt' width='100%'></textarea><p></p>";
@@ -252,8 +258,9 @@ function createTableData(data) {
 }
 
 var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-var deleteNoteStr = "function deleteNote(noteId, uId) { uId = '' + uId; $.ajax({type: 'GET', url: 'http://playnnote.herokuapp.com/deleteNote',data: {gId: uId, noteId: noteId}});}";
+var deleteNoteStr = "function deleteNote(noteId, uId1, uId2) { uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://playnnote.herokuapp.com/deleteNoteExtn',data: {gId: uId, noteId: noteId}}); $('#cmt' + noteId).remove();}";
 data = JSON.parse(notes.notesData);
+
 var notesHTML = createTableData(data);
 var delimiter = "" + Math.random().toString(36).substring(0,5);
 var dataStr = "";
@@ -262,7 +269,6 @@ for (i=0; i<data.length; i++) {
         dataStr += delimiter;
     dataStr += data[i].comments;
 }
-
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, dataStr);
 var scr = document.createElement("script");
 scr.textContent = moveToStr + deleteNoteStr;

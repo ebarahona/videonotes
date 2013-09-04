@@ -20,7 +20,7 @@ var tabId;
 
 function saveGInfo(text, xhr) {
   var jsonResp = JSON.parse(text);
-  uId = jsonResp.id;
+  uId = 's'+jsonResp.id + 's'; //set a 's' prefix right in the beginning
   dispName = jsonResp.name;
   
   chrome.storage.local.set({'gId': uId, 'displayName': dispName});
@@ -58,7 +58,6 @@ function loadNotes(uId, url, tabId) {
       data: {googleId: uId, videoURL: vId},
       success: function(data) {
         strData = JSON.stringify(data);
-        //alert('number of notes ' + data.length);
         chrome.tabs.executeScript(tabId, {code: "var notes={notesData: '" + strData + "'};"}, function() {
           chrome.tabs.executeScript(tabId, {code: "var ids={vId: '" + vId + "', gId: '" + uId + "'};"}, function() {
             chrome.tabs.executeScript(tabId, {file: "javascripts/shownotes.js"});

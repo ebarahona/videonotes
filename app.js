@@ -197,6 +197,36 @@ app.post('/submitNote', function(req, res) {
                   }); 
 });
 
+app.post('/submitNoteExtn', function(req, res) {
+  var str = JSON.stringify(req.body);
+  str=str.replace(/[{}]/g,'');
+  parms = str.split(',');
+  temp = [];
+  for (i=0; i<parms.length; i++) {
+    temp[i] = parms[i].split(':');
+  }
+  gId = temp[0][1].replace(/"/g, '').trim();
+  gId = gId.substring(1, gId.length-1);
+  vRL = temp[1][1].replace(/"/g, '').trim();
+  cmts = temp[2][1].replace(/"/g, '').trim(); 
+  noteId = temp[3][1].replace(/"/g, '').trim(); 
+  inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
+  ispblc = temp[5][1].trim(); 
+
+  user_note = User_Note.create({googleId : gId, videoURL : vRL, comments : cmts, noteId: noteId,
+                                    instant: inst, date: new Date(), ispublic : ispblc}, 
+                  function(err, data) {
+                    if (err) {
+                      return console.log(err);
+                    } else {
+                      res.writeHead(200, {'content-type': 'text/json' });
+                      res.write( JSON.stringify(data) );
+                      res.end('\n');
+                      console.log("submit comment successful");
+                    }
+                  }); 
+});
+
 app.get('/getNotes', function(req, res) {
   
   gId = req.query.googleId.trim();
@@ -218,6 +248,7 @@ app.get('/getNotes', function(req, res) {
 app.get('/getNotesExtn', function(req, res) {
   
   gId = req.query.googleId.trim();
+  gId = gId.substring(1, gId.length-1);
   vRL = req.query.videoURL.trim();
 
   user_note = User_Note.find({googleId: gId, videoURL: vRL},
@@ -234,6 +265,24 @@ app.get('/getNotesExtn', function(req, res) {
 });
 
 app.get('/deleteNote', function(req, res) {
+  
+  gId = req.query.gId.trim();
+  commentId = parseFloat(req.query.noteId.trim());
+
+  user_note = User_Note.findOneAndRemove({googleId : gId, noteId: commentId}, 
+                  function(err, docs) {
+                    if (err) 
+                      return console.log(err);
+                    else{
+                      res.writeHead(200, {'content-type': 'text/plain' });
+                      res.write('done');
+                      res.end('\n');
+                      console.log("delete notes successful");
+                    }
+                  }); 
+});
+
+app.get('/deleteNoteExtn', function(req, res) {
   
   gId = req.query.gId.trim();
   commentId = parseFloat(req.query.noteId.trim());
