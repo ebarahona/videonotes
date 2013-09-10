@@ -96,7 +96,7 @@ html(lang='en')
       elem.appendChild(headerli);
 
       data = data.data;
-      document.getElementById('vId').value = data[0].courseId + '_' + data[0].groupId + '_' + data[0].videoId;
+      document.getElementById('vId').value = data[0].courseId + '_' + data[0].videoId;
       document.getElementById('vURL').value = data[0].url;
       vjPlayer = videojs("vid1_html5_api");
       vjPlayer.src(document.getElementById('vURL').value)

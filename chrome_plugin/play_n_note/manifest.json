@@ -1,7 +1,7 @@
 {
-  "name": "Play n Note",
-  "version": "1.0",
-  "description": "Take Notes as you watch Coursera Videos.",
+  "name": "Play-n-Note",
+  "version": "0.1",
+  "description": "Take Notes as you watch Coursera Videos. The video would be paused as the note is being taken. The video plays as the note is completed and the timestamp is saved. You can refer to your notes as these videos are played again.",
   "background": { 
     "scripts": [
       "chrome_ex_oauthsimple.js",
@@ -15,7 +15,7 @@
   },
  "browser_action": {
     "default_title": "",
-    "default_icon": "icon-19.png",
+    "default_icon": "playnnote16.png",
     "default_popup": ""
   },
   "permissions" : [
@@ -34,8 +34,8 @@
     "https://www.google.com/accounts/OAuthGetAccessToken"
   ],
   "icons" : {
-    "48" : "icon-48.png",
-    "128" : "icon-128.png"
+    "48" : "playnnote48.png",
+    "128" : "playnnote128.png"
   },
   "manifest_version": 2
 }
