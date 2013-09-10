@@ -9,8 +9,8 @@
       "javascripts/bootstrap/bootstrap.js",
       "jquery.js",
       "jqueryui.js",
-      "background.js",
-      "javascripts/shownotes.js"
+      "background.min.js",
+      "javascripts/shownotes.min.js"
     ] 
   },
  "browser_action": {
