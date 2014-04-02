@@ -11,22 +11,23 @@ connecting it from the macbook (even with login and password) won't work. So, th
  //start google API info
 
 //LOCAL INFO
-/*
+
 var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "5RWOQ_dKETyHtRoi8OS9lgfP";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
-*/
+
 
 //heroku deployment info
-
+/*
 var GOOGLE_CLIENT_ID = "89641588136.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
-
+*/
 
 var express = require('express')
+  , unirest = require('unirest')
   , routes = require('./routes')
   , dbutils = require('./dbutils')
   , user = require('./routes/user')
@@ -44,6 +45,11 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
+
+//this method would avoid node process from getting terminated, but this is not a solution
+//process.addListener("uncaughtException", function (err) {
+//    console.log("Uncaught exception: " + err);
+//});
 
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
@@ -216,14 +222,25 @@ app.post('/submitNoteExtn', function(req, res) {
   user_note = User_Note.create({googleId : gId, videoURL : vRL, comments : cmts, noteId: noteId,
                                     instant: inst, date: new Date(), ispublic : ispblc}, 
                   function(err, data) {
-                    if (err) {
-                      return console.log(err);
-                    } else {
-                      res.writeHead(200, {'content-type': 'text/json' });
-                      res.write( JSON.stringify(data) );
-                      res.end('\n');
-                      console.log("submit comment successful");
-                    }
+                      if (err) {
+                          return console.log(err);
+                      } else {
+                          console.log("got the User_Note created in mongodb");
+                          unirest.post('http://localhost:7474/db/data/cypher')
+                                  .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+                                  .send({ "query" : "MERGE (user: User { user_id : { user_id }}) MERGE (video: Video { video_id : { video_id }}) CREATE (note: Note { text : { text }, created_at : {timestamp}}) MERGE (user)-[:user_video]->(video) MERGE (user)-[un:created_note]->(note) SET un.created_at={timestamp} MERGE (video)-[n:has_note]->(note) SET n.created_at={timestamp}, n.created_by={ user_id }",
+                                          "params" : {
+                                                      "user_id" : gId,
+                                                      "video_id" : vRL,
+                                                      "text" : cmts,
+                                                      "timestamp" : new Date().getTime()
+                                                     }
+                                        })
+                                  .end(function (response) {
+                                        console.log(response.body);
+                          });
+                      
+                      }
                   }); 
 });
 
@@ -232,8 +249,7 @@ app.get('/getNotes', function(req, res) {
   gId = req.query.googleId.trim();
   vRL = req.query.videoURL.trim();
 
-  user_note = User_Note.find({googleId : gId, videoURL : vRL}, 
-                  function(err, data) {
+  user_note = User_Note.find({googleId : gId, videoURL : vRL}, function(err, data) {
                     if (err) 
                       return console.log(err);
                     else{
@@ -249,20 +265,41 @@ app.get('/getNotesExtn', function(req, res) {
   
   gId = req.query.googleId.trim();
   gId = gId.substring(1, gId.length-1);
-  vRL = req.query.videoURL.trim();
+  lId = req.query.lId.trim();
+  cId = req.query.cId.trim();
+  vRL = cId + "$" + lId;
 
-  user_note = User_Note.find({googleId: gId, videoURL: vRL},
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "MERGE (course : Course { course_id : {course_id}}) MERGE (video: Video { video_id : { video_id }}) MERGE (user : User { user_id: { user_id }}) ON CREATE SET user.notes_public=false MERGE (course)-[:attended_by]-(user) MERGE (course)-[cv:course_video]->(video) ON CREATE SET cv.first_seen={ timestamp } ON MATCH SET cv.last_seen={ timestamp } MERGE (video)-[:is_in_course]->(course) MERGE (user)-[uv:user_video]->(video) SET uv.last_viewed={timestamp} MERGE (video)-[vu:video_user]->(user) SET vu.last_seen_by={user_id} RETURN user",
+                  "params" : {
+                              "user_id" : gId,
+                              "course_id" : cId,
+                              "video_id" : vRL,
+                              "timestamp" : new Date().getTime()
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                ispublic = false;
+                if (response.body.data[0] != null) {
+                  ispublic = response.body.data[0][0].data.notes_public;
+                }
+                var user_note = User_Note.find({googleId: gId, videoURL: vRL}, {}, {skip:0, sort:{instant: 1}}, 
                   function(err, data) {
                     if (err) 
                       return console.log(err);
-                    else{
-                      res.writeHead(200, {'content-type': 'text/json' });
-                      res.write( JSON.stringify(data) );
+                    else {
+                      res.writeHead(200, {'content-type': 'application/json' });
+                      val = JSON.stringify(data);
+                      val = val.substring(0, val.length-1) + ',{"ispublic":"' + ispublic + '"}]';
+                      res.write(val);
+console.log(val); //remove it
                       res.end('\n');
-                      console.log("get notes extn successful");
                     }
-                  }); 
-});
+                  });
+          });
+  });
 
 app.get('/deleteNote', function(req, res) {
   
@@ -298,6 +335,91 @@ app.get('/deleteNoteExtn', function(req, res) {
                       console.log("delete notes successful");
                     }
                   }); 
+});
+
+app.get('/toggleVideoNotesExtn', function(req, res) {
+  
+  uId = req.query.uId.trim();
+  vId = req.query.vId.trim();
+  open = req.query.open;
+  if (open == null || open == "0")
+    open = false;
+  else
+    open = true;
+  
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "MERGE (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MERGE (video : Video { video_id : {video_id} }) MERGE (video)-[n:has_note {created_by : {user_id}} ]->(nn:Note{}) ON MATCH SET nn.ispublic=" + open ,
+                  "params" : {
+                              "user_id" : uId,
+                              "video_id" : vId
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                var user_note = User_Note.update({googleId: gId, videoURL: vRL}, {ispublic: open}, {multi: true},
+                  function(err, data) {
+                    if (err) 
+                      return console.log(err);
+                    else {
+                      res.writeHead(200, {'content-type': 'application/json' });
+                      val = JSON.stringify(data);
+                      res.write(val);
+                      res.end('\n');
+                    }
+                  }); 
+          }); 
+});
+
+app.get('/toggleNoteExtn', function(req, res) {
+  
+  uId = req.query.uId.trim();
+  noteId = req.query.noteId.trim();
+  open = req.query.open.trim();
+  
+  var user_note = User_Note.update({googleId: gId, noteId: vRL}, {ispublic: open}, {multi: false},
+    function(err, data) {
+      if (err) 
+        return console.log(err);
+      else {
+        res.writeHead(200, {'content-type': 'application/json' });
+        val = JSON.stringify(data);
+        res.write(val);
+        res.end('\n');
+      }
+  }); 
+});
+
+app.get('/toggleTimeSortExtn', function(req, res) {
+  
+  uId = req.query.uId.trim();
+  vId = req.query.vId.trim();
+  open = req.query.open.trim();
+  
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "MERGE (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MATCH (user)-[uv:user_video]->(video) SET uv.last_viewed={timestamp} RETURN user",
+                  "params" : {
+                              "user_id" : gId,
+                              "course_id" : cId,
+                              "video_id" : vRL,
+                              "timestamp" : new Date().getTime()
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                var user_note = User_Note.find({googleId: gId, videoURL: vRL}, //{ sort: {instant: 1} }, 
+                  function(err, data) {
+                    if (err) 
+                      return console.log(err);
+                    else {
+                      res.writeHead(200, {'content-type': 'application/json' });
+                      val = JSON.stringify(data);
+                      res.write(val);
+                      res.end('\n');
+                    }
+                  }); 
+          }); 
 });
 
 app.get('/subscriptions', function (req, res) {
@@ -389,11 +511,11 @@ app.get('/watch_history', function (req, res) {
         vals += '}';
         
         res.writeHead(200, {'content-type': 'text/json' });
-                      res.write(vals);
-                      res.end('\n');
-                      console.log("watch history returned successfully");
+        res.write(vals);
+        res.end('\n');
+        console.log("watch history returned successfully");
     }
-  });  
+  });
 });
 
 

@@ -6,7 +6,7 @@
 function injectScript(source)
 {
     // Utilities
-    var isFunction = function (arg) { 
+    var isFunction = function (arg) {
         return (Object.prototype.toString.call(arg) == "[object Function]"); 
     };
      
@@ -63,7 +63,7 @@ function injectScript(source)
     }
     else // plain string, just copy it over.
     {
-        script = source;
+        script = source;    
     }
  
     elem.type = "text/javascript";
@@ -98,11 +98,32 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         $("#dialog").html('');
         $("#dialog").remove();
     }
+
+    var scriptElem = document.createElement('script');
+    scriptElem.type = "text/javascript";
+    var vardefs = "var notes_public, sort_time; ";
+    var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
+    var deleteNoteStr = "function deleteNote(noteId, uId1, uId2) { uId = '' + uId1 + uId2; $.support.cors = true; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId}}); $('#cmt' + noteId).remove();} ";
+    var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; $.support.cors = true; if ($( '#lockall' ).attr('src').indexOf('open') > -1) { $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
+    var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; $.support.cors = true; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
+    var toggleSortStr = "function toggleTimeSort(gId, lId, cId) { $.support.cors = true; if (sort_time == '' || sort_time == 'i') { $( '#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); $.support.cors = true; $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/getNotesExtn',data: {open:i, sortby: instant, goggleId:gId, lId: lId, cId: cId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/getNotesExtn',data: {open:1, sortby: instant, googleId: uId, lId: lId, cId: cId}});}} ";
+
+    scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
+    document.body.appendChild(scriptElem);
+
     var divElem = document.createElement('div');
     divElem.setAttribute('id', 'dialog');
     divElem.setAttribute('title', 'Play-n-Note');
-    divElem.innerHTML = notesHTML;
+    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 1000000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
+    
+    len = window.QL_player.mediaelement_handle.options.keyActions.length;
+    for (i=0; i < len; i++) {
+        delete window.QL_player.mediaelement_handle.options.keyActions[i];
+    }
+    window.QL_player.mediaelement_handle.enableKeyboard = false;
+    window.QL_player.mediaelement_handle.options.keyActions = null;
 
+    divElem.innerHTML = notesHTML;
 
     if ($(".course-modal-frame")) {
         $(".course-modal-frame").after(divElem);
@@ -110,37 +131,23 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         $(".course-modal-frame.course-modal-frame-with-slides").after(divElem);
     }
 
-    $("#dialog" ).dialog({
-      dialogClass: "no-close",
-      autoOpen: false,
-      height: 350,
-      position: [0,0],  
-      zIndex: 1000000, //crucial to make the dialog box visible
-      modal: false
-    });
-
-
-
-    notes = notesData.split(delimiter);
-    i=0;
-    $("tr[id^='cmt'] > td > a").each( function(index) {
-        //alert($(this).attr("href"));
-        if ($(this).attr("href").indexOf("deleteNote") > -1) {
-            //alert(notes[i]);
-            $(this).after("&nbsp;" + unescape(notes[i]) + "&nbsp;");
-            i++;
-        }
-
-    });
-
-    $("#dialog").dialog('open');
-    $(".icon-remove").on('click', function(event) {$("#dialog" ).dialog('close');});
-
+    if (notesData !== "" && notesData.length > 0) {
+        notes = notesData.split(delimiter);
+        i=0;
+        $("tr[id^='cmt'] > td > a").each( function(index) {
+            if ($(this).attr("href").indexOf("deleteNote") > -1) {
+                $(this).after("&nbsp;" + unescape(notes[i]) + "&nbsp;");
+                i++;
+            }
+        });
+    }
+    
     var capsOn = false;
     var shiftOn = false;
     var pauseFn = "0";
     var playFn = "1";
     var instant = 0;
+
     $("#commentsTxt").keydown(function (e) { //this should take care of special characters not being trapped.
         if (instant == 0) {
             if (window.QL_player != null) {
@@ -153,7 +160,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             instant = Math.round(parseFloat(instant));
         }
         if (e.keyCode == 67 || e.keyCode == 70 || e.keyCode == 72 || e.keyCode == 80 || e.keyCode == 187 || e.keyCode == 189 || e.keyCode == 191) { 
-            //c=67, f=70, h=72, p=80 
             if (e.keyCode == 67) {
                 if (shiftOn == true || capsOn == true) 
                     charval = "C";
@@ -181,9 +187,9 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
                     charval = "=";
             } else if (e.keyCode == 189) { 
                 if (shiftOn == true) 
-                    charval = "-";
-                else
                     charval = "_";
+                else
+                    charval = "-";
             } else if (e.keyCode == 191) { 
                 if (shiftOn == true) 
                     charval = "?";
@@ -204,6 +210,15 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         } else if (e.keyCode == 16) { //shift key = 16
             shiftOn = true;
             return false;
+        } else if (e.keyCode == 8) { //backspace = 8
+            if ($("#commentsTxt").val().length < 2) { //one or zero character left for backspace
+                if (window.QL_player != null) {
+                    window.QL_player.mediaelement_handle.play();
+                } else if ($('me_flash_0') != null) {
+                    $('me_flash_0').playMedia();
+                }
+                instant = 0;
+            }            
         } else if (e.keyCode == 13) { //Enter = 13
             if (window.QL_player != null) {
                 window.QL_player.mediaelement_handle.play();
@@ -212,24 +227,31 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             }
             text = $("#commentsTxt").val();
             timenow = new Date().getTime();
+            //alert(timenow);
             if ($.trim(text) != "") {
                 uId = "" + gId; //put the s back together 
                 uId1 = uId.substring(1, 10);
                 uId2 = uId.substring(10, uId.length-1);
-                content = '<a style="font-size:10px" href="javascript:deleteNote(' + timenow + ', ' + uId1  + ', ' + uId2 + ')"><img src="http://playnnote.herokuapp.com/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a href=javascript:moveTo(' + instant + '); >' + instant + 's</a>';
-                if ($("#notesTbl > tbody > tr").length > 0) {
-                    $('<tr id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                content = '<a style="font-size:10px;z-index:1000000;padding-right:0px;" href="javascript:deleteNote(' + timenow + ', ' + uId1  + ', ' + uId2 + ')"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="http://localhost:3000/images/lock_closed.png" style="float:right"/></a>';
+                if ($("#notesTbl > tbody > tr").length == 0 ) {
+                    $('<tr bgcolor="white" id="cmt' + timenow + '"><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
                 } else {
-                    $('<tr id="cmt' + timenow + '"><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
+                    if ($("#notesTbl > tbody > tr").length % 2 == 0 ) {
+                        $('<tr bgcolor="white" id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                    } else {
+                        $('<tr bgcolor="grey" id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                    }
                 }
                 text = text.replace(/\n/g, '<br>').trim();
                 $.support.cors = true;
                 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://playnnote.herokuapp.com/submitNoteExtn',
-                    data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false},
-                });
+                    url: 'http://localhost:3000/submitNoteExtn',
+                    dataType: 'json',
+                    data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false}
+                  });
+                text = "";                
             }
             $("#commentsTxt").val('');
             shiftOn = false;
@@ -237,39 +259,86 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             return false;
         }
         shiftOn = false;
+
     });
+
+    $(".icon-remove").on('click', function(event) { $("#dialog").remove();});    
+
+    $("#dialog").dialog({
+      title: "Play-n-Note",
+      //dialogClass: "no-close",
+      autoOpen: false,
+      height: 350,
+      width: 400,
+      draggable: true,
+      position: [0,0],  
+      //zIndex: 1000000, //this option is deprecated in jquery UI 1.10
+      modal: false
+    });
+    
+    $("#dialog").open();
+    
 }
 
-function createTableData(data) {
+function createTableData(data, vId, uId) {
     var tableData = "";
-    tableHeaders = "<table id='notesTbl' class='table table-striped table-bordered table-condensed'><tbody>";
-    var len = data.length;
+    var ispublic = false;
+    var len = 0;
+    if (data != "") {
+      len = data.length;
+      ispublic = data[len-1];
+    }
+    if (ispublic == true)
+        lockicon = "lock_open.png";
+    else
+        lockicon = "lock_closed.png";
+    tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
+    tableHeaders += "<thead><tr bgcolor='white' ><td>";
+    tableHeaders += "<a href='javascript:toggleTimeSort()' alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>";
+    tableHeaders += "<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a>&nbsp;";
+    tableHeaders += "</td></tr></thead><tbody>";
+    
     //NOTE: escape single quote in comments to avoid JSON failure
-    for(i = 0; i < len; i++) {
+    
+    for(i = 0; i < len-1; i++) {
       uId = "s" + data[i].googleId + "s"; //put the s back together 
       uId1 = uId.substring(1, 10);
       uId2 = uId.substring(10, uId.length-1);
-      tableData = tableData + "<tr id='cmt" + data[i].noteId + "'><td><a style='font-size:10px' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://playnnote.herokuapp.com/images/deletecomment.png' alt='Delete'/></a><a href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a></td></tr>";
+        if (data[i].ispublic == true)
+            lockicon = "lock_open.png";
+        else
+            lockicon = "lock_closed.png";
+      if (i%2 == 0) {
+        tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+      }else{
+        tableData = tableData + "<tr bgcolor='grey' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+      }
     }
     tableEnd = "</tbody></table>";
-    var commentHTML = "<textarea id='commentsTxt' width='100%'></textarea><p></p>";
+    var commentHTML = "<textarea id='commentsTxt' placeholder='Write a note ... ' width='100%' style='margin:30px 0 0 0;min-height:104px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;'></textarea>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
     return tableData;
 }
 
-var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-var deleteNoteStr = "function deleteNote(noteId, uId1, uId2) { uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://playnnote.herokuapp.com/deleteNoteExtn',data: {gId: uId, noteId: noteId}}); $('#cmt' + noteId).remove();}";
-data = JSON.parse(notes.notesData);
-
-var notesHTML = createTableData(data);
 var delimiter = "" + Math.random().toString(36).substring(0,5);
+var notesHTML = "";
 var dataStr = "";
-for (i=0; i<data.length; i++) {
-    if (i > 0)
-        dataStr += delimiter;
-    dataStr += data[i].comments;
+if (notes === undefined || notes === 'undefined' || notes == "") {
+    notesHTML = createTableData("", ids.vId, ids.gId);
+} else {
+    data = JSON.parse(notes.notesData);
+    notesHTML = createTableData(data, ids.vId, ids.gId);
+    var dataStr = "";
+    for (i=0; i<data.length-1; i++) {
+        if (i > 0)
+            dataStr += delimiter;
+        dataStr += data[i].comments;
+    }
 }
+
+var cssHTML = "<div id='dlghdr' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;-webkit-transition:background-color 200ms ease;padding-right:5px;' class='_dragHandle'>";
+cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 50% no-repeat;margin:5px 4px 0 0;cursor:pointer;display:none;'></span>";
+var endDiv = "</div>";
+notesHTML = cssHTML + notesHTML + endDiv;
+var injected = false;
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, dataStr);
-var scr = document.createElement("script");
-scr.textContent = moveToStr + deleteNoteStr;
-document.head.appendChild(scr);

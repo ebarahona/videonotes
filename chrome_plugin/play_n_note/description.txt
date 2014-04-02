@@ -2,7 +2,7 @@ Description
 
 Play n Note
 
-This plugin is for taking notes while watching Coursera videos.
+Take notes while watching Coursera videos.
 
 Features -
 1. As you start to take notes, the video pauses. You can take your time to put down your thoughts. As you press Enter, the video resumes.
@@ -13,7 +13,7 @@ Features -
 
 4. This extension uses Google authentication only once as you visit any video lectures list. After that you can go to any class video and a notes window would be presented.
 
-5. If you don't like a note, it can be deleted any time. 
+5. If you don't like a note, it can be deleted. 
 
 6. The notes can be moved any time to any part of the screen.
 

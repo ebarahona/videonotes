@@ -5,9 +5,9 @@ var mongodb = require('mongodb')
 var conn;
 //collections would be an array of all model files. The names here are same as the model files
 var collections = ["User", "User_Note"];
-//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
+var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
 
-var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds037358.mongolab.com:37358/courseranotes";
+//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds037358.mongolab.com:37358/courseranotes";
 
 var getConnection = function() {
 
@@ -42,13 +42,16 @@ testRefDataExists = function() {
 
 createRefData = function() {
   console.log("Starting to create reference data");
-  courses = require('./refdata/courses');
-  courses.createCourses();  
-  course_videos = require('./refdata/course_videos');
-  course_videos.createCourseVideos();  
+  //courses = require('./refdata/courses');
+  //courses.createCourses();  
+  //course_videos = require('./refdata/course_videos');
+  //course_videos.createCourseVideos();  
   console.log("... reference data Created!");
 }
 
+/**
+* This method would load the schemas in the MongoDB for User, Notes, Video etc.
+*/
 loadSchemas = function() {
   console.log("about to load schemas");
   if (conn == null) { //
@@ -82,6 +85,15 @@ loadSchemas = function() {
   User_Note = mongoose.model('User_Note');
   module.exports = User_Note; 
 
+  var UserHistorySchema = new mongoose.Schema({
+    googleId: String
+    , videoURL: Number
+    , date: Date
+  });
+  mongoose.model('User_History', UserHistorySchema);
+  User_History = mongoose.model('User_History');
+  module.exports = User_History;
+
   var CourseSchema = new mongoose.Schema({
     courseId: String
     , courseName: String
@@ -107,9 +119,20 @@ loadSchemas = function() {
   mongoose.model('Course_Video', CourseVideoSchema);
   Course_Video = mongoose.model('Course_Video');
   module.exports = Course_Video;
+
+// this would save all the video formats from the CDN
+  var VideoURLSchema = new mongoose.Schema({
+    videoURL: String
+    , starterImage: String
+    , flashVideo: String
+    , webmVideo: String
+    , mp4Video: String
+  })
+  mongoose.model('Video_URL', VideoURLSchema);
+  Video_URL = mongoose.model('Video_URL');
+  module.exports = Video_URL;
+
   console.log("... schemas loaded");
-} 
-
-
-
+}
+ 
 exports = module.exports = getConnection;
