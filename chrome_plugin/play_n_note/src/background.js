@@ -18,6 +18,7 @@ function isAuthorized() {
             uId = 's'+data.id + 's'; //set a 's' prefix right in the beginning
             dispName = data.name;
             chrome.storage.local.set({'gId': uId, 'displayName': dispName});
+            //store this user information in data store
             triggerGetNotes();
           },
           

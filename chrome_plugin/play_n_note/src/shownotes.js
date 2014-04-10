@@ -103,10 +103,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     scriptElem.type = "text/javascript";
     var vardefs = "var notes_public, sort_time; ";
     var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-    var deleteNoteStr = "function deleteNote(noteId, uId1, uId2) { uId = '' + uId1 + uId2; $.support.cors = true; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId}}); $('#cmt' + noteId).remove();} ";
-    var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; $.support.cors = true; if ($( '#lockall' ).attr('src').indexOf('open') > -1) { $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
-    var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; $.support.cors = true; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-    var toggleSortStr = "function toggleTimeSort(gId, lId, cId) { $.support.cors = true; if (sort_time == '' || sort_time == 'i') { $( '#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); $.support.cors = true; $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/getNotesExtn',data: {open:i, sortby: instant, goggleId:gId, lId: lId, cId: cId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'POST', dataType: 'json', crossDomain: true, url: 'http://localhost:3000/getNotesExtn',data: {open:1, sortby: instant, googleId: uId, lId: lId, cId: cId}});}} ";
+    var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
+    var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
+    var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
+    var toggleSortStr = "function toggleTimeSort(gId, lId, cId) { if (sort_time == '' || sort_time == 'i') { $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/getNotesExtn',data: {open:i, sortby: instant, goggleId:gId, lId: lId, cId: cId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/getNotesExtn',data: {open:1, sortby: instant, googleId: uId, lId: lId, cId: cId}});}} ";
 
     scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
     document.body.appendChild(scriptElem);
@@ -227,12 +227,12 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             }
             text = $("#commentsTxt").val();
             timenow = new Date().getTime();
-            //alert(timenow);
             if ($.trim(text) != "") {
                 uId = "" + gId; //put the s back together 
                 uId1 = uId.substring(1, 10);
                 uId2 = uId.substring(10, uId.length-1);
-                content = '<a style="font-size:10px;z-index:1000000;padding-right:0px;" href="javascript:deleteNote(' + timenow + ', ' + uId1  + ', ' + uId2 + ')"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="http://localhost:3000/images/lock_closed.png" style="float:right"/></a>';
+                prms = "'" + timenow + "$" + uId1  + "$" + uId2 + "$" + vId + "'";
+                content = '<a style="font-size:10px;z-index:1000000;padding-right:0px;" href="javascript:deleteNote(' + prms +')"><img src="http://localhost:3000/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="http://localhost:3000/images/lock_closed.png" style="float:right"/></a>';
                 if ($("#notesTbl > tbody > tr").length == 0 ) {
                     $('<tr bgcolor="white" id="cmt' + timenow + '"><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
                 } else {
@@ -286,12 +286,14 @@ function createTableData(data, vId, uId) {
     var len = 0;
     if (data != "") {
       len = data.length;
-      ispublic = data[len-1];
+      ispublic = data[len-1].ispublic;
+      
     }
-    if (ispublic == true)
+    if (ispublic == 'true')
         lockicon = "lock_open.png";
     else
         lockicon = "lock_closed.png";
+
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
     tableHeaders += "<a href='javascript:toggleTimeSort()' alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>";
@@ -308,10 +310,11 @@ function createTableData(data, vId, uId) {
             lockicon = "lock_open.png";
         else
             lockicon = "lock_closed.png";
+      prms = "'" + data[i].noteId + "$" + uId1  + "$" + uId2 + "$" + vId + "'";
       if (i%2 == 0) {
-        tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+        tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
       }else{
-        tableData = tableData + "<tr bgcolor='grey' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href='javascript:deleteNote(" + data[i].noteId + ", " + uId1  + ", " + uId2 + ")'><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+        tableData = tableData + "<tr bgcolor='grey' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='http://localhost:3000/images/deletecomment.png' alt='Delete'/></a><a style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a></td></tr>";
       }
     }
     tableEnd = "</tbody></table>";

@@ -233,7 +233,7 @@ app.post('/submitNoteExtn', function(req, res) {
                                                       "user_id" : gId,
                                                       "video_id" : vRL,
                                                       "text" : cmts,
-                                                      "timestamp" : new Date().getTime()
+                                                      "timestamp" : noteId
                                                      }
                                         })
                                   .end(function (response) {
@@ -292,7 +292,11 @@ app.get('/getNotesExtn', function(req, res) {
                     else {
                       res.writeHead(200, {'content-type': 'application/json' });
                       val = JSON.stringify(data);
-                      val = val.substring(0, val.length-1) + ',{"ispublic":"' + ispublic + '"}]';
+                      val = val.substring(0, val.length-1);
+                      if (val == "[")
+                        val = '[{"ispublic":"' + ispublic + '"}]';
+                      else
+                        val += ',{"ispublic":"' + ispublic + '"}]';
                       res.write(val);
 console.log(val); //remove it
                       res.end('\n');
@@ -301,12 +305,24 @@ console.log(val); //remove it
           });
   });
 
-app.get('/deleteNote', function(req, res) {
+app.get('/deleteNoteExtn', function(req, res) {
   
   gId = req.query.gId.trim();
-  commentId = parseFloat(req.query.noteId.trim());
+  noteId = parseInt(req.query.noteId.trim());
+  vId = req.query.vId.trim();
 
-  user_note = User_Note.findOneAndRemove({googleId : gId, noteId: commentId}, 
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : " MATCH (v : Video{video_id : { vId }})-[hn:has_note {created_by : { gId }}]->(note : Note{created_at : { noteId }}) MATCH n-[r]-(note) DELETE hn, r , note",
+                  "params" : {
+                              "gId" : gId,
+                              "noteId" : noteId,
+                              "vId" : vId
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                user_note = User_Note.findOneAndRemove({googleId : gId, noteId: noteId}, 
                   function(err, docs) {
                     if (err) 
                       return console.log(err);
@@ -317,9 +333,10 @@ app.get('/deleteNote', function(req, res) {
                       console.log("delete notes successful");
                     }
                   }); 
+          }); 
 });
 
-app.get('/deleteNoteExtn', function(req, res) {
+app.get('/deleteNote', function(req, res) {
   
   gId = req.query.gId.trim();
   commentId = parseFloat(req.query.noteId.trim());
@@ -349,7 +366,7 @@ app.get('/toggleVideoNotesExtn', function(req, res) {
   
   unirest.post('http://localhost:7474/db/data/cypher')
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-          .send({ "query" : "MERGE (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MERGE (video : Video { video_id : {video_id} }) MERGE (video)-[n:has_note {created_by : {user_id}} ]->(nn:Note{}) ON MATCH SET nn.ispublic=" + open ,
+          .send({ "query" : "MATCH (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MERGE (video : Video { video_id : {video_id} }) MERGE (video)-[n:has_note ]->(nn:Note) ON MATCH SET nn.ispublic=" + open +", n.created_by={user_id}" ,
                   "params" : {
                               "user_id" : uId,
                               "video_id" : vId
@@ -357,7 +374,7 @@ app.get('/toggleVideoNotesExtn', function(req, res) {
                 })
           .end(function (response) {
                 console.log(response.body);
-                var user_note = User_Note.update({googleId: gId, videoURL: vRL}, {ispublic: open}, {multi: true},
+                var user_note = User_Note.update({googleId: uId, videoURL: vId}, {ispublic: open}, {multi: true},
                   function(err, data) {
                     if (err) 
                       return console.log(err);
@@ -377,7 +394,7 @@ app.get('/toggleNoteExtn', function(req, res) {
   noteId = req.query.noteId.trim();
   open = req.query.open.trim();
   
-  var user_note = User_Note.update({googleId: gId, noteId: vRL}, {ispublic: open}, {multi: false},
+  var user_note = User_Note.update({googleId: uId, noteId: noteId}, {ispublic: open}, {multi: false},
     function(err, data) {
       if (err) 
         return console.log(err);
