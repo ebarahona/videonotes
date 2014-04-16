@@ -218,6 +218,10 @@ app.post('/submitNoteExtn', function(req, res) {
   noteId = temp[3][1].replace(/"/g, '').trim(); 
   inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
   ispblc = temp[5][1].trim(); 
+  if (ispblc == "true")
+    ispblc = true;
+  else
+    ispblc = false;
 
   user_note = User_Note.create({googleId : gId, videoURL : vRL, comments : cmts, noteId: noteId,
                                     instant: inst, date: new Date(), ispublic : ispblc}, 
@@ -228,12 +232,13 @@ app.post('/submitNoteExtn', function(req, res) {
                           console.log("got the User_Note created in mongodb");
                           unirest.post('http://localhost:7474/db/data/cypher')
                                   .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-                                  .send({ "query" : "MERGE (user: User { user_id : { user_id }}) MERGE (video: Video { video_id : { video_id }}) CREATE (note: Note { text : { text }, created_at : {timestamp}}) MERGE (user)-[:user_video]->(video) MERGE (user)-[un:created_note]->(note) SET un.created_at={timestamp} MERGE (video)-[n:has_note]->(note) SET n.created_at={timestamp}, n.created_by={ user_id }",
+                                  .send({ "query" : "MERGE (user: User { user_id : { user_id }}) MERGE (video: Video { video_id : { video_id }}) CREATE (note: Note { text : { text }, created_at : {timestamp}, ispublic : {ispublic}}) MERGE (user)-[:user_video]->(video) MERGE (user)-[un:created_note]->(note) SET un.created_at={timestamp} MERGE (video)-[n:has_note]->(note) SET n.created_at={timestamp}, n.created_by={ user_id }",
                                           "params" : {
                                                       "user_id" : gId,
                                                       "video_id" : vRL,
                                                       "text" : cmts,
-                                                      "timestamp" : noteId
+                                                      "timestamp" : noteId,
+                                                      "ispublic" : ispblc
                                                      }
                                         })
                                   .end(function (response) {
@@ -268,6 +273,12 @@ app.get('/getNotesExtn', function(req, res) {
   lId = req.query.lId.trim();
   cId = req.query.cId.trim();
   vRL = cId + "$" + lId;
+  sortby = req.query.sortby;
+  open = req.query.open;
+  if (open == null || open == "0")
+    open = -1;
+  else
+    open = 1;
 
   unirest.post('http://localhost:7474/db/data/cypher')
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
@@ -285,12 +296,12 @@ app.get('/getNotesExtn', function(req, res) {
                 if (response.body.data[0] != null) {
                   ispublic = response.body.data[0][0].data.notes_public;
                 }
-                var user_note = User_Note.find({googleId: gId, videoURL: vRL}, {}, {skip:0, sort:{instant: 1}}, 
+                var user_note = User_Note.find({googleId: gId, videoURL: vRL}, {}, {skip:0, sort:{instant: open}}, 
                   function(err, data) {
                     if (err) 
                       return console.log(err);
                     else {
-                      res.writeHead(200, {'content-type': 'application/json' });
+                      res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
                       val = JSON.stringify(data);
                       val = val.substring(0, val.length-1);
                       if (val == "[")
@@ -392,19 +403,33 @@ app.get('/toggleNoteExtn', function(req, res) {
   
   uId = req.query.uId.trim();
   noteId = req.query.noteId.trim();
-  open = req.query.open.trim();
+  open = req.query.open;
+  if (open == null || open == "0")
+    open = false;
+  else
+    open = true;
   
-  var user_note = User_Note.update({googleId: uId, noteId: noteId}, {ispublic: open}, {multi: false},
-    function(err, data) {
-      if (err) 
-        return console.log(err);
-      else {
-        res.writeHead(200, {'content-type': 'application/json' });
-        val = JSON.stringify(data);
-        res.write(val);
-        res.end('\n');
-      }
-  }); 
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "MATCH (note : Note { created_at: { note_id }}) SET note.ispublic=" + open ,
+                  "params" : {
+                              "note_id" : noteId
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                var user_note = User_Note.update({googleId: uId, noteId: noteId}, {ispublic: open}, {multi: false},
+                function(err, data) {
+                  if (err) 
+                    return console.log(err);
+                  else {
+                    res.writeHead(200, {'content-type': 'application/json' });
+                    val = JSON.stringify(data);
+                    res.write(val);
+                    res.end('\n');
+                  }
+                });
+          }); 
 });
 
 app.get('/toggleTimeSortExtn', function(req, res) {

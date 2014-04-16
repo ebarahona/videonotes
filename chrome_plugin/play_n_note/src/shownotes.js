@@ -101,12 +101,12 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
     var scriptElem = document.createElement('script');
     scriptElem.type = "text/javascript";
-    var vardefs = "var notes_public, sort_time; ";
+    var vardefs = "var notes_public, sort_instant; ";
     var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
     var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
     var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
     var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-    var toggleSortStr = "function toggleTimeSort(gId, lId, cId) { if (sort_time == '' || sort_time == 'i') { $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/getNotesExtn',data: {open:i, sortby: instant, goggleId:gId, lId: lId, cId: cId}});} else {$( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/getNotesExtn',data: {open:1, sortby: instant, googleId: uId, lId: lId, cId: cId}});}} ";
+    var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src', 'http://localhost:3000/images/clock.png');}} ";
 
     scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
     document.body.appendChild(scriptElem);
@@ -287,8 +287,8 @@ function createTableData(data, vId, uId) {
     if (data != "") {
       len = data.length;
       ispublic = data[len-1].ispublic;
-      
     }
+
     if (ispublic == 'true')
         lockicon = "lock_open.png";
     else
@@ -296,8 +296,8 @@ function createTableData(data, vId, uId) {
 
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    tableHeaders += "<a href='javascript:toggleTimeSort()' alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>";
-    tableHeaders += "<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a>&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a>&nbsp;";
     tableHeaders += "</td></tr></thead><tbody>";
     
     //NOTE: escape single quote in comments to avoid JSON failure
@@ -339,7 +339,7 @@ if (notes === undefined || notes === 'undefined' || notes == "") {
     }
 }
 
-var cssHTML = "<div id='dlghdr' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;-webkit-transition:background-color 200ms ease;padding-right:5px;' class='_dragHandle'>";
+var cssHTML = "<div id='dlghdr1' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;-webkit-transition:background-color 200ms ease;padding-right:5px;' class='_dragHandle'>";
 cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 50% no-repeat;margin:5px 4px 0 0;cursor:pointer;display:none;'></span>";
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
