@@ -99,30 +99,28 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         $("#dialog").remove();
     }
 
-    var scriptElem = document.createElement('script');
-    scriptElem.type = "text/javascript";
-    var vardefs = "var notes_public, sort_instant; ";
-    var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-    var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
-    var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
-    var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-    var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src', 'http://localhost:3000/images/clock.png');}} ";
+    $(".icon-remove").on('click', function(event) { $("#dialog").remove();});    
 
-    scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
-    document.body.appendChild(scriptElem);
+    var fnsExist = false;
+    if (document.getElementById("fns") == null) {
+        var scriptElem = document.createElement('script');
+        scriptElem.type = "text/javascript";
+        scriptElem.id = "fns";
+        var vardefs = "var notes_public, sort_instant; ";
+        var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
+        var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
+        var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
+        var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
+        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src', 'http://localhost:3000/images/clock.png');}} ";
+
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
+        document.body.appendChild(scriptElem);
+    }
 
     var divElem = document.createElement('div');
     divElem.setAttribute('id', 'dialog');
     divElem.setAttribute('title', 'Play-n-Note');
     divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 1000000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
-    
-    len = window.QL_player.mediaelement_handle.options.keyActions.length;
-    for (i=0; i < len; i++) {
-        delete window.QL_player.mediaelement_handle.options.keyActions[i];
-    }
-    window.QL_player.mediaelement_handle.enableKeyboard = false;
-    window.QL_player.mediaelement_handle.options.keyActions = null;
-
     divElem.innerHTML = notesHTML;
 
     if ($(".course-modal-frame")) {
@@ -130,7 +128,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     } else if ($(".course-modal-frame.course-modal-frame-with-slides")) {
         $(".course-modal-frame.course-modal-frame-with-slides").after(divElem);
     }
-
     if (notesData !== "" && notesData.length > 0) {
         notes = notesData.split(delimiter);
         i=0;
@@ -141,7 +138,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             }
         });
     }
-    
+
     var capsOn = false;
     var shiftOn = false;
     var pauseFn = "0";
@@ -262,6 +259,13 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
     });
 
+    len = window.QL_player.mediaelement_handle.options.keyActions.length;    
+    for (i=0; i < len; i++) {
+        delete window.QL_player.mediaelement_handle.options.keyActions[i];
+    }
+    window.QL_player.mediaelement_handle.enableKeyboard = false;
+    window.QL_player.mediaelement_handle.options.keyActions = null;
+
     $(".icon-remove").on('click', function(event) { $("#dialog").remove();});    
 
     $("#dialog").dialog({
@@ -272,11 +276,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
       width: 400,
       draggable: true,
       position: [0,0],  
-      //zIndex: 1000000, //this option is deprecated in jquery UI 1.10
       modal: false
     });
     
-    $("#dialog").open();
+    $("#commentsTxt").focus();
     
 }
 
@@ -318,7 +321,7 @@ function createTableData(data, vId, uId) {
       }
     }
     tableEnd = "</tbody></table>";
-    var commentHTML = "<textarea id='commentsTxt' placeholder='Write a note ... ' width='100%' style='margin:30px 0 0 0;min-height:104px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;'></textarea>";
+    var commentHTML = "<textarea id='commentsTxt' placeholder='Write a note (Enter to play)... ' width='100%' style='margin:30px 0 0 0;min-height:104px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;'></textarea>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
     return tableData;
 }

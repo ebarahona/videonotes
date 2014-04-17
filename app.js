@@ -411,7 +411,7 @@ app.get('/toggleNoteExtn', function(req, res) {
   
   unirest.post('http://localhost:7474/db/data/cypher')
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-          .send({ "query" : "MATCH (note : Note { created_at: { note_id }}) SET note.ispublic=" + open ,
+          .send({ "query" : "MERGE (note : Note { created_at: { note_id }}) ON MATCH SET note.ispublic=" + open ,
                   "params" : {
                               "note_id" : noteId
                              }
