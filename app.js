@@ -273,6 +273,7 @@ app.get('/getNotesExtn', function(req, res) {
   lId = req.query.lId.trim();
   cId = req.query.cId.trim();
   vRL = cId + "$" + lId;
+  timenow = req.query.timenow;
   sortby = req.query.sortby;
   open = req.query.open;
   if (open == null || open == "0")
@@ -287,7 +288,7 @@ app.get('/getNotesExtn', function(req, res) {
                               "user_id" : gId,
                               "course_id" : cId,
                               "video_id" : vRL,
-                              "timestamp" : new Date().getTime()
+                              "timestamp" : timenow
                              }
                 })
           .end(function (response) {
@@ -309,11 +310,32 @@ app.get('/getNotesExtn', function(req, res) {
                       else
                         val += ',{"ispublic":"' + ispublic + '"}]';
                       res.write(val);
-console.log(val); //remove it
                       res.end('\n');
                     }
                   });
           });
+  });
+
+app.get('/reloadNotesExtn', function(req, res) {
+  
+  gId = req.query.googleId.trim();
+  gId = gId.substring(1, gId.length-1);
+  lId = req.query.lId.trim();
+  cId = req.query.cId.trim();
+  vRL = cId + "$" + lId;
+  open = parseInt(req.query.open);
+
+  var user_note = User_Note.find({googleId: gId, videoURL: vRL}, {}, {skip:0, sort:{instant: open}}, 
+    function(err, data) {
+      if (err) 
+        return console.log(err);
+      else {
+        res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
+        val = JSON.stringify(data);
+        res.write(val);
+        res.end('');
+      }
+    });
   });
 
 app.get('/deleteNoteExtn', function(req, res) {
@@ -463,6 +485,50 @@ app.get('/toggleTimeSortExtn', function(req, res) {
                   }); 
           }); 
 });
+
+app.get('/getLectureNotesExtn', function(req, res) {
+  
+  uId = req.query.uId.trim();
+  vId = req.query.vId.trim();
+  
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "MATCH (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n",
+                  "params" : {
+                              "user_id" : uId,
+                              "video_id" : vId
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                res.writeHead(200, {'content-type': 'application/json' });
+                val = JSON.stringify(response.body);
+                res.write(val);
+                res.end('\n');
+          });
+});
+
+/*app.get('/copyNotesExtn', function(req, res) {
+  
+  uId = req.query.uId.trim();
+  vId = req.query.vId.trim();
+  
+  unirest.post('http://localhost:7474/db/data/cypher')
+          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+          .send({ "query" : "CREATE (note:Note {}) (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n",
+                  "params" : {
+                              "user_id" : uId,
+                              "video_id" : vId
+                             }
+                })
+          .end(function (response) {
+                console.log(response.body);
+                res.writeHead(200, {'content-type': 'application/json' });
+                val = JSON.stringify(response.body);
+                res.write(val);
+                res.end('\n');
+          }); 
+});*/
 
 app.get('/subscriptions', function (req, res) {
   var usr = req._passport.session.user;

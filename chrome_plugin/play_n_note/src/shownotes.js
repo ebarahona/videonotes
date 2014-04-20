@@ -102,18 +102,28 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     $(".icon-remove").on('click', function(event) { $("#dialog").remove();});    
 
     var fnsExist = false;
-    if (document.getElementById("fns") == null) {
+    if (document.getElementById("fns") != null) {
+        rows_hidden = undefined;
+        sort_instant = undefined;
+    } else {
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
-        var vardefs = "var notes_public, sort_instant; ";
+        var vardefs = "var notes_public, sort_instant, rows_hidden; ";
         var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
         var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: 'http://localhost:3000/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
         var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
         var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', 'http://localhost:3000/images/lock_closed.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', 'http://localhost:3000/images/lock_open.png'); $.ajax({type: 'GET', url: 'http://localhost:3000/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/getNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { alert(JSON.stringify(data)); createTableData(data, cId + '$' + lId, 's' + gId + 's'); } }); $('#sorticon').attr('src', 'http://localhost:3000/images/clock.png');}} ";
+        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src','http://localhost:3000/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', 'http://localhost:3000/images/clock.png');}} ";
+        var resetTableStr = "function resetTable() { $('tr[id^=\"cmt\"]').remove(); } ";
+        var setRowDataStr = "function setRowData(text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; content = '<a style=\"font-size:10px;z-index:1000000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"http://localhost:3000/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"http://localhost:3000/images/lock_closed.png\" style=\"float:right\"/></a>'; " + 
+                "if ($('#notesTbl > tbody > tr').length == 0 ) { $('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').appendTo($('table > tbody'));} else {if ($('#notesTbl > tbody > tr').length % 2 == 0 ) {$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));} else {$('<tr bgcolor=\"grey\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));} }} ";
+        
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr;
+        var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
+        var importNotesStr = "function importNotes(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; vId = cId + '$' + lId; if (rows_hidden == undefined || rows_hidden == false) { $.ajax({type: 'GET',  url: 'http://localhost:3000/getLectureNotesExtn',data: {uId: gId, vId: vId}, success: function(data) { setTableData(data); } }); resetTable(); rows_hidden = true; } else { $.ajax({type: 'GET', dataType: 'json', url: 'http://localhost:3000/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { setTableData(data); } });  resetTable(); rows_hidden = false;}  } ";
+
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setRowDataStr + setTableDataStr + importNotesStr;
         document.body.appendChild(scriptElem);
     }
 
@@ -299,12 +309,11 @@ function createTableData(data, vId, uId) {
 
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a>&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='http://localhost:3000/images/clock.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='http://localhost:3000/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='http://localhost:3000/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "</td></tr></thead><tbody>";
-    
-    //NOTE: escape single quote in comments to avoid JSON failure
-    
+        
     for(i = 0; i < len-1; i++) {
       uId = "s" + data[i].googleId + "s"; //put the s back together 
       uId1 = uId.substring(1, 10);

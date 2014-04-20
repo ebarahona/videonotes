@@ -58,15 +58,15 @@ function loadNotes(uId, url, tabId) {
   var match = URL_REGEX.exec(url); //this would match all the groups mentioned in parentheses in the regex
   var courseCode = match[2];
   var lectureCode = match[3];
+  var timenow = new Date().getTime();
 
   vId = courseCode + "$" + lectureCode;
   chrome.storage.local.set({'vId': vId, 'url': url});
   $.support.cors = true; 
-
   $.ajax({
       type: 'GET',
       url: 'http://localhost:3000/getNotesExtn',
-      data: { googleId: uId, lId: lectureCode, cId: courseCode, videoURL: vId },
+      data: { googleId: uId, lId: lectureCode, cId: courseCode, videoURL: vId, timenow: timenow },
       dataType: 'json', //json works
       crossDomain: true, //crossdomain works
       error: function (textStatus, xhr, error) {
