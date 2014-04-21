@@ -490,10 +490,22 @@ app.get('/getLectureNotesExtn', function(req, res) {
   
   uId = req.query.uId.trim();
   vId = req.query.vId.trim();
+
+  var user_note = User_Note.find({googleId: {'$ne' : uId}, videoURL: vId, ispublic : true}, {}, {skip:0, sort:{noteId: 1}}, 
+                    function(err, data) {
+                      if (err) 
+                        return console.log(err);
+                      else {
+                        res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
+                        val = JSON.stringify(data);
+                        res.write(val);
+                        res.end('\n');
+                      }
+                  });
   
-  unirest.post('http://localhost:7474/db/data/cypher')
+/*  unirest.post('http://localhost:7474/db/data/cypher')
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-          .send({ "query" : "MATCH (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n",
+          .send({ "query" : "MATCH (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n, hn",
                   "params" : {
                               "user_id" : uId,
                               "video_id" : vId
@@ -501,34 +513,25 @@ app.get('/getLectureNotesExtn', function(req, res) {
                 })
           .end(function (response) {
                 console.log(response.body);
-                res.writeHead(200, {'content-type': 'application/json' });
-                val = JSON.stringify(response.body);
+                data = response.body.data;
+                entries = data.length;
+                val = "{\"values\": [" ;
+                for (i=0; i<entries; i++) {
+                  val += JSON.stringify(data[i][0].data);
+                  val = val.substring(0, val.length-1) + ",";
+                  val2 = JSON.stringify(data[i][1].data);
+                  val2 = val2.substring(1, val2.length);
+                  val += val2;
+                  if (i < entries-1)
+                    val += ",";
+                }
+                val += "]}";
+                res.writeHead(200, {'content-type': 'text/plain', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
                 res.write(val);
                 res.end('\n');
           });
+*/
 });
-
-/*app.get('/copyNotesExtn', function(req, res) {
-  
-  uId = req.query.uId.trim();
-  vId = req.query.vId.trim();
-  
-  unirest.post('http://localhost:7474/db/data/cypher')
-          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-          .send({ "query" : "CREATE (note:Note {}) (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n",
-                  "params" : {
-                              "user_id" : uId,
-                              "video_id" : vId
-                             }
-                })
-          .end(function (response) {
-                console.log(response.body);
-                res.writeHead(200, {'content-type': 'application/json' });
-                val = JSON.stringify(response.body);
-                res.write(val);
-                res.end('\n');
-          }); 
-});*/
 
 app.get('/subscriptions', function (req, res) {
   var usr = req._passport.session.user;
