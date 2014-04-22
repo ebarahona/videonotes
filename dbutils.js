@@ -5,9 +5,9 @@ var mongodb = require('mongodb')
 var conn;
 //collections would be an array of all model files. The names here are same as the model files
 var collections = ["User", "User_Note"];
-var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
+//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
 
-//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://playnnote:H1m4l4y4@ds037358.mongolab.com:37358/courseranotes";
+var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://heroku_app24406028:d3p58kpsu0d5mivsd44s6628hr@ds053838.mongolab.com:53838/heroku_app24406028";
 
 var getConnection = function() {
 

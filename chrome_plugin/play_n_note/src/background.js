@@ -39,6 +39,8 @@ function attachPrevNextLinks() {
 var uId;
 var dispName;
 var tabId;
+//var SERVER_URL = "http://localhost:3000";
+var SERVER_URL = "http://playnnote.herokuapp.com";
 
 function triggerGetNotes() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -65,7 +67,7 @@ function loadNotes(uId, url, tabId) {
   $.support.cors = true; 
   $.ajax({
       type: 'GET',
-      url: 'http://localhost:3000/getNotesExtn',
+      url: SERVER_URL + '/getNotesExtn',
       data: { googleId: uId, lId: lectureCode, cId: courseCode, videoURL: vId, timenow: timenow },
       dataType: 'json', //json works
       crossDomain: true, //crossdomain works

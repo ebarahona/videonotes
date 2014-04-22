@@ -26,6 +26,9 @@ var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 */
 
+//var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
+var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
+
 var express = require('express')
   , unirest = require('unirest')
   , routes = require('./routes')
@@ -35,8 +38,8 @@ var express = require('express')
   , path = require('path')
   , util = require('util')
   , passport = require('passport')
-  , youtube = require('youtube-feeds')
-  , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+  , youtube = require('youtube-feeds');
+  //, GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 passport.serializeUser(function(user, done) {
   done(null, user); 
@@ -51,7 +54,7 @@ passport.deserializeUser(function(obj, done) {
 //    console.log("Uncaught exception: " + err);
 //});
 
-passport.use(new GoogleStrategy({
+/*passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
@@ -83,7 +86,7 @@ passport.use(new GoogleStrategy({
         return done(null, user);//this return statements was missing when login was messed up, DO NOT MOVE!
       });
     } 
-));
+));*/
 
 
 var app = express();
@@ -230,7 +233,7 @@ app.post('/submitNoteExtn', function(req, res) {
                           return console.log(err);
                       } else {
                           console.log("got the User_Note created in mongodb");
-                          unirest.post('http://localhost:7474/db/data/cypher')
+                          unirest.post(LOCAL_NEO4J_URL)
                                   .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
                                   .send({ "query" : "MERGE (user: User { user_id : { user_id }}) MERGE (video: Video { video_id : { video_id }}) CREATE (note: Note { text : { text }, created_at : {timestamp}, ispublic : {ispublic}}) MERGE (user)-[:user_video]->(video) MERGE (user)-[un:created_note]->(note) SET un.created_at={timestamp} MERGE (video)-[n:has_note]->(note) SET n.created_at={timestamp}, n.created_by={ user_id }",
                                           "params" : {
@@ -281,7 +284,7 @@ app.get('/getNotesExtn', function(req, res) {
   else
     open = 1;
 
-  unirest.post('http://localhost:7474/db/data/cypher')
+  unirest.post(LOCAL_NEO4J_URL)
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : "MERGE (course : Course { course_id : {course_id}}) MERGE (video: Video { video_id : { video_id }}) MERGE (user : User { user_id: { user_id }}) ON CREATE SET user.notes_public=false MERGE (course)-[:attended_by]-(user) MERGE (course)-[cv:course_video]->(video) ON CREATE SET cv.first_seen={ timestamp } ON MATCH SET cv.last_seen={ timestamp } MERGE (video)-[:is_in_course]->(course) MERGE (user)-[uv:user_video]->(video) SET uv.last_viewed={timestamp} MERGE (video)-[vu:video_user]->(user) SET vu.last_seen_by={user_id} RETURN user",
                   "params" : {
@@ -344,7 +347,7 @@ app.get('/deleteNoteExtn', function(req, res) {
   noteId = parseInt(req.query.noteId.trim());
   vId = req.query.vId.trim();
 
-  unirest.post('http://localhost:7474/db/data/cypher')
+  unirest.post(LOCAL_NEO4J_URL)
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : " MATCH (v : Video{video_id : { vId }})-[hn:has_note {created_by : { gId }}]->(note : Note{created_at : { noteId }}) MATCH n-[r]-(note) DELETE hn, r , note",
                   "params" : {
@@ -397,7 +400,7 @@ app.get('/toggleVideoNotesExtn', function(req, res) {
   else
     open = true;
   
-  unirest.post('http://localhost:7474/db/data/cypher')
+  unirest.post(LOCAL_NEO4J_URL)
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : "MATCH (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MERGE (video : Video { video_id : {video_id} }) MERGE (video)-[n:has_note ]->(nn:Note) ON MATCH SET nn.ispublic=" + open +", n.created_by={user_id}" ,
                   "params" : {
@@ -431,7 +434,7 @@ app.get('/toggleNoteExtn', function(req, res) {
   else
     open = true;
   
-  unirest.post('http://localhost:7474/db/data/cypher')
+  unirest.post(LOCAL_NEO4J_URL)
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : "MERGE (note : Note { created_at: { note_id }}) ON MATCH SET note.ispublic=" + open ,
                   "params" : {
@@ -460,7 +463,7 @@ app.get('/toggleTimeSortExtn', function(req, res) {
   vId = req.query.vId.trim();
   open = req.query.open.trim();
   
-  unirest.post('http://localhost:7474/db/data/cypher')
+  unirest.post(LOCAL_NEO4J_URL)
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : "MERGE (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MATCH (user)-[uv:user_video]->(video) SET uv.last_viewed={timestamp} RETURN user",
                   "params" : {
@@ -628,9 +631,6 @@ app.get('/watch_history', function (req, res) {
     }
   });
 });
-
-
-
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
