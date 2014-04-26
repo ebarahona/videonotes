@@ -1,13 +1,13 @@
 {
   "name": "Coursera Notes",
-  "version": "0.2",
-  "description": "Take Notes as you watch Coursera Videos.",
+  "version": "0.3.2",
+  "description": "Watch Videos. Take Notes. Share. All from one place.",
   "background": { 
     "scripts": [
       "jquery.js",
       "jqueryui.js",
-      "src/background.js",
-      "src/shownotes.js"
+      "background.js",
+      "shownotes.js"
     ] 
   },
  "browser_action": {
@@ -23,17 +23,18 @@
     "identity",
     "http://playnnote.herokuapp.com/",
     "https://class.coursera.org/*",
-    "http://localhost:3000/*",
-    "https://accounts.google.com/",
-    "https://www.googleapis.com/",
+    "https://ssl.gstatic.com/",
+    "https://accounts.google.com/*",
+    "https://www.googleapis.com/*",
     "https://www.googleapis.com/oauth2/v2/userinfo",
     "https://www.googleapis.com/auth/userinfo.profile"
   ],
-  "key": "oepfalbmkkdbjcchbfcdpffkenldmlda",
   "icons" : {
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
+  "key": "emeichidjoibkhjnihjbklbkkcenkbpj",
+  "minimum_chrome_version": "29",
   "oauth2": {
       "client_id": "89641588136-g285g8mu99m7pc778p85rehrjkt58osb.apps.googleusercontent.com",
       "scopes": ["https://www.googleapis.com/auth/userinfo.profile"]
