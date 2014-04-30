@@ -22,3 +22,4 @@ Features -
     "https://class.coursera.org/",
     "https://www.googleapis.com/",
     "https://www.google.com/accounts/*"
+

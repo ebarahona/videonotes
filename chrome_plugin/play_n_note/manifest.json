@@ -1,11 +1,13 @@
 {
   "name": "Coursera Notes",
-  "version": "0.3.2",
+  "version": "0.3.5",
   "description": "Watch Videos. Take Notes. Share. All from one place.",
   "background": { 
     "scripts": [
       "jquery.js",
       "jqueryui.js",
+      "oauth2/oauth2.js",
+      "oauth2/oauth2_finish.js",
       "background.js",
       "shownotes.js"
     ] 
@@ -15,12 +17,21 @@
     "default_icon": "playnnote16.png",
     "default_popup": ""
   },
+  "content_scripts": [
+    {
+      "matches": ["http://www.google.com/robots.txt*"],
+      "js": ["oauth2/oauth2_inject.js", "oauth2/oauth2_finish.js"],
+        "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    "oauth2/oauth2.html"
+  ],
   "permissions" : [
     "tabs",
     "webNavigation",
     "activeTab",
     "storage",
-    "identity",
     "http://playnnote.herokuapp.com/",
     "https://class.coursera.org/*",
     "https://ssl.gstatic.com/",
@@ -33,7 +44,6 @@
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
-  "key": "emeichidjoibkhjnihjbklbkkcenkbpj",
   "minimum_chrome_version": "29",
   "oauth2": {
       "client_id": "89641588136-g285g8mu99m7pc778p85rehrjkt58osb.apps.googleusercontent.com",
