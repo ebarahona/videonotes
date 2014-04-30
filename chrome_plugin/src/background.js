@@ -3,31 +3,38 @@ function isAuthorized() {
       $("#dialog").html('');
       $("#dialog").remove();
   }
-  chrome.identity.getAuthToken({ 'interactive' : true }, function(token) {
-    if (chrome.runtime.lastError) {
-      chrome.identity.removeCachedAuthToken({token: token}, isAuthorized);
-    }else{
-        $.ajax({
-          type: 'GET',
-          url: 'https://www.googleapis.com/oauth2/v2/userinfo',
-          crossDomain: true,
-          headers: {'Authorization': 'Bearer ' + token},
-          
-          success: function(data) {
-            uId = 's'+data.id + 's'; //set a 's' prefix right in the beginning
-            dispName = data.name;
-            chrome.storage.local.set({'gId': uId, 'displayName': dispName});
-            //store this user information in data store
-            triggerGetNotes();
-          },
-          
-          error: function (xhr, error) {
-            chrome.identity.removeCachedAuthToken({token: token}, isAuthorized);
-          },
-          dataType: "json"
-      });  
-    }
+  var google = new OAuth2('google', {
+    client_id: '89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com',
+    client_secret: 'cma_qHvZRuCQ3cO6tdnmF9XS',
+    api_scope: 'https://www.googleapis.com/auth/userinfo.profile'
   });
+
+  if (!google.hasAccessToken()) {
+    google.authorize(function() {
+      console.log("User authorized with google");
+    });
+  } else {
+    token = google.getAccessToken();
+    $.ajax({
+      type: 'GET',
+      url: 'https://www.googleapis.com/oauth2/v2/userinfo',
+      crossDomain: true,
+      headers: {'Authorization': 'Bearer ' + token},
+      
+      success: function(data) {
+        uId = 's'+data.id + 's'; //set a 's' prefix right in the beginning
+        dispName = data.name;
+        //chrome.storage.local.set({'gId': uId, 'displayName': dispName});
+        //store this user information in data store
+        triggerGetNotes();
+      },
+      
+      error: function (xhr, error) {
+        chrome.identity.removeCachedAuthToken({token: token}, isAuthorized);
+      },
+      dataType: "json"
+    });  
+  }
 }
 
 function attachPrevNextLinks() {
@@ -72,14 +79,14 @@ function loadNotes(uId, url, tabId) {
       crossDomain: true, //crossdomain works
       error: function (textStatus, xhr, error) {
         chrome.tabs.executeScript(tabId, {code: "var ids={vId: '" + vId + "', gId: '" + uId + "'}; var notes='';"}, function() {
-          chrome.tabs.executeScript(tabId, {file: "src/shownotes.js"});
+          chrome.tabs.executeScript(tabId, {file: "shownotes.js"});
         });
       },
       success: function(data) {
         strData = JSON.stringify(data);
         chrome.tabs.executeScript(tabId, {code: "var notes={notesData: '" + strData + "'};"}, function() {
           chrome.tabs.executeScript(tabId, {code: "var ids={vId: '" + vId + "', gId: '" + uId + "'};"}, function() {
-            chrome.tabs.executeScript(tabId, {file: "src/shownotes.js"});
+            chrome.tabs.executeScript(tabId, {file: "shownotes.js"});
           });
         });
       },
