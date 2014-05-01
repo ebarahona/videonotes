@@ -98,7 +98,8 @@ OAuth2.prototype.openAuthorizationCodePopup = function(callback) {
   window['oauth-callback'] = callback;
 
   // Create a new tab with the OAuth 2.0 prompt
-  chrome.tabs.create({url: this.adapter.authorizationCodeURL(this.getConfig())},
+  chrome.tabs.create({url: 'https://accounts.google.com/o/oauth2/auth?approval_prompt=force&client_id=89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com&' +
+      'redirect_uri=http://www.google.com/robots.txt&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&response_type=code'},
   function(tab) {
     // 1. user grants permission for the application to access the OAuth 2.0
     // endpoint
