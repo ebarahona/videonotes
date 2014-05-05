@@ -130,8 +130,9 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         
         var copyNoteStr = "function copyNote(dtuIdvId) { nth = dtuIdvId.split('$')[0]; tn = new Date().getTime(); timenow = dtuIdvId.split('$')[1]; vId = dtuIdvId.split('$')[4] + '$' + dtuIdvId.split('$')[5]; gId = dtuIdvId.split('$')[6]; instant = dtuIdvId.split('$')[7]; text = $('#imp' + nth).html() ; nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); $.ajax({ type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} }); } "
         var importNotesStr = "function importNotes(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; vId = cId + '$' + lId; if (rows_hidden == undefined || rows_hidden == false) { $.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn',data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} }); resetTable(); rows_hidden = true; } else { $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { setTableData(data); } });  resetTable(); rows_hidden = false;}  } ";
+        var writeNotesStr = "function writeRichNote() { alert('show rich editor'); } "
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr;
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + writeNotesStr;
         document.body.appendChild(scriptElem);
 
     }
@@ -321,6 +322,7 @@ function createTableData(data, vId, uId) {
     tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + SERVER_URL + "/images/clock.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='" + SERVER_URL + "/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='" + SERVER_URL + "/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:writeRichNote() alt='Rich Text Editor'><img width=16 height=16 src='" + SERVER_URL + "/images/editor.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "</td></tr></thead><tbody>";
         
     for(i = 0; i < len-1; i++) {
@@ -367,4 +369,5 @@ cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 5
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
 var injected = false;
+
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, dataStr);

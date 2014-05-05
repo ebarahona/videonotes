@@ -1,6 +1,6 @@
 {
   "name": "Coursera Notes",
-  "version": "0.3.5",
+  "version": "0.3.7",
   "description": "Watch Videos. Take Notes. Share. All from one place.",
   "background": { 
     "scripts": [
@@ -44,6 +44,7 @@
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
+  "key" : "hcbljfnbalinhidjahdmekegdnnampbi",
   "minimum_chrome_version": "29",
   "oauth2": {
       "client_id": "89641588136-g285g8mu99m7pc778p85rehrjkt58osb.apps.googleusercontent.com",

@@ -1,0 +1,30 @@
+Description
+
+Play n Note
+
+Take notes while watching Coursera videos.
+
+Features -
+1. As you start to take notes, the video pauses. You can take your time to put down your thoughts. As you press Enter, the video resumes.
+
+2. You can take note as you find any interesting point to make.
+
+3. As each note gets saved, there is a timestamp associated. This timestamp is clickable - with which you can browse through the video. You can go back and forth to any interesting point that you note.
+
+4. This extension uses Google authentication only once as you visit any video lectures list. After that you can go to any class video and a notes window would be presented.
+
+5. If you don't like a note, it can be deleted. 
+
+6. The notes can be moved any time to any part of the screen.
+
+7. The sites accessed are --
+	"http://playnnote.herokuapp.com/",
+    "https://class.coursera.org/",
+    "https://www.googleapis.com/",
+    "https://www.google.com/accounts/*"
+
+8. The ckeditor is used as rich text editor. This is where it has been downloaded from 
+
+	"http://ckeditor.com/builder/69751b1b63c25e11a4731cfb03df0756"
+
+9. chrome identity doesnt work in production properly. Reverting to oauth2 authentication and authorization. There was a bug in the oauth2. In the data saved in localStorage, refresh_token has to be saved. refresh_token is not returned while access token is refreshed usnig the refresh_token. Using a refresh_token, infinite number of access tokens can be retrieved. No need to expire the refresh_token and get a new refresh_token. Save the refresh_token in the first go and keep using the same for refreshing the access_token (which expires in an hr)

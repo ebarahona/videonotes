@@ -9,11 +9,7 @@ function isAuthorized() {
     api_scope: 'https://www.googleapis.com/auth/userinfo.profile'
   });
 
-  if (!google.hasAccessToken()) {
-    google.authorize(function() {
-      console.log("User authorized with google");
-    });
-  } else {
+  google.authorize(function() {
     token = google.getAccessToken();
     $.ajax({
       type: 'GET',
@@ -24,17 +20,17 @@ function isAuthorized() {
       success: function(data) {
         uId = 's'+data.id + 's'; //set a 's' prefix right in the beginning
         dispName = data.name;
-        //chrome.storage.local.set({'gId': uId, 'displayName': dispName});
+        chrome.storage.local.set({'gId': uId, 'displayName': dispName});
         //store this user information in data store
-        triggerGetNotes();
+        triggerGetNotes(uId);
       },
       
       error: function (xhr, error) {
-        chrome.identity.removeCachedAuthToken({token: token}, isAuthorized);
+        google.removeAuthToken({token: token}, isAuthorized);
       },
       dataType: "json"
     });  
-  }
+  });
 }
 
 function attachPrevNextLinks() {
@@ -48,7 +44,7 @@ var tabId;
 //var SERVER_URL = "http://localhost:3000";
 var SERVER_URL = "http://playnnote.herokuapp.com";
 
-function triggerGetNotes() {
+function triggerGetNotes(uId) {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     var url = tabs[0].url;
     var lastWord = url.substring(url.lastIndexOf("/") + 1);

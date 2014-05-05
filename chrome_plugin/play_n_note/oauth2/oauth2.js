@@ -175,7 +175,7 @@ OAuth2.prototype.refreshAccessToken = function(refreshToken, callback) {
         // Parse response with JSON
         var obj = JSON.parse(xhr.responseText);
         // Callback with the tokens
-        callback(obj.access_token, obj.expires_in, obj.refresh_token);
+        callback(obj.access_token, obj.expires_in);
       }
     }
   };
@@ -418,13 +418,14 @@ OAuth2.prototype.authorize = function(callback) {
       that.openAuthorizationCodePopup(callback);
     } else if (that.isAccessTokenExpired()) {
       // There's an existing access token but it's expired
+      //alert("accessToken has expired");
       if (data.refreshToken) {
-        that.refreshAccessToken(data.refreshToken, function(at, exp, re) {
+        that.refreshAccessToken(data.refreshToken, function(at, exp) {
           var newData = that.get();
           newData.accessTokenDate = new Date().valueOf();
           newData.accessToken = at;
           newData.expiresIn = exp;
-          newData.refreshToken = re;
+          newData.refreshToken = data.refreshToken;
           that.setSource(newData);
           // Callback when we finish refreshing
           if (callback) {
@@ -433,6 +434,7 @@ OAuth2.prototype.authorize = function(callback) {
         });
       } else {
         // No refresh token... just do the popup thing again
+        //console.log("no refreshToken");
         that.openAuthorizationCodePopup(callback);
       }
     } else {
