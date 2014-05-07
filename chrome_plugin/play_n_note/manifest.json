@@ -25,30 +25,45 @@
     }
   ],
   "web_accessible_resources": [
-    "oauth2/oauth2.html"
+    "oauth2/oauth2.html", 
+    "ckeditor/*.js",
+    "ckeditor/*.css",
+    "ckeditor/skins/moono/*",
+    "ckeditor/skins/moono/images/*.png",
+    "ckeditor/skins/moono/images/hidpi/*.png",
+    "ckeditor/plugins/*",
+    "ckeditor/plugins/*/*",
+    "ckeditor/plugins/*/*/*",
+    "ckeditor/plugins/*/*/*/*",
+    "ckeditor/lang/en.js",
+    "ckeditor/adapters/jquery.js"
   ],
   "permissions" : [
     "tabs",
     "webNavigation",
     "activeTab",
     "storage",
-    "http://playnnote.herokuapp.com/",
+    "http://localhost:3000/*",
+    "http://playnnote.herokuapp.com/*",
     "https://class.coursera.org/*",
     "https://ssl.gstatic.com/",
     "https://accounts.google.com/*",
     "https://www.googleapis.com/*",
     "https://www.googleapis.com/oauth2/v2/userinfo",
-    "https://www.googleapis.com/auth/userinfo.profile"
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "http://latex.codecogs.com/js/*.js",
+    "http://latex.codecogs.com/css/*.css"
   ],
   "icons" : {
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
-  "key" : "hcbljfnbalinhidjahdmekegdnnampbi",
+  "key" : "lofgpjddabmmjlolmegcfpojgkjllokk",
   "minimum_chrome_version": "29",
   "oauth2": {
-      "client_id": "89641588136-g285g8mu99m7pc778p85rehrjkt58osb.apps.googleusercontent.com",
+      "client_id": "89641588136-902f29oc7tl588mbe0987erhf2gnoouq.apps.googleusercontent.com",
       "scopes": ["https://www.googleapis.com/auth/userinfo.profile"]
   },
-  "manifest_version": 2
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://playnnote.herokuapp.com https://latex.codecogs.com; object-src 'self'"
 }

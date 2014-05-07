@@ -28,3 +28,7 @@ Features -
 	"http://ckeditor.com/builder/69751b1b63c25e11a4731cfb03df0756"
 
 9. chrome identity doesnt work in production properly. Reverting to oauth2 authentication and authorization. There was a bug in the oauth2. In the data saved in localStorage, refresh_token has to be saved. refresh_token is not returned while access token is refreshed usnig the refresh_token. Using a refresh_token, infinite number of access tokens can be retrieved. No need to expire the refresh_token and get a new refresh_token. Save the refresh_token in the first go and keep using the same for refreshing the access_token (which expires in an hr)
+
+10. The shownotes.js and background.js would be minimized using these commands and only min versions would be deployed in extension. Minimization --
+java -jar yuicompressor-2.4.8.jar -o chrome_plugin/play_n_note/shownotes.js chrome_plugin/src/shownotes.js 
+java -jar yuicompressor-2.4.8.jar -o chrome_plugin/play_n_note/background.js chrome_plugin/src/background.js
