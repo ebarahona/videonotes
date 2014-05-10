@@ -116,7 +116,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
         var ckeditorjs = document.createElement('script');
         ckeditorjs.type = "text/javascript";
-        ckeditorjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/ckeditor.js";
+        ckeditorjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/ckeditor.js";
         document.head.appendChild(ckeditorjs);
 
         var ckestyle = document.createElement('style');
@@ -126,26 +126,26 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
         var configjs = document.createElement('script');
         configjs.type = "text/javascript";
-        configjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/config.js";
+        configjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/config.js";
         document.head.appendChild(configjs);
 
         var editorcss = document.createElement('link');
         editorcss.type = "text/css";
         editorcss.rel = "stylesheet";
-        editorcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor/skins/moono/editor.css";
+        editorcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/skins/moono/editor.css";
         document.head.appendChild(editorcss);
 
         var langen = document.createElement('script');
         langen.type = "text/javascript";
-        langen.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/lang/en.js";
+        langen.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/lang/en.js";
         document.head.appendChild(langen);
 
         var stylesjs = document.createElement('script');
         stylesjs.type = "text/javascript";
-        stylesjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/styles.js";
+        stylesjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/styles.js";
         document.head.appendChild(stylesjs);
 
-        var eq_configjs = document.createElement('script');
+        /*var eq_configjs = document.createElement('script');
         eq_configjs.type = "text/javascript";
         eq_configjs.src = "http://latex.codecogs.com/js/eq_config.js";
         document.head.appendChild(eq_configjs);
@@ -187,8 +187,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         var dialogcss = document.createElement('link');
         dialogcss.type = "text/css";
         dialogcss.rel = "stylesheet";
-        dialogcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor/plugins/skins/moono/dialog.css";
-        document.head.appendChild(dialogcss);
+        dialogcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/plugins/skins/moono/dialog.css";
+        document.head.appendChild(dialogcss);*/
 
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
@@ -211,7 +211,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         
         var copyNoteStr = "function copyNote(dtuIdvId) { nth = dtuIdvId.split('$')[0]; tn = new Date().getTime(); timenow = dtuIdvId.split('$')[1]; vId = dtuIdvId.split('$')[4] + '$' + dtuIdvId.split('$')[5]; gId = dtuIdvId.split('$')[6]; instant = dtuIdvId.split('$')[7]; text = $('#imp' + nth).html() ; nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); $.ajax({ type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} }); } "
         var importNotesStr = "function importNotes(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; vId = cId + '$' + lId; if (rows_hidden == undefined || rows_hidden == false) { $.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn',data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} }); resetTable(); rows_hidden = true; } else { $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { setTableData(data); } });  resetTable(); rows_hidden = false;}  } ";
-        var writeNotesStr = "function writeRichNote() { if (!rich_text) { rich_text = true; if($(\"#cke_commentsTxt\").length == 0) { CKEDITOR.replace('commentsTxt'); } else { $(\"#commentsTxt\").hide(); $(\"#cke_commentsTxt\").removeAttr('style'); } if (window.QL_player != null) {window.QL_player.mediaelement_handle.pause(); instant = window.QL_player.mediaelement_media.currentTime;} else if ($('me_flash_0') != null) { $('me_flash_0').pauseMedia(); instant = $('me_flash_0').currentTime();}} else { rich_text = false; $(\"#cke_commentsTxt\").hide(); styleval = $(\"#commentsTxt\").attr(\"style\"); l = styleval.length; styleval = styleval.substring(0, l-35); $(\"#commentsTxt\").attr(\"style\", styleval); $(\"#commentsTxt\").val(CKEDITOR.instances.commentsTxt.getData()); if (window.QL_player != null) { window.QL_player.mediaelement_handle.play(); } else if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); }} } ";
+        var writeNotesStr = "function writeRichNote() { if (!rich_text) { rich_text = true; if($(\"#cke_richEdit\").length == 0) { CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { len = $(\"#cke_richEdit\").length; elem = document.getElementById(\"cke_richEdit\"); elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: auto; z-index: 100001'); }}}); } else { $(\"#cke_richEdit\").show(); } if (window.QL_player != null) {window.QL_player.mediaelement_handle.pause(); instant = window.QL_player.mediaelement_media.currentTime;} else if ($('me_flash_0') != null) { $('me_flash_0').pauseMedia(); instant = $('me_flash_0').currentTime();}} else { rich_text = false; $(\"#cke_richEdit\").hide(); $(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); CKEDITOR.instances.richEdit.setData('<p></p>'); if (window.QL_player != null) { window.QL_player.mediaelement_handle.play(); } else if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); }} } ";
 
         scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + writeNotesStr;
         document.body.appendChild(scriptElem);
@@ -220,13 +220,27 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     var divElem = document.createElement('div');
     divElem.setAttribute('id', 'dialog');
     divElem.setAttribute('title', 'Play-n-Note');
-    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 1000000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
+    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 100000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
     divElem.innerHTML = notesHTML;
 
+
+    var richEditElem = document.createElement('textarea');
+    richEditElem.setAttribute('id','richEdit');
+    richEditElem.setAttribute('name', 'richEdit');
+    richEditElem.setAttribute('width', '100%');
+    richEditElem.setAttribute('style', 'margin:30px 0 0 0;min-height:1px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;');
+
+    
     if ($(".course-modal-frame")) {
         $(".course-modal-frame").after(divElem);
+        if ($("#richEdit").length == 0) {
+            $(".course-modal-frame").after(richEditElem);
+        }
     } else if ($(".course-modal-frame.course-modal-frame-with-slides")) {
         $(".course-modal-frame.course-modal-frame-with-slides").after(divElem);
+        if ($("#richEdit").length == 0) {
+            $(".course-modal-frame.course-modal-frame-with-slides").after(richEditElem);
+        }
     }
     if (notesData !== "" && notesData.length > 0) {
         notes = notesData.split(delimiter);
@@ -244,6 +258,15 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     var pauseFn = "0";
     var playFn = "1";
     var instant = 0;
+
+    $( "#commentsTxt" ).mousedown(function() {
+        len = window.QL_player.mediaelement_handle.options.keyActions.length;    
+        for (i=0; i < len; i++) {
+            delete window.QL_player.mediaelement_handle.options.keyActions[i];
+        }
+        window.QL_player.mediaelement_handle.enableKeyboard = false;
+        window.QL_player.mediaelement_handle.options.keyActions = null;
+    });
 
     $("#commentsTxt").keydown(function (e) { //this should take care of special characters not being trapped.
         if (instant == 0) {
@@ -309,6 +332,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
     });
 
+    
+
     len = window.QL_player.mediaelement_handle.options.keyActions.length;    
     for (i=0; i < len; i++) {
         delete window.QL_player.mediaelement_handle.options.keyActions[i];
@@ -316,7 +341,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     window.QL_player.mediaelement_handle.enableKeyboard = false;
     window.QL_player.mediaelement_handle.options.keyActions = null;
 
-    $(".icon-remove").on('click', function(event) { $("#dialog").remove();});    
+    $(".icon-remove").on('click', function(event) { $("#dialog").remove(); if ($("#cke_richEdit").length > 0) $("#cke_richEdit").hide(); });    
 
     $("#dialog").dialog({
       title: "Play-n-Note",
@@ -394,7 +419,7 @@ if (notes === undefined || notes === 'undefined' || notes == "") {
     }
 }
 
-var cssHTML = "<div id='dlghdr1' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;-webkit-transition:background-color 200ms ease;padding-right:5px;' class='_dragHandle'>";
+var cssHTML = "<div id='dlghdr1' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;'>";
 cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 50% no-repeat;margin:5px 4px 0 0;cursor:pointer;display:none;'></span>";
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;

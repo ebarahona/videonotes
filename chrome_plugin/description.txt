@@ -32,3 +32,20 @@ Features -
 10. The shownotes.js and background.js would be minimized using these commands and only min versions would be deployed in extension. Minimization --
 java -jar yuicompressor-2.4.8.jar -o chrome_plugin/play_n_note/shownotes.js chrome_plugin/src/shownotes.js 
 java -jar yuicompressor-2.4.8.jar -o chrome_plugin/play_n_note/background.js chrome_plugin/src/background.js
+
+TROUBLESHOOTING --
+
+1. To restart the dyno, run this command -
+heroku ps:restart DYNO
+
+divs for dialog
+<div class="ui-dialog ui-widget-content ui-corner-all ui-draggable ui-resizable" role="dialog" aria-labelledby="ui-dialog-title-dialog">
+	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+		<span id="ui-dialog-title-dialog" class="ui-dialog-title">Play N Note</span>
+		<a class="ui-dialog-titlebar-close ui-corner-all" href="#" role="button">
+			<span class="ui-icon ui-icon-closethick">close</span>
+		</a>
+	</div>
+	<div id="dialog" class="ui-dialog-content ui-widget-content" style="width:auto; min-height: 0px"
+
+	CKEDITOR.replace('richEdit', {position: absolute; left: 12px; top: 9px; z-index: 100001}); 
