@@ -77,6 +77,7 @@ loadSchemas = function() {
     , extnURL: String
     , noteId : Number
     , comments : String
+    , commentsTxt : String
     , instant: Number
     , date: Date
     , ispublic : Boolean

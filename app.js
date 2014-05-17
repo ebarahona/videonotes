@@ -38,6 +38,7 @@ var express = require('express')
   , path = require('path')
   , util = require('util')
   , passport = require('passport')
+  , html_to_text = require('html-to-text')
   , youtube = require('youtube-feeds');
   //, GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
@@ -218,6 +219,8 @@ app.post('/submitNoteExtn', function(req, res) {
   gId = gId.substring(1, gId.length-1);
   vRL = temp[1][1].replace(/"/g, '').trim();
   cmts = temp[2][1].replace(/"/g, '').trim(); 
+  cmts_txt = html_to_text.fromString(unescape(cmts), {wordwrap: 100});
+  cmts_txt = escape(cmts_txt);
   noteId = temp[3][1].replace(/"/g, '').trim(); 
   inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
   ispblc = temp[5][1].trim(); 
@@ -226,7 +229,7 @@ app.post('/submitNoteExtn', function(req, res) {
   else
     ispblc = false;
 
-  user_note = User_Note.create({googleId : gId, videoURL : vRL, comments : cmts, noteId: noteId,
+  user_note = User_Note.create({googleId : gId, videoURL : vRL, comments : cmts, noteId: noteId, commentsTxt: cmts_txt, 
                                     instant: inst, date: new Date(), ispublic : ispblc}, 
                   function(err, data) {
                       if (err) {

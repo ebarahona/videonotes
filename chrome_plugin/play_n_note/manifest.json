@@ -1,6 +1,6 @@
 {
   "name": "Coursera Notes",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Watch Videos. Take Notes. Share. All from one place.",
   "background": { 
     "scripts": [
@@ -26,17 +26,20 @@
   ],
   "web_accessible_resources": [
     "oauth2/oauth2.html", 
-    "ckeditor/*.js",
-    "ckeditor/*.css",
-    "ckeditor/skins/moono/*",
-    "ckeditor/skins/moono/images/*.png",
-    "ckeditor/skins/moono/images/hidpi/*.png",
-    "ckeditor/plugins/*",
-    "ckeditor/plugins/*/*",
-    "ckeditor/plugins/*/*/*",
-    "ckeditor/plugins/*/*/*/*",
-    "ckeditor/lang/en.js",
-    "ckeditor/adapters/jquery.js"
+    "ckeditor_basic_basic/*.js",
+    "ckeditor_basic/*.css",
+    "ckeditor_basic/skins/moono/*",
+    "ckeditor_basic/skins/moono/images/*.png",
+    "ckeditor_basic/skins/moono/images/hidpi/*.png",
+    "ckeditor_basic/plugins/*",
+    "ckeditor_basic/plugins/*/*",
+    "ckeditor_basic/plugins/*/*/*",
+    "ckeditor_basic/plugins/*/*/*/*",
+    "ckeditor_basic/lang/en.js",
+    "ckeditor_basic/adapters/jquery.js",
+    "jquery.js",
+    "jqueryui.js",
+    "jquery-ui.css"
   ],
   "permissions" : [
     "tabs",
@@ -58,12 +61,12 @@
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
-  "key" : "lofgpjddabmmjlolmegcfpojgkjllokk",
+  "key": "hcbljfnbalinhidjahdmekegdnnampbi",
   "minimum_chrome_version": "29",
   "oauth2": {
       "client_id": "89641588136-902f29oc7tl588mbe0987erhf2gnoouq.apps.googleusercontent.com",
       "scopes": ["https://www.googleapis.com/auth/userinfo.profile"]
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://playnnote.herokuapp.com https://latex.codecogs.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://playnnote.herokuapp.com https://latex.codecogs.com ; object-src 'self'"
 }

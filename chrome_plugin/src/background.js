@@ -38,6 +38,7 @@ function attachPrevNextLinks() {
   $(".course-lecture-view-next-link.course-lecture-controls-button").on("click", isAuthorized);
 }
 
+var displaying = false;
 var uId;
 var dispName;
 var tabId;
@@ -45,6 +46,7 @@ var tabId;
 var SERVER_URL = "http://playnnote.herokuapp.com";
 
 function triggerGetNotes(uId) {
+  //alert('triggerGetNotes');
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     var url = tabs[0].url;
     var lastWord = url.substring(url.lastIndexOf("/") + 1);
@@ -57,6 +59,7 @@ function triggerGetNotes(uId) {
 
 function loadNotes(uId, url, tabId) {
   //WARNING - dont make URL-REGEX a class var because it would be cached and .exec would give match null alternately
+  //alert('loadNotes');
   attachPrevNextLinks();
   var URL_REGEX = /(http|https):\/\/class.coursera.org\/([a-zA-Z0-9-]*)\/lecture\/([0-9]{0,4})/g; 
   var match = URL_REGEX.exec(url); //this would match all the groups mentioned in parentheses in the regex
@@ -67,6 +70,10 @@ function loadNotes(uId, url, tabId) {
   vId = courseCode + "$" + lectureCode;
   chrome.storage.local.set({'vId': vId, 'url': url});
   $.support.cors = true; 
+  if (displaying == false)
+    displaying = true;
+  else
+    return;
   $.ajax({
       type: 'GET',
       url: SERVER_URL + '/getNotesExtn',
@@ -74,14 +81,18 @@ function loadNotes(uId, url, tabId) {
       dataType: 'json', //json works
       crossDomain: true, //crossdomain works
       error: function (textStatus, xhr, error) {
+        //alert('failure');
         chrome.tabs.executeScript(tabId, {code: "var ids={vId: '" + vId + "', gId: '" + uId + "'}; var notes='';"}, function() {
+          displaying = false;
           chrome.tabs.executeScript(tabId, {file: "shownotes.js"});
         });
       },
       success: function(data) {
         strData = JSON.stringify(data);
+        //alert(strData);
         chrome.tabs.executeScript(tabId, {code: "var notes={notesData: '" + strData + "'};"}, function() {
           chrome.tabs.executeScript(tabId, {code: "var ids={vId: '" + vId + "', gId: '" + uId + "'};"}, function() {
+            displaying = false;
             chrome.tabs.executeScript(tabId, {file: "shownotes.js"});
           });
         });

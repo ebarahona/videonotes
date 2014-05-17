@@ -93,15 +93,16 @@ function injectScript(source)
         return (elem);
 }
 
-function showNotes(notesHTML, vId, gId, delimiter, notesData) {
+function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     if ($("#dialog")) {
         $("#dialog").html('');
         $("#dialog").remove();
     }
 
     $(".icon-remove").on('click', function(event) { $("#dialog").remove();}); 
-    var SERVER_URL = 'http://playnnote.herokuapp.com';
+    var SERVER_URL = 'https://playnnote.herokuapp.com';
     //var SERVER_URL = 'http://localhost:3000';
+    var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
 
     var fnsExist = false;
     if (document.getElementById("fns") != null) {
@@ -116,7 +117,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
         var ckeditorjs = document.createElement('script');
         ckeditorjs.type = "text/javascript";
-        ckeditorjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/ckeditor.js";
+        ckeditorjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/ckeditor.js";
         document.head.appendChild(ckeditorjs);
 
         var ckestyle = document.createElement('style');
@@ -126,24 +127,42 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
         var configjs = document.createElement('script');
         configjs.type = "text/javascript";
-        configjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/config.js";
+        configjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/config.js";
         document.head.appendChild(configjs);
 
         var editorcss = document.createElement('link');
         editorcss.type = "text/css";
         editorcss.rel = "stylesheet";
-        editorcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/skins/moono/editor.css";
+        editorcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/skins/moono/editor.css";
         document.head.appendChild(editorcss);
 
         var langen = document.createElement('script');
         langen.type = "text/javascript";
-        langen.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/lang/en.js";
+        langen.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/lang/en.js";
         document.head.appendChild(langen);
 
         var stylesjs = document.createElement('script');
         stylesjs.type = "text/javascript";
-        stylesjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/styles.js";
+        stylesjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/styles.js";
         document.head.appendChild(stylesjs);
+
+        var ttjs = document.createElement('script');
+        ttjs.type = "text/javascript";
+        ttjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.darktooltip.min.js";
+        document.head.appendChild(ttjs);
+
+        var ttcss = document.createElement('link');
+        ttcss.type = "text/css";
+        ttcss.rel = "stylesheet";
+        ttcss.href = RESOURCE_DOMAIN + "/stylesheets/darktooltip.min.css";
+        document.head.appendChild(ttcss);
+
+        //This reset css messes up the format in the table. If commented out, the <ins> stops to work. Removed the table from reset.css
+        var resetcss = document.createElement('link');
+        resetcss.type = "text/css";
+        resetcss.rel = "stylesheet";
+        resetcss.href = RESOURCE_DOMAIN + "/stylesheets/reset.css";
+        document.head.appendChild(resetcss);
 
         /*var eq_configjs = document.createElement('script');
         eq_configjs.type = "text/javascript";
@@ -163,64 +182,68 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
 
         var highlighterjs = document.createElement('script');
         highlighterjs.type = "text/javascript";
-        highlighterjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/plugins/pbckcode/dialogs/PBSyntaxHighlighter.js";
+        highlighterjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/pbckcode/dialogs/PBSyntaxHighlighter.js";
         document.head.appendChild(highlighterjs);
 
         //ignoring the js for uploadcare deployed at - https://ucarecdn.r.worldssl.net/widget/1.0.0/uploadcare/uploadcare-1.0.0.min.js
 
         var highlightpackjs = document.createElement('script');
         highlightpackjs.type = "text/javascript";
-        highlightpackjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js";
+        highlightpackjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js";
         document.head.appendChild(highlightpackjs);
 
         var stylecss = document.createElement('link');
         stylecss.type = "text/css";
         stylecss.rel = "stylesheet";
-        stylecss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor/plugins/pbckcode/dialogs/style.css";
+        stylecss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/pbckcode/dialogs/style.css";
         document.head.appendChild(stylecss);
 
         var findjs = document.createElement('script');
         findjs.type = "text/javascript";
-        findjs.src = "https://playnnote.herokuapp.com/javascripts/ckeditor/plugins/find/dialogs/find.js";
+        findjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/find/dialogs/find.js";
         document.head.appendChild(findjs);
 
         var dialogcss = document.createElement('link');
         dialogcss.type = "text/css";
         dialogcss.rel = "stylesheet";
-        dialogcss.href = "https://playnnote.herokuapp.com/javascripts/ckeditor_basic/plugins/skins/moono/dialog.css";
+        dialogcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/plugins/skins/moono/dialog.css";
         document.head.appendChild(dialogcss);*/
 
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
-        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var rich_text = false, rich_text_style; ";
+        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; ";
         var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
         var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: SERVER_URL + '/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
-        var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', SERVER_URL + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', SERVER_URL + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
-        var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', SERVER_URL + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', SERVER_URL + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src',SERVER_URL + '/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', SERVER_URL + '/images/clock.png');}} ";
+        var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
+        var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
+        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src',RESOURCE_DOMAIN + '/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', RESOURCE_DOMAIN + '/images/clock.png');}} ";
         var resetTableStr = "function resetTable() { $('tr[id^=\"cmt\"]').remove(); } ";
-        var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
-        var setRowDataStr = "function setRowData(text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; content = '<a style=\"font-size:10px;z-index:1000000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"' + SERVER_URL + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + SERVER_URL + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " + 
-                "if ($('#notesTbl > tbody > tr').length == 0 ) { $('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').appendTo($('table > tbody'));} else {if ($('#notesTbl > tbody > tr').length % 2 == 0 ) {$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));} else {$('<tr bgcolor=\"grey\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));} }} ";
+        var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
+        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); " + 
+            "prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; txt_content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " +
+            "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + txt_content + '</div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div>' + cmts + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
+            "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; if ($(\"#notesTbl > tbody > tr\").length == 0 ) { $(rich_content_white).insertAfter($('table > tbody')); } else { if ($(\"#notesTbl > tbody > tr\").length % 2 == 0 ) { " +
+            "$(rich_content_white).insertBefore($('table > tbody > tr:first')); } else { $(rich_content_grey).insertBefore($('table > tbody > tr:first')); }} $(\"#div\" + timenow).mousedown(function() { p = $(this).parent().position(); if($(this).next().css('display') == \"none\") $(this).next().css({'display': 'block', 'width': '100%', 'top': p.top}); else $(this).next().css('display','none'); }); } ";
 
-        var setImportTableDataStr = "function setImportTableData(notesData, gId) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setImportRowData(i, unescape(notesData[i].comments), notesData[i].date, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant, gId)} }} ";
+        var setImportTableDataStr = "function setImportTableData(notesData, gId) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setImportRowData(i, unescape(notesData[i].commentsTxt), notesData[i].date, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant, gId)} }} ";
         
-        var setImportRowDataStr = "function setImportRowData(i, text, timenow, uIdvId, instant, gId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); prms = '\"' + i + '$' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '$' + gId + '$' + instant + '\"'; content = '<a style=\"font-size:10px;z-index:1000000;padding-right:0px;\" href=javascript:copyNote(' + prms +')><img src=\"' + SERVER_URL + '/images/import.png\" alt=\"Import\"/></a> &nbsp;<span id=\"imp' + i + '\">' + text + '</span>&nbsp;<a style=\"float:right\" >' + instant + 's</a> &nbsp;'; " + 
+        var setImportRowDataStr = "function setImportRowData(i, text, timenow, uIdvId, instant, gId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); prms = '\"' + i + '$' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '$' + gId + '$' + instant + '\"'; content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:copyNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/import.png\" alt=\"Import\"/></a> &nbsp;<span id=\"imp' + i + '\">' + text + '</span>&nbsp;<a style=\"float:right\" >' + instant + 's</a> &nbsp;'; " + 
                 "if ($('#notesTbl > tbody > tr').length == 0 ) { $('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').appendTo($('table > tbody'));} else {if ($('#notesTbl > tbody > tr').length % 2 == 0 ) {$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first'));} else {$('<tr bgcolor=\"grey\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first'));} }} ";                
         
         var copyNoteStr = "function copyNote(dtuIdvId) { nth = dtuIdvId.split('$')[0]; tn = new Date().getTime(); timenow = dtuIdvId.split('$')[1]; vId = dtuIdvId.split('$')[4] + '$' + dtuIdvId.split('$')[5]; gId = dtuIdvId.split('$')[6]; instant = dtuIdvId.split('$')[7]; text = $('#imp' + nth).html() ; nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); $.ajax({ type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} }); } "
         var importNotesStr = "function importNotes(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; vId = cId + '$' + lId; if (rows_hidden == undefined || rows_hidden == false) { $.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn',data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} }); resetTable(); rows_hidden = true; } else { $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { setTableData(data); } });  resetTable(); rows_hidden = false;}  } ";
-        var writeNotesStr = "function writeRichNote() { if (!rich_text) { rich_text = true; if($(\"#cke_richEdit\").length == 0) { CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { len = $(\"#cke_richEdit\").length; elem = document.getElementById(\"cke_richEdit\"); elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: auto; z-index: 100001'); }}}); } else { $(\"#cke_richEdit\").show(); } if (window.QL_player != null) {window.QL_player.mediaelement_handle.pause(); instant = window.QL_player.mediaelement_media.currentTime;} else if ($('me_flash_0') != null) { $('me_flash_0').pauseMedia(); instant = $('me_flash_0').currentTime();}} else { rich_text = false; $(\"#cke_richEdit\").hide(); $(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); CKEDITOR.instances.richEdit.setData('<p></p>'); if (window.QL_player != null) { window.QL_player.mediaelement_handle.play(); } else if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); }} } ";
+        var writeNotesStr = "function writeRichNote() { removeShortCuts(); if (!rich_text) { rich_text = true; if($(\"#cke_richEdit\").length == 0) { CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { len = $(\"#cke_richEdit\").length; elem = document.getElementById(\"cke_richEdit\"); elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: 60%; z-index: 100001'); }}}); } else { $(\"#cke_richEdit\").show(); } if (window.QL_player != null) {window.QL_player.mediaelement_handle.pause(); instant = window.QL_player.mediaelement_media.currentTime;} else if ($('me_flash_0') != null) { $('me_flash_0').pauseMedia(); instant = $('me_flash_0').currentTime();}} else { rich_text = false; $(\"#cke_richEdit\").hide(); $(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); CKEDITOR.instances.richEdit.setData('<p></p>'); if (window.QL_player != null) { window.QL_player.mediaelement_handle.play(); } else if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); }} } ";
+        var removeShortcutsStr = "function removeShortCuts() { try { len = window.QL_player.mediaelement_handle.options.keyActions.length; for (i=0; i < len; i++) { delete window.QL_player.mediaelement_handle.options.keyActions[i]; } window.QL_player.mediaelement_handle.enableKeyboard = false; window.QL_player.mediaelement_handle.options.keyActions = null; } catch (e) {} } ";
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + writeNotesStr;
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + writeNotesStr + removeShortcutsStr;
         document.body.appendChild(scriptElem);
     }
 
     var divElem = document.createElement('div');
     divElem.setAttribute('id', 'dialog');
     divElem.setAttribute('title', 'Play-n-Note');
-    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 100000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
+    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 9px; z-index: 50000; display: block; height: 30px; width:294px; border-top-left-radius: 2px; border-top-right-radius: 2px; -webkit-transition: background-color 200ms ease; transition: padding-right: 5px; background-color: #D2D5D6; background-position: initial initial; background-repeat: initial initial;');
     divElem.innerHTML = notesHTML;
 
 
@@ -242,12 +265,39 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
             $(".course-modal-frame.course-modal-frame-with-slides").after(richEditElem);
         }
     }
+    var rtdisplayed = '';
     if (notesData !== "" && notesData.length > 0) {
         notes = notesData.split(delimiter);
+        txtNotes = notesTxtData.split(delimiter);
         i=0;
-        $("tr[id^='cmt'] > td > a").each( function(index) {
+        $("tr[id^='cmt'] > td > div[id^='div'] > a").each( function(index) {
+            //alert(JSON.stringify($(this).parent().parent().html()));
             if ($(this).attr("href").indexOf("deleteNote") > -1) {
-                $(this).after("&nbsp;" + unescape(notes[i]) + "&nbsp;");
+                note = unescape(notes[i]);
+                txtNote = unescape(txtNotes[i]);
+                //alert(note); alert(txtNote);
+                $(this).after("&nbsp;" + txtNote + "&nbsp;");
+                $(this).parent().next().find("div:first-child").html(note);
+                $(this).parent().mousedown(function() {
+                    if (rtdisplayed != "" && rtdisplayed != $(this).attr("id")) {
+                        $("#" + rtdisplayed).next().css('display', 'none');
+                    }
+                    
+                    p = $(this).parent().position();
+                    if($(this).next().css('display') == "none")
+                        $(this).next().css({'display': 'block', 'width': '250%', 'top': p.top});
+                    else
+                        $(this).next().css('display','none');
+
+                    rtdisplayed = $(this).attr("id");
+                    
+                    //alert('left ' + p.left + ' top ' + p.top);
+                });
+                //alert($(this).parent().next().find("div:first-child ").html());
+                //$(this).parent().next().darkTooltip({
+                //     gravity:'west'
+                //});
+                
                 i++;
             }
         });
@@ -260,12 +310,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
     var instant = 0;
 
     $( "#commentsTxt" ).mousedown(function() {
-        len = window.QL_player.mediaelement_handle.options.keyActions.length;    
-        for (i=0; i < len; i++) {
-            delete window.QL_player.mediaelement_handle.options.keyActions[i];
-        }
-        window.QL_player.mediaelement_handle.enableKeyboard = false;
-        window.QL_player.mediaelement_handle.options.keyActions = null;
+        removeShortCuts();
     });
 
     $("#commentsTxt").keydown(function (e) { //this should take care of special characters not being trapped.
@@ -302,16 +347,33 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
                 uId1 = uId.substring(1, 10);
                 uId2 = uId.substring(10, uId.length-1);
                 prms = "'" + timenow + "$" + uId1  + "$" + uId2 + "$" + vId + "'";
-                content = '<a style="font-size:10px;z-index:1000000;padding-right:0px;" href="javascript:deleteNote(' + prms +')"><img src="' + SERVER_URL + '/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="' + SERVER_URL + '/images/lock_closed.png" style="float:right"/></a>';
+                content = '<a style="font-size:10px;z-index:50000;padding-right:0px;" href="javascript:deleteNote(' + prms +')"><img src="' + RESOURCE_DOMAIN + '/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="' + RESOURCE_DOMAIN + '/images/lock_closed.png" style="float:right"/></a>';
                 if ($("#notesTbl > tbody > tr").length == 0 ) {
-                    $('<tr bgcolor="white" id="cmt' + timenow + '"><td>' + content + '</td></tr>').insertAfter($('table > tbody'));
+                    $('<tr bgcolor="white" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertAfter($('table > tbody'));
                 } else {
                     if ($("#notesTbl > tbody > tr").length % 2 == 0 ) {
-                        $('<tr bgcolor="white" id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                        $('<tr bgcolor="white" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertBefore($('table > tbody > tr:first'));
                     } else {
-                        $('<tr bgcolor="grey" id="cmt' + timenow + '"+><td>' + content + '</td></tr>').insertBefore($('table > tbody > tr:first'));
+                        $('<tr bgcolor="grey" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertBefore($('table > tbody > tr:first'));
                     }
                 }
+                if ($("#div" + timenow).length > 0) {
+                    $("#div" + timenow).next().find("div:first-child").html(text);
+                    textval = $("#div" + timenow).next().find("div:first-child").text();
+                    //alert($("#div" + timenow).find("a:first-child").next().html());
+                    //alert(textval);
+                    $("#div" + timenow).find("a:first-child").next().html(textval);
+                    $("#div" + timenow).mousedown(function() {
+
+                        p = $(this).parent().position();
+                        if($(this).next().css('display') == "none")
+                            $(this).next().css({'display': 'block', 'width': '100%', 'top': p.top});
+                        else
+                            $(this).next().css('display','none');
+                        
+                    });
+                }
+
                 text = text.replace(/\n/g, '<br>').trim();
                 $.support.cors = true;
                 
@@ -331,15 +393,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData) {
         shiftOn = false;
 
     });
-
-    
-
-    len = window.QL_player.mediaelement_handle.options.keyActions.length;    
-    for (i=0; i < len; i++) {
-        delete window.QL_player.mediaelement_handle.options.keyActions[i];
-    }
-    window.QL_player.mediaelement_handle.enableKeyboard = false;
-    window.QL_player.mediaelement_handle.options.keyActions = null;
 
     $(".icon-remove").on('click', function(event) { $("#dialog").remove(); if ($("#cke_richEdit").length > 0) $("#cke_richEdit").hide(); });    
 
@@ -374,10 +427,10 @@ function createTableData(data, vId, uId) {
 
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + SERVER_URL + "/images/clock.png' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='" + SERVER_URL + "/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='" + SERVER_URL + "/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:writeRichNote() alt='Rich Text Editor'><img width=16 height=16 src='" + SERVER_URL + "/images/editor.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/clock.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:writeRichNote() alt='Rich Text Editor'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "</td></tr></thead><tbody>";
         
     for(i = 0; i < len-1; i++) {
@@ -390,32 +443,43 @@ function createTableData(data, vId, uId) {
             lockicon = "lock_closed.png";
       prms = "'" + data[i].noteId + "$" + uId1  + "$" + uId2 + "$" + vId + "'";
       if (i%2 == 0) {
-        tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + SERVER_URL + "/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + SERVER_URL + "/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+        tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><div id='div" + data[i].noteId + "'><a style='font-size:10px;z-index:50000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + RESOURCE_DOMAIN + "/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a></div><ins class='dark-tooltip dark medium west' style='max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none'><div></div><div class='tip'></div></ins></td></tr>";
       }else{
-        tableData = tableData + "<tr bgcolor='grey' id='cmt" + data[i].noteId + "'><td><a style='font-size:10px;z-index:1000000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + SERVER_URL + "/images/deletecomment.png' alt='Delete'/></a><a style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + SERVER_URL + "/images/" + lockicon + "' style='float:right'/></a></td></tr>";
+        tableData = tableData + "<tr bgcolor='grey' id='cmt" + data[i].noteId + "'><td><div id='div" + data[i].noteId + "'><a style='font-size:10px;z-index:50000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + RESOURCE_DOMAIN + "/images/deletecomment.png' alt='Delete'/></a><a style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a></div><ins class='dark-tooltip dark medium west' style='max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none'><div></div><div class='tip'></div></ins></td></tr>";
       }
     }
     tableEnd = "</tbody></table>";
     var commentHTML = "<textarea id='commentsTxt' name='commentsTxt' placeholder='Write a note (Enter to play)... ' width='100%' style='margin:30px 0 0 0;min-height:104px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;'></textarea>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
+
     return tableData;
 }
 
 var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
-var dataStr = "";
-var SERVER_URL = "http://playnnote.herokuapp.com";
+var richDataStr = "";
+var txtDataStr = "";
+var SERVER_URL = "https://playnnote.herokuapp.com";
 //var SERVER_URL = "http://localhost:3000";
+var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
 } else {
     data = JSON.parse(notes.notesData);
     notesHTML = createTableData(data, ids.vId, ids.gId);
-    var dataStr = "";
+    var txtDataStr = "";
     for (i=0; i<data.length-1; i++) {
-        if (i > 0)
-            dataStr += delimiter;
-        dataStr += data[i].comments;
+        //alert('data[i]' + JSON.stringify(data[i]));
+        if (i > 0) {
+            txtDataStr += delimiter;
+            richDataStr += delimiter;
+        }
+        val = data[i].commentsTxt;
+        if (val.length > 100) {
+            val = val.substring(0,97) + "...";
+        }
+        txtDataStr += val;
+        richDataStr += data[i].comments;
     }
 }
 
@@ -425,4 +489,4 @@ var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
 var injected = false;
 
-injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, dataStr);
+injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, richDataStr, txtDataStr);
