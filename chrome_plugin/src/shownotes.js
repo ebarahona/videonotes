@@ -212,7 +212,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
-        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; ";
+        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; var rtdisplayed = ''; ";
         var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
         var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: SERVER_URL + '/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
         var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
@@ -220,11 +220,11 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src',RESOURCE_DOMAIN + '/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', RESOURCE_DOMAIN + '/images/clock.png');}} ";
         var resetTableStr = "function resetTable() { $('tr[id^=\"cmt\"]').remove(); } ";
         var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
-        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); " + 
+        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); if (text.length > 0) { text = text.substring(0,97) + '...'; } " + 
             "prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; txt_content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " +
             "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + txt_content + '</div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div>' + cmts + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
             "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; if ($(\"#notesTbl > tbody > tr\").length == 0 ) { $(rich_content_white).insertAfter($('table > tbody')); } else { if ($(\"#notesTbl > tbody > tr\").length % 2 == 0 ) { " +
-            "$(rich_content_white).insertBefore($('table > tbody > tr:first')); } else { $(rich_content_grey).insertBefore($('table > tbody > tr:first')); }} $(\"#div\" + timenow).mousedown(function() { p = $(this).parent().position(); if($(this).next().css('display') == \"none\") $(this).next().css({'display': 'block', 'width': '100%', 'top': p.top}); else $(this).next().css('display','none'); }); } ";
+            "$(rich_content_white).insertBefore($('table > tbody > tr:first')); } else { $(rich_content_grey).insertBefore($('table > tbody > tr:first')); }} $(\"#div\" + timenow).mousedown(function() { if (rtdisplayed != '' && rtdisplayed != $(this).attr(\"id\")) { $(\"#\" + rtdisplayed).next().css('display', 'none'); } p = $(this).parent().position(); if($(this).next().css('display') == \"none\") $(this).next().css({'display': 'block', 'width': '250%', 'top': p.top}); else $(this).next().css('display','none'); rtdisplayed = $(this).attr(\"id\"); }); } ";
 
         var setImportTableDataStr = "function setImportTableData(notesData, gId) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setImportRowData(i, unescape(notesData[i].commentsTxt), notesData[i].date, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant, gId)} }} ";
         
@@ -275,7 +275,9 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
             if ($(this).attr("href").indexOf("deleteNote") > -1) {
                 note = unescape(notes[i]);
                 txtNote = unescape(txtNotes[i]);
-                //alert(note); alert(txtNote);
+                if (txtNote.length > 100) {
+                    txtNote = txtNote.substring(0,97) + "...";
+                }
                 $(this).after("&nbsp;" + txtNote + "&nbsp;");
                 $(this).parent().next().find("div:first-child").html(note);
                 $(this).parent().mousedown(function() {
@@ -347,27 +349,30 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                 uId1 = uId.substring(1, 10);
                 uId2 = uId.substring(10, uId.length-1);
                 prms = "'" + timenow + "$" + uId1  + "$" + uId2 + "$" + vId + "'";
-                content = '<a style="font-size:10px;z-index:50000;padding-right:0px;" href="javascript:deleteNote(' + prms +')"><img src="' + RESOURCE_DOMAIN + '/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="' + RESOURCE_DOMAIN + '/images/lock_closed.png" style="float:right"/></a>';
+                content = '<a style="font-size:10px;z-index:50000;padding-right:0px;" href="javascript:deleteNote(' + prms +')"><img src="' + RESOURCE_DOMAIN + '/images/deletecomment.png" alt="Delete"/></a> &nbsp;&nbsp;<a style="float:right" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',"' + timenow + '")><img width=16 height=16 id="lock' + timenow + '" src="' + RESOURCE_DOMAIN + '/images/lock_closed.png" style="float:right"/></a>';
+                part_data = timenow + '">' + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>'
+                rich_content_white = '<tr bgcolor="white" id="cmt' + part_data; 
+                rich_content_grey = '<tr bgcolor="grey" id="cmt' + part_data; 
                 if ($("#notesTbl > tbody > tr").length == 0 ) {
-                    $('<tr bgcolor="white" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertAfter($('table > tbody'));
+                    $(rich_content_white).insertAfter($('table > tbody'));
                 } else {
                     if ($("#notesTbl > tbody > tr").length % 2 == 0 ) {
-                        $('<tr bgcolor="white" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertBefore($('table > tbody > tr:first'));
+                        $(rich_content_white).insertBefore($('table > tbody > tr:first'));
                     } else {
-                        $('<tr bgcolor="grey" id="cmt' + timenow + '"><td><div id="div' + timenow + '">' + content + '</div><ins class="dark-tooltip dark medium west" style="max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none"><div>' + text + '</div><div class="tip"></div></ins></td></tr>').insertBefore($('table > tbody > tr:first'));
+                        $(rich_content_grey).insertBefore($('table > tbody > tr:first'));
                     }
                 }
                 if ($("#div" + timenow).length > 0) {
-                    $("#div" + timenow).next().find("div:first-child").html(text);
                     textval = $("#div" + timenow).next().find("div:first-child").text();
-                    //alert($("#div" + timenow).find("a:first-child").next().html());
-                    //alert(textval);
-                    $("#div" + timenow).find("a:first-child").next().html(textval);
+                    if (textval.length > 100) {
+                        textval = textval.substring(0, 97) + '...';
+                    }
+                    $("#div" + timenow).find("a:first-child").after("&nbsp;" + textval + "&nbsp;");
                     $("#div" + timenow).mousedown(function() {
 
                         p = $(this).parent().position();
                         if($(this).next().css('display') == "none")
-                            $(this).next().css({'display': 'block', 'width': '100%', 'top': p.top});
+                            $(this).next().css({'display': 'block', 'width': '250%', 'top': p.top});
                         else
                             $(this).next().css('display','none');
                         
@@ -475,9 +480,6 @@ if (notes === undefined || notes === 'undefined' || notes == "") {
             richDataStr += delimiter;
         }
         val = data[i].commentsTxt;
-        if (val.length > 100) {
-            val = val.substring(0,97) + "...";
-        }
         txtDataStr += val;
         richDataStr += data[i].comments;
     }
