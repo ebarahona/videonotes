@@ -158,11 +158,11 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         document.head.appendChild(ttcss);
 
         //This reset css messes up the format in the table. If commented out, the <ins> stops to work. Removed the table from reset.css
-        var resetcss = document.createElement('link');
+        /*var resetcss = document.createElement('link');
         resetcss.type = "text/css";
         resetcss.rel = "stylesheet";
         resetcss.href = RESOURCE_DOMAIN + "/stylesheets/reset.css";
-        document.head.appendChild(resetcss);
+        document.head.appendChild(resetcss);*/
 
         /*var eq_configjs = document.createElement('script');
         eq_configjs.type = "text/javascript";
@@ -220,7 +220,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src',RESOURCE_DOMAIN + '/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', RESOURCE_DOMAIN + '/images/clock.png');}} ";
         var resetTableStr = "function resetTable() { $('tr[id^=\"cmt\"]').remove(); } ";
         var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
-        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); if (text.length > 0) { text = text.substring(0,97) + '...'; } " + 
+        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); if(text.length > 100) { text = text.substring(0, 97) + '...'; } " + 
             "prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; txt_content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " +
             "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + txt_content + '</div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div>' + cmts + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
             "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; if ($(\"#notesTbl > tbody > tr\").length == 0 ) { $(rich_content_white).insertAfter($('table > tbody')); } else { if ($(\"#notesTbl > tbody > tr\").length % 2 == 0 ) { " +
@@ -275,9 +275,11 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
             if ($(this).attr("href").indexOf("deleteNote") > -1) {
                 note = unescape(notes[i]);
                 txtNote = unescape(txtNotes[i]);
+
                 if (txtNote.length > 100) {
                     txtNote = txtNote.substring(0,97) + "...";
                 }
+                //alert(note);
                 $(this).after("&nbsp;" + txtNote + "&nbsp;");
                 $(this).parent().next().find("div:first-child").html(note);
                 $(this).parent().mousedown(function() {
@@ -367,7 +369,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                     if (textval.length > 100) {
                         textval = textval.substring(0, 97) + '...';
                     }
-                    $("#div" + timenow).find("a:first-child").after("&nbsp;" + textval + "&nbsp;");
+                    $("#div" + timenow).find("a:first-child").after(textval);
                     $("#div" + timenow).mousedown(function() {
 
                         p = $(this).parent().position();
