@@ -300,9 +300,11 @@ app.get('/getNotesExtn', function(req, res) {
           .end(function (response) {
                 console.log(response.body);
                 ispublic = false;
-                if (response.body.data[0] != null) {
-                  ispublic = response.body.data[0][0].data.notes_public;
-                }
+                try{
+                  if (response.body != null && response.body.data != null && response.body.data[0] != null) {
+                    ispublic = response.body.data[0][0].data.notes_public;
+                  }
+                } catch (e) {}
                 var user_note = User_Note.find({googleId: gId, videoURL: vRL}, {}, {skip:0, sort:{instant: open}}, 
                   function(err, data) {
                     if (err) 
