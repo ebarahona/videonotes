@@ -213,28 +213,235 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
         var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; var rtdisplayed = ''; ";
-        var moveToStr = "function moveTo(toTime) {if (window.QL_player != null) {window.QL_player.mediaelement_handle.setCurrentTime(toTime);} else if ($('me_flash_0') != null) {$('me_flash_0').setCurrentTime(toTime);}} ";
-        var deleteNoteStr = "function deleteNote(prms) {  noteId = prms.split('$')[0]; uId1  = prms.split('$')[1]; uId2 = prms.split('$')[2];  vId = prms.split('$')[3] + '$' + prms.split('$')[4]; uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: SERVER_URL + '/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); $('#cmt' + noteId).remove();} ";
-        var toggleLockStr = "function toggleLock(uIdvId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; if ($('#lockall' ).attr('src').indexOf('open') > -1) { notes_public = false; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}});} else { notes_public = true; $( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}});}} ";
-        var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { uId = '' + uId1 + uId2; if ($('#lock'+i).attr('src').indexOf('open') > -1) { $('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}});} else {$('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); $.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}});}} ";
-        var toggleSortStr = "function toggleTimeSort(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; if (sort_instant == undefined || sort_instant == 1) { sort_instant = 0; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src',RESOURCE_DOMAIN + '/images/lock_closed.png'); } else {sort_instant=1; $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { resetTable(); setTableData(data); } }); $('#sorticon').attr('src', RESOURCE_DOMAIN + '/images/clock.png');}} ";
+        var moveToStr = "function moveTo(toTime) { " +
+                            "if (window.QL_player != null) { " +
+                                "window.QL_player.mediaelement_handle.setCurrentTime(toTime); " +
+                        "} else if ($('me_flash_0') != null) { " +
+                            "$('me_flash_0').setCurrentTime(toTime);  " +
+                        "}} ";
+        var deleteNoteStr = "function deleteNote(prms) {  " +
+                                 "noteId = prms.split('$')[0]; " +
+                                  "uId1  = prms.split('$')[1]; " +
+                                  "uId2 = prms.split('$')[2];  " +
+                                  "vId = prms.split('$')[3] + '$' + prms.split('$')[4]; " +
+                                  "uId = '' + uId1 + uId2; $.ajax({type: 'GET', url: SERVER_URL + '/deleteNoteExtn',data: {gId: uId, noteId: noteId, vId: vId}}); " +
+                                  "$('#cmt' + noteId).remove(); " +
+                            "} ";
+        var toggleLockStr = "function toggleLock(uIdvId) { " +
+                                 "uId = uIdvId.split('$')[0]; " +
+                                 "vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; " +
+                                 "if ($('#lockall' ).attr('src').indexOf('open') > -1) { " +
+                                     "notes_public = false; " + 
+                                     "$( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); " +
+                                     "$.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:0, uId: uId, vId: vId}}); " +
+                                 "} else { " + 
+                                     "notes_public = true; " + 
+                                     "$( \"img[id^='lock']\" ).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); " + 
+                                     "$.ajax({type: 'GET', url: SERVER_URL + '/toggleVideoNotesExtn',data: {open:1, uId: uId, vId: vId}}); " +
+                                 "} " +
+                            "} ";
+        var toggleLockOneStr = "function toggleLockOne(uId1, uId2, i) { " +
+                                    "uId = '' + uId1 + uId2; " +
+                                    "if ($('#lock'+i).attr('src').indexOf('open') > -1) { " +
+                                        "$('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_closed.png'); " + 
+                                        "$.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:0, uId: uId, noteId: i}}); " +
+                                    "} else { " +
+                                        "$('#lock'+i).attr('src', RESOURCE_DOMAIN + '/images/lock_open.png'); " + 
+                                        "$.ajax({type: 'GET', url: SERVER_URL + '/toggleNoteExtn',data: {open:1, uId: uId, noteId: i}}); " +
+                                    "} " +
+                                "} ";
+        var toggleSortStr = "function toggleTimeSort(gIdvId) { " + 
+                                "gId = gIdvId.split('$')[0]; " + 
+                                "cId = gIdvId.split('$')[1]; " + 
+                                "lId = gIdvId.split('$')[2]; " + 
+                                "if (sort_instant == undefined || sort_instant == 1) { " + 
+                                    "sort_instant = 0; " + 
+                                    "$.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:-1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, " +
+                                        "success: function(data) { " + 
+                                                      "resetTable(); setTableData(data); " +
+                                                    "} " + 
+                                    "}); " + 
+                                    "$('#sorticon').attr('src',RESOURCE_DOMAIN + '/images/sort_down.png'); " + 
+                                "} else { " +
+                                    "sort_instant=1; " + 
+                                    "$.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, " + 
+                                        "success: function(data) { " + 
+                                                    "resetTable(); " + 
+                                                    "setTableData(data); " + 
+                                                  "} " +
+                                    "}); " + 
+                                    "$('#sorticon').attr('src', RESOURCE_DOMAIN + '/images/sort_up.png'); " +
+                                "} " +
+                            "} ";
         var resetTableStr = "function resetTable() { $('tr[id^=\"cmt\"]').remove(); } ";
-        var setTableDataStr = "function setTableData(notesData) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setRowData(unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant)} }} ";
-        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); if(text.length > 100) { text = text.substring(0, 97) + '...'; } " + 
-            "prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; txt_content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;' + text + '&nbsp;<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " +
-            "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + txt_content + '</div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div>' + cmts + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
-            "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; if ($(\"#notesTbl > tbody > tr\").length == 0 ) { $(rich_content_white).insertAfter($('table > tbody')); } else { if ($(\"#notesTbl > tbody > tr\").length % 2 == 0 ) { " +
-            "$(rich_content_white).insertBefore($('table > tbody > tr:first')); } else { $(rich_content_grey).insertBefore($('table > tbody > tr:first')); }} $(\"#div\" + timenow).mousedown(function() { if (rtdisplayed != '' && rtdisplayed != $(this).attr(\"id\")) { $(\"#\" + rtdisplayed).next().css('display', 'none'); } p = $(this).parent().position(); if($(this).next().css('display') == \"none\") $(this).next().css({'display': 'block', 'width': '250%', 'top': p.top}); else $(this).next().css('display','none'); rtdisplayed = $(this).attr(\"id\"); }); } ";
+        var setTableDataStr = "function setTableData(notesData) { " + 
+                                    "if (notesData !== '' && notesData.length > 0) { " +
+                                        "for (i=0; i<notesData.length; i++) { " + 
+                                            "setRowData(unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].noteId, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant); " + 
+                                        "} " +
+                                    "} " +
+                              "} ";
+        var setRowDataStr = "function setRowData(cmts, text, timenow, uIdvId, instant) { " + 
+                                "uId = uIdvId.split('$')[0]; " + 
+                                "vId = uIdvId.split('$')[1]; " + 
+                                "uId1 = uId.substring(0, 9); " + 
+                                "uId2 = uId.substring(9, uId.length); " + 
+                                "if(text.length > 100) { text = text.substring(0, 97) + '...'; } " + 
+                                "prms = '\"' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '\"'; " + 
+                                "txt_content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(' + prms +')> " +
+                                                    "<img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> " + 
+                                                    "&nbsp;' + text + '&nbsp; " +
+                                                "<a style=\"float:right\" href=javascript:moveTo(' + instant + '); >' + instant + 's</a> &nbsp; " +
+                                                "<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',\"' + timenow + '\")> " +
+                                                    "<img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a>'; " +
+                                "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + txt_content + '</div> " +
+                                                "<ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"> " +
+                                                    "<div>' + cmts + '</div><div class=\"tip\"></div> " +
+                                                "</ins></td></tr>'; " +
+                                "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; " + 
+                                "rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; " + 
+                                "if ($(\"#notesTbl > tbody > tr\").length == 0 ) { " + 
+                                    "$(rich_content_white).insertAfter($('table > tbody')); " + 
+                                "} else { " + 
+                                    "if ($(\"#notesTbl > tbody > tr\").length % 2 == 0 ) { " +
+                                        "$(rich_content_white).insertBefore($('table > tbody > tr:first')); } " + 
+                                    "else { $(rich_content_grey).insertBefore($('table > tbody > tr:first')); } " +
+                                "} " + 
+                                "$(\"#div\" + timenow).mousedown(function() { " + 
+                                    "if (rtdisplayed != '' && rtdisplayed != $(this).attr(\"id\")) { " + 
+                                        "$(\"#\" + rtdisplayed).next().css('display', 'none'); " + 
+                                    "} " + 
+                                    "p = $(this).parent().position(); " + 
+                                    "if($(this).next().css('display') == \"none\") " + 
+                                        "$(this).next().css({'display': 'block', 'width': '250%', 'top': p.top}); " + 
+                                    "else " + 
+                                        "$(this).next().css('display','none'); rtdisplayed = $(this).attr(\"id\"); " + 
+                                "}); " + 
+                            "} ";
 
-        var setImportTableDataStr = "function setImportTableData(notesData, gId) { if (notesData !== '' && notesData.length > 0) {for (i=0; i<notesData.length; i++) { setImportRowData(i, unescape(notesData[i].commentsTxt), notesData[i].date, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant, gId)} }} ";
+        var setImportTableDataStr = "function setImportTableData(notesData, gId) { " + 
+                                        "if (notesData !== '' && notesData.length > 0) { " +
+                                            "for (i=0; i<notesData.length; i++) { " + 
+                                                "setImportRowData(i, unescape(notesData[i].comments), unescape(notesData[i].commentsTxt), notesData[i].date, notesData[i].googleId + '$' + notesData[i].videoURL, notesData[i].instant, gId); " +
+                                            "} " + 
+                                        "} " +
+                                    "} ";
         
-        var setImportRowDataStr = "function setImportRowData(i, text, timenow, uIdvId, instant, gId) { uId = uIdvId.split('$')[0]; vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; uId1 = uId.substring(0, 9); uId2 = uId.substring(9, uId.length); prms = '\"' + i + '$' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '$' + gId + '$' + instant + '\"'; content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:copyNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/import.png\" alt=\"Import\"/></a> &nbsp;<span id=\"imp' + i + '\">' + text + '</span>&nbsp;<a style=\"float:right\" >' + instant + 's</a> &nbsp;'; " + 
-                "if ($('#notesTbl > tbody > tr').length == 0 ) { $('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').appendTo($('table > tbody'));} else {if ($('#notesTbl > tbody > tr').length % 2 == 0 ) {$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first'));} else {$('<tr bgcolor=\"grey\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first'));} }} ";                
+        var setImportRowDataStr = "function setImportRowData(i, cmts, text, timenow, uIdvId, instant, gId) { " + 
+                                        "uId = uIdvId.split('$')[0]; " + 
+                                        "vId = uIdvId.split('$')[1] + '$' + uIdvId.split('$')[2]; " + 
+                                        "uId1 = uId.substring(0, 9); " + 
+                                        "uId2 = uId.substring(9, uId.length); " + 
+                                        "if (text.length > 100) { " +
+                                            "text = text.substring(0, 97) + '...'; " +
+                                        "} " +
+                                        "prms = '\"' + i + '$' + timenow + '$' + uId1 + '$' + uId2 + '$' + vId + '$' + gId + '$' + instant + '\"'; " + 
+                                        "content = '<a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:copyNote(' + prms +')><img src=\"' + RESOURCE_DOMAIN + '/images/import.png\" alt=\"Import\"/></a> &nbsp;<span id=\"imp' + i + '\">' + text + '</span>&nbsp;<a style=\"float:right\" >' + instant + 's</a> &nbsp;'; " + 
+                                        "part_data = timenow + '\">' + '<td><div id=\"div' + timenow + '\">' + content + '</div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div>' + cmts + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
+                                        "rich_content_white = '<tr bgcolor=\"white\" id=\"cmt' + part_data; " +
+                                        "rich_content_grey = '<tr bgcolor=\"grey\" id=\"cmt' + part_data; " +
+                                        "if ($('#notesTbl > tbody > tr').length == 0 ) { " + 
+                                            "$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').appendTo($('table > tbody')); " +
+                                        "} else { " +
+                                            "if ($('#notesTbl > tbody > tr').length % 2 == 0 ) { " +
+                                                "$('<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first')); " +
+                                            "} else { " +
+                                                "$('<tr bgcolor=\"grey\" id=\"cmt' + timenow + '\"><td>' + content + '</td></tr>').insertAfter($('table > tbody > tr:first')); " +
+                                            "} " + 
+                                        "} " +
+                                        "$(\"#div\" + timenow).mousedown(function () { " +
+                                            "if (rtdisplayed != '' && rtdisplayed != $(this).attr(\"id\")) { " +
+                                                "$(\"#\" + rtdisplayed).next().css('display', 'none'); " +
+                                            "} " +
+                                            "p = $(this).parent().position(); " +
+                                            "if ($(this).next().css('display') == \"none\") " + 
+                                                "$(this).next().css({ " +
+                                                    "'display': 'block', " +
+                                                    "'width': '250%', " +
+                                                    "'top': p.top " +
+                                                "}); " +
+                                            "else $(this).next().css('display', 'none'); " +
+                                            "rtdisplayed = $(this).attr(\"id\"); " +
+                                        "}); " +
+                                    "} ";
         
-        var copyNoteStr = "function copyNote(dtuIdvId) { nth = dtuIdvId.split('$')[0]; tn = new Date().getTime(); timenow = dtuIdvId.split('$')[1]; vId = dtuIdvId.split('$')[4] + '$' + dtuIdvId.split('$')[5]; gId = dtuIdvId.split('$')[6]; instant = dtuIdvId.split('$')[7]; text = $('#imp' + nth).html() ; nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); $.ajax({ type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} }); } "
-        var importNotesStr = "function importNotes(gIdvId) { gId = gIdvId.split('$')[0]; cId = gIdvId.split('$')[1]; lId = gIdvId.split('$')[2]; vId = cId + '$' + lId; if (rows_hidden == undefined || rows_hidden == false) { $.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn',data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} }); resetTable(); rows_hidden = true; } else { $.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, success: function(data) { setTableData(data); } });  resetTable(); rows_hidden = false;}  } ";
-        var writeNotesStr = "function writeRichNote() { removeShortCuts(); if (!rich_text) { rich_text = true; if($(\"#cke_richEdit\").length == 0) { CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { len = $(\"#cke_richEdit\").length; elem = document.getElementById(\"cke_richEdit\"); elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: 60%; z-index: 100001'); }}}); } else { $(\"#cke_richEdit\").show(); } if (window.QL_player != null) {window.QL_player.mediaelement_handle.pause(); instant = window.QL_player.mediaelement_media.currentTime;} else if ($('me_flash_0') != null) { $('me_flash_0').pauseMedia(); instant = $('me_flash_0').currentTime();}} else { rich_text = false; $(\"#cke_richEdit\").hide(); $(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); CKEDITOR.instances.richEdit.setData('<p></p>'); if (window.QL_player != null) { window.QL_player.mediaelement_handle.play(); } else if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); }} } ";
-        var removeShortcutsStr = "function removeShortCuts() { try { len = window.QL_player.mediaelement_handle.options.keyActions.length; for (i=0; i < len; i++) { delete window.QL_player.mediaelement_handle.options.keyActions[i]; } window.QL_player.mediaelement_handle.enableKeyboard = false; window.QL_player.mediaelement_handle.options.keyActions = null; } catch (e) {} } ";
+        var copyNoteStr = "function copyNote(dtuIdvId) {  " +
+                            "nth = dtuIdvId.split('$')[0]; " + 
+                            "tn = new Date().getTime(); " + 
+                            "timenow = dtuIdvId.split('$')[1]; " + 
+                            "vId = dtuIdvId.split('$')[4] + '$' + dtuIdvId.split('$')[5]; " + 
+                            "gId = dtuIdvId.split('$')[6]; " + 
+                            "instant = dtuIdvId.split('$')[7]; " + 
+                            "text = $('#imp' + nth).html(); " + 
+                            "nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); " + 
+                            "$.ajax({ " + 
+                                "type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', " + 
+                                "data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} " + 
+                            "}); " + 
+                        "} ";
+        var importNotesStr ="function importNotes(gIdvId) { " + 
+                                "gId = gIdvId.split('$')[0]; " + 
+                                "cId = gIdvId.split('$')[1]; " + 
+                                "lId = gIdvId.split('$')[2]; " + 
+                                "vId = cId + '$' + lId; " + 
+                                "if (rows_hidden == undefined || rows_hidden == false) { " + 
+                                    "$.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn', " +
+                                        "data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} " + 
+                                    "}); " + 
+                                    "resetTable(); " + 
+                                    "rows_hidden = true; " + 
+                                "} else { " + 
+                                    "$.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', " + 
+                                        "data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, " + 
+                                        "success: function(data) { setTableData(data); } " + 
+                                    "}); " + 
+                                    "resetTable(); rows_hidden = false; " +
+                                "} " +  
+                            "} ";
+        var writeNotesStr = "function writeRichNote() { " + 
+                                "removeShortCuts(); " + 
+                                "if (!rich_text) { " + 
+                                    "rich_text = true; " + 
+                                    "if($(\"#cke_richEdit\").length == 0) { " + 
+                                        "CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { " + 
+                                                                                                "len = $(\"#cke_richEdit\").length; " + 
+                                                                                                "elem = document.getElementById(\"cke_richEdit\"); " + 
+                                                                                                "elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: 60%; z-index: 100001'); " + 
+                                                                                             "} " +
+                                                                            "} " +
+                                                                        "}); " + 
+                                    "} else {  " +
+                                        "$(\"#cke_richEdit\").show(); " + 
+                                    "} " + 
+                                    "if (window.QL_player != null) { " +
+                                        "window.QL_player.mediaelement_handle.pause(); " + 
+                                        "instant = window.QL_player.mediaelement_media.currentTime; " +
+                                    "} else " + 
+                                        "if ($('me_flash_0') != null) { " + 
+                                            "$('me_flash_0').pauseMedia(); " + 
+                                            "instant = $('me_flash_0').currentTime(); " +
+                                        "} " +
+                                "} else { " + 
+                                    "rich_text = false; " + 
+                                    "$(\"#cke_richEdit\").hide(); " + 
+                                    "$(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); " + 
+                                    "CKEDITOR.instances.richEdit.setData('<p></p>'); " + 
+                                    "if (window.QL_player != null) { " + 
+                                        "window.QL_player.mediaelement_handle.play(); " + 
+                                    "} else " + 
+                                        "if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); } " +
+                                "} " + 
+                            "} ";
+        var removeShortcutsStr = "function removeShortCuts() { " + 
+                                     "try { " +  
+                                        "len = window.QL_player.mediaelement_handle.options.keyActions.length; " + 
+                                        "for (i=0; i < len; i++) { " +  
+                                            "delete window.QL_player.mediaelement_handle.options.keyActions[i]; " + 
+                                        "} " + 
+                                        "window.QL_player.mediaelement_handle.enableKeyboard = false; " + 
+                                        "window.QL_player.mediaelement_handle.options.keyActions = null; " + 
+                                    "} catch (e) {} " + 
+                                "} ";
 
         scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + writeNotesStr + removeShortcutsStr;
         document.body.appendChild(scriptElem);
@@ -434,7 +641,7 @@ function createTableData(data, vId, uId) {
 
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/clock.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/sort_up.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:writeRichNote() alt='Rich Text Editor'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' style='float:right'/></a>&nbsp;&nbsp;";
@@ -492,5 +699,5 @@ cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 5
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
 var injected = false;
-
+//alert(richDataStr);
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, richDataStr, txtDataStr);

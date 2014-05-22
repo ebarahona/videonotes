@@ -510,35 +510,7 @@ app.get('/getLectureNotesExtn', function(req, res) {
                         res.end('\n');
                       }
                   });
-  
-/*  unirest.post('http://localhost:7474/db/data/cypher')
-          .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
-          .send({ "query" : "MATCH (video : Video { video_id: { video_id }})-[hn : has_note]->(n:Note{ispublic : true }) WHERE hn.created_by <> {user_id} RETURN n, hn",
-                  "params" : {
-                              "user_id" : uId,
-                              "video_id" : vId
-                             }
-                })
-          .end(function (response) {
-                console.log(response.body);
-                data = response.body.data;
-                entries = data.length;
-                val = "{\"values\": [" ;
-                for (i=0; i<entries; i++) {
-                  val += JSON.stringify(data[i][0].data);
-                  val = val.substring(0, val.length-1) + ",";
-                  val2 = JSON.stringify(data[i][1].data);
-                  val2 = val2.substring(1, val2.length);
-                  val += val2;
-                  if (i < entries-1)
-                    val += ",";
-                }
-                val += "]}";
-                res.writeHead(200, {'content-type': 'text/plain', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
-                res.write(val);
-                res.end('\n');
-          });
-*/
+
 });
 
 app.get('/subscriptions', function (req, res) {
