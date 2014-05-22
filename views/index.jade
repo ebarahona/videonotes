@@ -2,42 +2,44 @@
 html(lang='en')
 head
     meta(charset='utf-8')
-    title #{title}
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    link(href='/stylesheets/bootstrap.css', rel='stylesheet')
-
-    style(type='text/css')
-      body {
-        padding-top: 40px;
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-      }
-
-      
-    link(href='/stylesheets/bootstrap-responsive.css', rel='stylesheet')
-    //
-       HTML5 shim, for IE6-8 support of HTML5 elements 
-    //if lt IE 9
-      script(src='/javascripts/html5shiv.js')
+    title Play N Note - Watch. Note. Share
+    meta(name='description', content='')
+    meta(name='keywords', content='Video Notes. Coursera Notes. Notes.')
+    link(href='stylesheets/bootstrap.css', rel='stylesheet')
+    link(href='stylesheets/bootstrap-responsive.css', rel='stylesheet')
+    link(href='stylesheets/social-buttons.css', rel='stylesheet')
+    link(href='http://fonts.googleapis.com/css?family=Lobster', rel='stylesheet')
+    link(href='stylesheets/style-hearty.css', rel='stylesheet')
+    link(href='stylesheets/custom-hearty.css', rel='stylesheet')
+    script(type='text/javascript', src='javascripts/jquery.js')
+    script(src='javascripts/bootstrap/bootstrap.min.js')
+    script(type='text/javascript', src='javascripts/custom-hearty.js')
+    script(type='text/javascript')
+      $(function(){
+      window.prettyPrint && prettyPrint()
+      var logoStyle = $('#logo')[0].style;
+      var headingStyle = $('h1')[0].style;
+      $('#cp').colorpicker().on('changeColor', function(ev){
+      logoStyle.backgroundColor = ev.color.toHex();
+      headingStyle.color = ev.color.toHex();
+      });
+      });
   body
-    if user
-      script(type='text/javascript')
-        window.location='/landing'
-
     .container
-      form.form-signin(action='/auth/google/', method='get')
-        button.btn.btn-large.btn-primary(type='submit') Sign in with Google
-          
-    script(src='/javascripts/bootstrap/jquery.js')
-    script(src='/javascripts/bootstrap/bootstrap-transition.js')
-    script(src='/javascripts/bootstrap/bootstrap-alert.js')
-    script(src='/javascripts/bootstrap/bootstrap-modal.js')
-    script(src='/javascripts/bootstrap/bootstrap-dropdown.js')
-    script(src='/javascripts/bootstrap/bootstrap-scrollspy.js')
-    script(src='/javascripts/bootstrap/bootstrap-tab.js')
-    script(src='/javascripts/bootstrap/bootstrap-tooltip.js')
-    script(src='/javascripts/bootstrap/bootstrap-popover.js')
-    script(src='/javascripts/bootstrap/bootstrap-button.js')
-    script(src='/javascripts/bootstrap/bootstrap-collapse.js')
-    script(src='/javascripts/bootstrap/bootstrap-carousel.js')
-    script(src='/javascripts/bootstrap/bootstrap-typeahead.js')
+      .gradient
+        .row
+          #logo
+            img(src='http://playnnote.herokuapp.com/images/playnnote.png')
+        .row
+          .span12
+            .content
+              h1 Welcome, Coursera Users!
+              p
+                | We are working hard to bring to you a new Notes taking App.
+                br
+                | Leave us your email below to be an early user.
+              form.form-horizontal(action='index.html')
+                input.input-large(type='email', name='email', placeholder='Enter your email')
+                input.btn.btn-large(type='submit', value='Notify me!')
+              p
+                a.sb.circle.twitter.mytooltip(href='http://twitter.com/playnnote', title='Twitter') Twitter

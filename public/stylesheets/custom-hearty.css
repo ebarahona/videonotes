@@ -1,0 +1,11 @@
+﻿
+/* Logo styles */
+#logo {
+    background: #ddd url(../img/bg.png);
+    color: white;
+}
+
+/* Heading styles */
+h1 {
+    color: #000000;
+}
