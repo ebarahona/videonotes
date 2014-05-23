@@ -174,11 +174,31 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
   
 });
 
+app.post('/registerBeta', function(req, res) {
+  var str = req.body;
+  email=str.email.trim();
+  
+
+  BetaUser.create({email : email, dateRegistered : new Date()},
+      function(err, data) {
+        if (err) {
+          res.writeHead(200, {'Content-type': 'application/json'});
+          res.write('[{"failed":"' + email + ' already registered"}]');
+          res.end();
+        } else {
+          res.writeHead(200, {'Content-type': 'application/json'});
+          res.write('[{"ok":"' + email + ' could not be registered"}]');
+          res.end();
+        }
+      })
+
+});
+
 
 var vals = "";
 var subHeader = "";
 
-app.post('/submitNote', function(req, res) {
+/*app.post('/submitNote', function(req, res) {
   var str = JSON.stringify(req.body);
   str=str.replace(/[{}]/g,'');
   parms = str.split(',');
@@ -205,7 +225,7 @@ app.post('/submitNote', function(req, res) {
                       console.log("submit comment successful");
                     }
                   }); 
-});
+});*/
 
 app.post('/submitNoteExtn', function(req, res) {
   var str = JSON.stringify(req.body);

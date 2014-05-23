@@ -5,9 +5,9 @@ var mongodb = require('mongodb')
 var conn;
 //collections would be an array of all model files. The names here are same as the model files
 var collections = ["User", "User_Note"];
-//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
+var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://localhost/local";
 
-var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://heroku_app24406028:d3p58kpsu0d5mivsd44s6628hr@ds053838.mongolab.com:53838/heroku_app24406028";
+//var MONGO_CONNECTION = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || "mongodb://heroku_app24406028:d3p58kpsu0d5mivsd44s6628hr@ds053838.mongolab.com:53838/heroku_app24406028";
 
 var getConnection = function() {
 
@@ -70,6 +70,14 @@ loadSchemas = function() {
   mongoose.model('User', UserSchema);
   User = mongoose.model('User');
   module.exports = User; 
+
+  var BetaUserSchema = new mongoose.Schema({
+    email: {type: String, unique: true}
+    , dateRegistered: Date
+  });
+  mongoose.model('BetaUser', BetaUserSchema);
+  BetaUser = mongoose.model('BetaUser');
+  module.exports = BetaUser; 
 
   var UserNoteSchema = new mongoose.Schema({
     googleId : String

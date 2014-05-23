@@ -24,6 +24,23 @@ head
       headingStyle.color = ev.color.toHex();
       });
       });
+      function postIt() {
+      email = $("#email").val();
+      $.ajax({
+      type: "POST",
+      url: "/registerBeta",
+      data: {email : email},
+      success: function() {
+      $('#email').val('');
+      $('div.hero-unit').text('All Done! You would be notified on ' + email + ' when we are ready.');
+      },
+      error: function (xhr, error) {
+      $('#email').val('');
+      $('div.hero-unit').text('test');
+      },
+      dataType: 'json'
+      });
+      }
   body
     .container
       .gradient
@@ -38,8 +55,10 @@ head
                 | We are working hard to bring to you a new Notes taking App.
                 br
                 | Leave us your email below to be an early user.
-              form.form-horizontal(action='index.html')
-                input.input-large(type='email', name='email', placeholder='Enter your email')
+              form.form-horizontal(action='javascript:postIt()', method='POST')
+                input#email.input-large(type='email', name='email', placeholder='Enter your email')
                 input.btn.btn-large(type='submit', value='Notify me!')
+                p
+                  #result.hero-unit
               p
                 a.sb.circle.twitter.mytooltip(href='http://twitter.com/playnnote', title='Twitter') Twitter
