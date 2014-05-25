@@ -641,10 +641,10 @@ function createTableData(data, vId, uId) {
 
     tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Sort By Instant/Timestamp'><img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/sort_up.png' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Latest Comments'><img width=16 height=16 id='lockall' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "') alt='Import Video Notes'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' style='float:right'/></a>&nbsp;&nbsp;";
-    tableHeaders += "&nbsp;<a href=javascript:writeRichNote() alt='Rich Text Editor'><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' style='float:right'/></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:writeRichNote()><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' alt='Rich Text Editor' /></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 id='lockall' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "'  alt='Latest Comments' /></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' alt='Import Video Notes' /></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/sort_up.png' alt='Sort By Instant/Timestamp' /></a>&nbsp;&nbsp;";
     tableHeaders += "</td></tr></thead><tbody>";
         
     for(i = 0; i < len-1; i++) {
