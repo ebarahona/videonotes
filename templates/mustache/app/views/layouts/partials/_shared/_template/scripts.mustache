@@ -1,0 +1,49 @@
+<!-- basic scripts -->
+{{> layout._template.jquery}}
+{{> layout._template.bootstrap}}
+
+<!-- page specific plugin scripts -->
+{{!put IE only scripts here, currently we only use ExCanvas.js from time to time}}
+{{#page.ie_scripts}}
+<!--[if lte IE {{version}}]>
+  <script src="{{{path.assets}}}/javascripts/ace/{{{file_name}}}"></script>
+<![endif]-->
+{{/page.ie_scripts}}
+
+{{#page.scripts}}
+<script src="{{{path.assets}}}/javascripts/ace/{{{.}}}"></script>
+{{/page.scripts}}
+
+
+<!-- ace scripts -->
+{{^site.development}}{{! in production mode use ace-elements.js and ace.js script file }}
+ <script src="{{{path.assets}}}/javascripts/ace/ace-elements.min.js"></script>
+ <script src="{{{path.assets}}}/javascripts/ace/ace.min.js"></script>
+{{/site.development}}
+
+{{#site.development}}{{! in development mode use separate script files }}
+ {{#site.ace_scripts}}
+  <script src="{{{path.assets}}}/javascripts/ace/ace/{{{.}}}"></script>
+ {{/site.ace_scripts}}
+{{/site.development}}
+
+
+<!-- inline scripts related to this page -->
+{{#page.inline_scripts}}
+<script type="text/javascript">
+{{{page.inline_scripts}}}
+</script>
+{{/page.inline_scripts}}
+
+
+{{#site.onpage_help}}{{! enable on page help }}
+  <link rel="stylesheet" href="{{{path.assets}}}/stylsheets/ace/ace.onpage-help.css" />
+  <link rel="stylesheet" href="{{{path.base}}}/docs/assets/javascripts/ace/themes/sunburst.css" />
+
+  <script type="text/javascript">ace.vars['base'] = '{{{path.base}}}';</script>
+  <script src="{{{path.base}}}/javascripts/ace/thirdparty/rainbow.js"></script>
+  <script src="{{{path.base}}}/javascripts/ace/thirdparty/language/generic.js"></script>
+  <script src="{{{path.base}}}/javascripts/ace/thirdparty/language/html.js"></script>
+  <script src="{{{path.base}}}/javascripts/ace/thirdparty/language/css.js"></script>  
+  <script src="{{{path.base}}}/javascripts/ace/thirdparty/language/javascript.js"></script>
+{{/site.onpage_help}}
