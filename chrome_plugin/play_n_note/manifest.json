@@ -1,6 +1,6 @@
 {
   "name": "Coursera Notes",
-  "version": "0.3.11.3",
+  "version": "0.3.11.4",
   "description": "Watch Videos. Take Notes. Share. All from one place.",
   "background": { 
     "scripts": [
@@ -11,6 +11,11 @@
       "background.js",
       "shownotes.js"
     ] 
+  },
+ "externally_connectable" : {
+    "matches" : ["http://localhost:3000/*", 
+                  "http://playnnote.herokuapp.com/*"
+                ]
   },
  "browser_action": {
     "default_title": "",
@@ -46,6 +51,7 @@
     "webNavigation",
     "activeTab",
     "storage",
+    "http://localhost:3000/*",
     "https://playnnote.herokuapp.com/*",
     "http://playnnote.herokuapp.com/*",
     "https://class.coursera.org/*",
@@ -61,7 +67,7 @@
     "48" : "playnnote48.png",
     "128" : "playnnote128.png"
   },
-  "key" : "pmjcofmidnfkmjjehnfgeeihkikacfhe",
+  "key": "ehjngheochkknhdfjhnkpeabhikmhefj",
   "minimum_chrome_version": "29",
   "oauth2": {
       "client_id": "89641588136-902f29oc7tl588mbe0987erhf2gnoouq.apps.googleusercontent.com",
