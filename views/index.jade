@@ -20,12 +20,13 @@ html(lang='en')
     //
        Custom CSS for the 'Business Frontpage' Template 
     link(href='/stylesheets/business-frontpage.css', rel='stylesheet')
+    link(rel="chrome-webstore-item", href='https://chrome.google.com/webstore/detail/chadkpkckdaneoadajielnmpkaaepifj')
     script(src='/javascripts/ace/ace-extra.min.js')
   body.no-skin
     if user
       script(type='text/javascript')
         window.location='/landing'
-        
+
     #navbar.navbar.navbar-default.navbar-fixed-top
       script(type='text/javascript')
         try{ace.settings.check('navbar' , 'fixed')}catch(e){}
@@ -76,6 +77,8 @@ html(lang='en')
         .col-lg-4.col-sm-4
           h2 Chrome Extension
           address
+            button#install-button(onclick='chrome.webstore.install()') Text Chrome Extension
+            br
             strong Twitter, Inc.
             br
             | 795 Folsom Ave, Suite 600
@@ -99,7 +102,7 @@ html(lang='en')
        JavaScript 
     script(type='text/javascript')
       window.jQuery || document.write("<script src='/javascripts/jquery.js'>"+"<"+"/script>");
-    script(src='/javscripts/jquery.js')
+    script(src='/javascripts/jquery.js')
     script(type='text/javascript')
       if('ontouchstart' in document.documentElement) document.write("<script src='/javascripts/jquery.mobile.custom.min.js'>"+"<"+"/script>");
     script(src='/javascripts/bootstrap/bootstrap.js')
@@ -116,5 +119,16 @@ html(lang='en')
       $('#timeline-'+which).removeClass('hide');
       });
       });
+      var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+      if (is_chrome==true)
+      {
+      window.onload = function() {
+      chrome.runtime.sendMessage('ehjngheochkknhdfjhnkpeabhikmhefj', 'hello', {}, function(response) {
+      if (response == 'yes') {
+      $("#install-button").hide();
+      }
+      });
+      };
+      }
     script(type='text/javascript')
       ace.vars['base'] = '..';
