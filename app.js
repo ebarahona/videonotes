@@ -26,21 +26,21 @@ var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 */
 
-//var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
-var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
+var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
+//var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
 
 var express = require('express')
-  , unirest = require('unirest')
   , routes = require('./routes')
   , dbutils = require('./dbutils')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , util = require('util')
+  , unirest = require('unirest')
   , passport = require('passport')
   , html_to_text = require('html-to-text')
-  , youtube = require('youtube-feeds');
-  //, GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+  , youtube = require('youtube-feeds')
+  , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 passport.serializeUser(function(user, done) {
   done(null, user); 
@@ -50,12 +50,7 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
 
-//this method would avoid node process from getting terminated, but this is not a solution
-//process.addListener("uncaughtException", function (err) {
-//    console.log("Uncaught exception: " + err);
-//});
-
-/*passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
@@ -87,7 +82,7 @@ passport.deserializeUser(function(obj, done) {
         return done(null, user);//this return statements was missing when login was messed up, DO NOT MOVE!
       });
     } 
-));*/
+));
 
 
 var app = express();
@@ -98,11 +93,11 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
-app.use(express.favicon());
+app.use(express.favicon());//the graphic in the URL address bar of browsers):
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(express.bodyParser()); //is needed to painlessly access incoming data
 app.use(express.cookieParser()); 
-app.use(express.methodOverride());
+app.use(express.methodOverride()); //is a workaround for HTTP methods that involve headers
 app.use(express.session({secret: 'my playnnote'})); //Use a session store
 
 //TODO: Passport login sessions should be saved in a database. 
@@ -122,8 +117,6 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-
-
 //youtube.httpProtocol = 'https';
   //'https://www.googleapis.com/auth/userinfo.email',
   //'https://www.googleapis.com/auth/youtube',
@@ -142,10 +135,9 @@ app.get('/auth/google/return',
   passport.authenticate('google', {failureRedirect: '/' }),
     function(req, res) {
       console.log("redirecting to landing page .. might be slower because of trying to get mongodb connection");
-      res.redirect('/');
+      res.redirect('/landing');
     });
   
-//app.get('/', routes.index);
 app.get('/', function (req, res) {
   res.render('index', { title: 'Play-n-Note - Play Videos · Take Notes', signin: 'Please Sign In', user: req.user });
 });

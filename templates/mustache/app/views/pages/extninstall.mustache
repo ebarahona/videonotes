@@ -1,0 +1,35 @@
+<head>
+	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/chadkpkckdaneoadajielnmpkaaepifj"> 
+</head>
+
+<script>
+var bitlylink = "http://bit.ly/playnnote";
+var failinstall = "Please register to get access to the Chrome Extension";
+
+function installpnn() {
+	//check if the browser is present. navigator.userAgent supported by IE, Opera, Safari, Firefox and Chrome
+	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+	 if (is_chrome==true)
+		//check if the extn is present or not 
+		
+			chrome.webstore.install(STORE_LINK, 
+				function() {
+					var extndiv = document.createElement('div');
+					extndiv.setAttribute('id', 'extn_present');
+	    			extndiv.onerror = if_not_installed;
+	    			extndiv.onload = if_installed;
+	    			document.body.appendChild(extndiv);
+	    			extndiv.src = base + '/manifest.json';
+	    		});
+		}
+}
+
+function checkExtn() {
+	if ($('#extn_present').length == 0 ) {
+
+	}
+}
+</script>
+<body>
+	<button id="install-button" onclick="javascript:installpnn()"> Add to Chrome </button>
+</body>

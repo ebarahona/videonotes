@@ -1,0 +1,359 @@
+!!! 5
+html(lang='en')
+ head
+  meta(charset='utf-8')
+  title Play-n-Note - Watch · Note · Share
+  script(src='/javascripts/bootstrap/jquery.js')
+  script(src='/javascripts/bootstrap/bootstrap.js')
+  script(src='/javascripts/bootstrap/bootstrap-switch.js')
+  script(src='/javascripts/bootstrap/bootstrap-wysiwyg.js')
+  script(src='/javascripts/video.js/source-loader.js')
+  script(type='text/javascript')
+
+    vjs.options.flash.swf = '/swf/video-js.swf';
+    var ytHt, ytWd;
+
+    function getScreenRes() {
+      ytHt = '240';
+      ytWd = '384';
+    }
+
+    function setListeners() {
+      if(document.addEventListener){ //code for Moz
+        document.addEventListener("keypress",keyCapt,false);
+      }else{
+        document.attachEvent("onkeypress",keyCapt); 
+      }
+    }
+
+    function submitNote(text) {    
+      timenow = Math.round(parseFloat(vjPlayer.currentTime()));
+      $("#t_elapse").val(timenow);
+      uId = $("#uId").val();
+      vId = $("#vId").val();
+      text = text.replace(/\n/g, '<br>').trim();
+      $.ajax({
+           type: 'POST',
+           url: '/submitNote',
+           data: {googleId: uId, videoURL: vId, comments: text, noteId: new Date().getTime(), instant: timenow, ispublic: false},
+           success: function(data) { 
+             var lielem = document.getElementById("commentList").firstChild;
+             lielem.setAttribute('id', 'li' + data.noteId);
+             lielem.firstChild.setAttribute('href', 'javascript:deleteNote("' + data.noteId + '")');
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });      
+    }
+
+    function keyCapt(e){
+      if(typeof window.event!="undefined"){
+        e=window.event;//code for IE
+      }
+      if(e.type=="keypress"){
+        if (e.keyCode == "13" && $('#enterSubmitSwitch').bootstrapSwitch('status')){
+          //processNote();
+          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
+            vjPlayer.play();
+          }
+        }else{
+          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
+            vjPlayer.pause();
+          }
+        }
+      }
+    }   
+
+    function showCourseVideos(data) {
+      //cleanup
+      var elem = document.getElementById('navlist');
+      if (elem) {
+        while (elem.firstChild) {
+          elem.removeChild(elem.firstChild);
+        }
+      }
+      document.getElementById('navlist').innerHTML = "";
+
+      //set header
+      var headerli = document.createElement('li');
+      headerli.setAttribute('class', 'nav-header');
+      headerli.innerHTML = "Startup Engineering";
+      elem.appendChild(headerli);
+
+      data = data.data;
+      document.getElementById('vId').value = data[0].courseId + '_' + data[0].videoId;
+      document.getElementById('vURL').value = data[0].url;
+      vjPlayer = videojs("vid1_html5_api");
+      vjPlayer.src(document.getElementById('vURL').value)
+      vjPlayer.ready(function(){
+        vjPlayer = this;
+        vjPlayer.play();
+      });
+      
+      var lgrpId = '';
+
+      for (i=0; i< data.length; i++) {
+        var name = data[i].videoName.trim();
+        var url = data[i].url.trim();
+        var lectGrpId = data[i].lectureGroup.trim();
+        //create a group header
+        if (lectGrpId != lgrpId) {
+          var headerli = document.createElement('li');        
+          headerli.setAttribute('id', 'li' + data[i].courseId + '_' + data[i].groupId);
+          headerli.innerHTML = "<h4>" + lectGrpId + "</h4>";
+          elem.appendChild(headerli);
+          lgrpId = lectGrpId;
+        }
+
+        var listli = document.createElement('li');        
+        idVal = data[i].courseId + '_' + data[i].groupId + '_' + data[i].videoId;
+        listli.setAttribute('id', idVal);
+        if (i == 0)
+          listli.setAttribute('class','active');
+        var a1 = document.createElement('a');
+        a1.setAttribute('href','javascript:playVideo("' + idVal + '", "' + url + '")');
+        a1.innerHTML = name;
+        listli.appendChild(a1);
+        elem.appendChild(listli);
+      }
+    }    
+    
+    //keep the onload as light as possible and make async requests to load the page
+    onload = function(req, res) {
+      $.ajax({
+           type: 'GET',
+           url: '/get_course_videos',
+           data: {cId: "startup-001"},
+           success: function(data) { 
+             showCourseVideos(data); 
+             loadNotes(); //has to be done after loading the videos
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });
+      document.getElementById('uId').value = '#{googleId}';
+
+      setListeners();        
+      getScreenRes();
+      $("#vid1").width(ytWd).height(ytHt);
+      
+
+    }
+
+    playVideo = function(vid, url) {
+      oldvid = document.getElementById('vId').value;
+      document.getElementById('vURL').value = url;
+      document.getElementById('vId').value = vid;
+      setVideoAndPlay();
+      loadNotes();
+      $('#'+oldvid).removeAttr('class');
+      $('#'+vid).attr('class', 'active');
+    }
+
+    setVideoAndPlay = function(){
+      vjPlayer.src(document.getElementById('vURL').value);
+      vjPlayer.ready(function(){
+        vjPlayer = this;
+        vjPlayer.play();
+      });
+    }
+
+    moveTo = function(instant) {
+      vjPlayer.currentTime(instant);
+    }
+
+    displayNote = function(text, instant) {
+      instant = Math.round(parseFloat(instant));
+      var lst = document.getElementById("commentList");
+      //var listli = document.createElement('li');
+      //listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
+      //lst.insertBefore(listli, lst.firstChild);
+    }
+
+    function loadNotesInFrame(data) {
+      var elem = document.getElementById('commentList');
+      if (elem) {
+        while (elem.firstChild) {
+          elem.removeChild(elem.firstChild);
+        }
+      }
+      if (data == null || data.length == 0)
+        return;
+
+      for(i=0; i<data.length; i++) {
+        
+        var listli = document.createElement('li');
+        listli.setAttribute('id', 'li' + data[i].noteId);
+        var aelem = document.createElement('a');
+        aelem.setAttribute();
+        instant = data[i].instant;
+        listli.innerHTML = '<a alt="Delete" href=javascript:deleteNote("' + data[i].noteId + '")><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + data[i].comments;
+        listli.innerHTML += '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
+        elem.insertBefore(listli, elem.firstChild);        
+      }
+    }    
+
+    //has to be called after the course videos have been loaded. The first video of the course would be played.
+    loadNotes = function() {
+      uId = $("#uId").val();
+      vId = $("#vId").val();
+      $.ajax({
+           type: 'GET',
+           url: '/getNotes',
+           data: {googleId: uId, videoURL: vId},
+           success: function(data) { 
+             loadNotesInFrame(data); 
+           },
+           error: function (xhr, error) {
+           }, 
+           dataType: "json"
+      });      
+
+    }
+
+    deleteNote = function(liId) {
+      googleId = $('#uId').val();
+      vId = $('#vId').val();
+      
+      $.ajax({
+           type: 'GET',
+           url: '/deleteNote',
+           data: {googleId: uId, videoURL: vId, noteId: liId},
+           success: function(data) { 
+             $('li#li' + liId ).remove();
+           },
+           error: function (xhr, error) {
+             alert(error);
+           }, 
+           dataType: "text"
+      });      
+    }
+
+    var tag = document.createElement('script');
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var vjPlayer;
+        
+    var done = false;
+    function stopVideo() {
+      vjPlayer.stopVideo();
+    }
+
+
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  meta(name='description', content='')
+  meta(name='author', content='')
+  link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+  style(type='text/css')
+    body {
+          padding-top: 60px;
+          padding-bottom: 40px;
+         }
+         .sidebar-nav {
+          padding: 9px 0;
+         }
+         @media (max-width: 980px) {
+          /* Enable use of floated navbar text */
+           .navbar-text.pull-right {
+            float: none;
+            padding-left: 5px;
+            padding-right: 5px;
+           }
+         }
+         .notes2{
+          height: 330px;
+          float: left;
+          overflow: auto;
+          overflow-x:hidden;
+         }
+  link(href='/stylesheets/bootstrap-responsive.css', rel='stylesheet')
+  link(href='/stylesheets/bootstrap-switch.css', rel='stylesheet')
+  link(href='/stylesheets/bootstrap-wysiwyg.css', rel='stylesheet')
+  link(href='/stylesheets/video.js/css/video-js.css', rel='stylesheet')
+  link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/stylesheets/apple-touch-icon-144-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/stylesheets/apple-touch-icon-114-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/stylesheets/apple-touch-icon-72-precomposed.png')
+  link(rel='apple-touch-icon-precomposed', href='/stylesheets/apple-touch-icon-57-precomposed.png')
+  link(rel='shortcut icon', href='/stylesheets/favicon.png')
+
+ body
+ input#uId(type='hidden', value='')
+ input#vId(type='hidden', value='')
+ input#vURL(type='hidden', value='')
+ input#t_elapse(type='hidden', value='')
+ .navbar.navbar-inverse.navbar-fixed-top
+  .navbar-inner
+   .container-fluid
+     button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+     a.brand(href='/landing') Play N Note
+      .nav-collapse.collapse
+        p.navbar-text.pull-right
+          //| Logged in as
+          a.navbar-link(href='/logout') Log out
+        ul.nav
+          li.active
+            a(href='#') Home
+          li
+            a(href='mailto:playnnote@gmail.com') Contact 
+        form.navbar-form.pull-right
+          input.search-query(type='text', placeholder='Search')
+          button.btn(type='submit') Search
+        //
+         /.nav-collapse
+
+.container-fluid
+    .row-fluid
+      .span3
+        .well.sidebar-nav
+         ul.nav.nav-list#navlist 
+          
+          //
+            /.well 
+        //
+          /span
+      .span9
+          .hero-unit
+            .row-fluid
+              .span4
+                video#vid1.video-js.vjs-default-skin(controls='controls', preload='auto', width='640', height='264', poster='http://video-js.zencoder.com/oceans-clip.png', data-setup='{}')
+                 source(src='http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part1-intro.51d19cf5c052a.webm', type='video/mp4')
+                 source(src='http://video-js.zencoder.com/oceans-clip.webm', type='video/webm')
+                 source(src='http://video-js.zencoder.com/oceans-clip.ogv', type='video/ogg')
+                 track(kind='captions', src='../build/demo-files/demo.captions.vtt', srclang='en', label='English')
+                 p Video Playback Not Supported
+              .span1                
+              .span3#notes
+                label
+                  .span1
+                  label(for='pauseVideoWhenTyping') Pause On Typing
+                   .switch.switch-mini#pauseTypeSwitch
+                    input#pauseVideoWhenTyping(type='checkbox', checked=true) 
+                  label(for='submitOnEnter') Submit On Enter
+                   .switch.switch-mini#enterSubmitSwitch
+                    input#submitOnEnter(type='checkbox', checked=true) 
+                 textarea#commentTxt(placeholder='Type your comment here...', style='width: 100%; min-height: 200px;')
+
+                
+                input#commentBtn(type='button', value='Create Note', onclick='javascript:processNote()', disabled=false)
+
+              .span4.notes2#notes2
+                label Lecture Notes
+                p
+                ul#commentList(style='list-style-type: none')  
+
+      hr
+      footer
+        p © PlaynNote 2013    
+           a.brand(href='mailto:playnnote@gmail.com') Contact
+
+    //
+      /.fluid-container
+  
+  script(type='text/javascript')
+   vid = document.getElementById("vid1");
+

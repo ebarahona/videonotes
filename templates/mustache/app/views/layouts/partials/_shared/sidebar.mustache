@@ -5,8 +5,6 @@
 	try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
 	</script>
 
-	{{> layout.sidebar.shortcuts}}
-
 	<ul class="nav nav-list">
 		{{#layout.sidebar_items}} {{! the item array}}
 			{{> layout.sidebar.item}} {{! the item partial template}}
