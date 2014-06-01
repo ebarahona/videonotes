@@ -38,3 +38,35 @@
 <script src="{{{path.assets}}}/javascripts/ace/html5shiv.js"></script>
 <script src="{{{path.assets}}}/javascripts/ace/respond.min.js"></script>
 <![endif]-->
+<script>
+	function createDisplayData() {
+		var dataStr = '<div id="lecture-modal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="CodeDialog" aria-hidden="false" style="display: block;">\
+		    <div class="modal-dialog modal-lg">\
+		        <div class="modal-content">\
+		            <div class="modal-header">\
+		                <button aria-hidden="true" onclick="$(\'#lecture-modal\').remove(); $(\'#lecture-modal-backdrop\').remove()" class="close" type="button">×</button>\
+		                <i class="fa fa-file-o"></i>\
+		                <span></span>\
+		            </div>\
+		            <div class="modal-body">\
+		              <div style="background-color: #000;border: 1px solid #DEDEDE;word-wrap: break-word;margin: 0;padding: 10px;color: #F8F8F8;font-size: 13px;line-height: 16px;margin-bottom: 20px">\
+		                <div>\
+		                  This would contain the<em>rich</em> and <i>important</i>content.\
+		                  <li> line bullet </li>\
+		                    <ol>Indent in html?\
+		                      <ol>Double <em>indent</em>?</ol>\
+		                    </ol>\
+								<div>\
+									<a href="#lecture-table" onclick="createDisplayData()" role="button" class="green" data-toggle="modal">Play Video</a>\
+								</div>\
+		                  <p></p>\
+		                </div>\
+		              </div>\
+		            </div>\
+		        </div>\
+		    </div>\
+		</div>\
+		<div id="lecture-modal-backdrop" class="modal-backdrop fade in"></div>';
+		$(dataStr).appendTo('body');
+	}
+</script>
