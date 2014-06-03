@@ -21,28 +21,23 @@
 				<div class="widget-box transparent">
 					<div class="widget-body">
 						<div id="accordion" class="accordion-style1 panel-group">
+							{{#first_note}}
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse0">
 											<i class="ace-icon fa fa-angle-down bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-											&nbsp;Course name > Lecture Name > Lecture Note&nbsp;&nbsp;
+											&nbsp;{{course_name}} > {{video_name}} > Lecture Note&nbsp;&nbsp;
 											<!--span class="widget-toolbar no-border"-->
 												<i class="ace-icon fa fa-clock-o bigger-110"></i>
-												16:22
+												{{video_timespan}}
 											<!--/span-->
 										</a>
 									</h4>
 								</div>
-
-
 								<div class="panel-collapse collapse in" id="collapseOne">
 									<div class="panel-body">
-										This would contain the <em>rich</em> and <i>important</i> content.
-										<li> line bullet </li>
-										<ol> Indent in html?
-											<ol> Double <em>indent</em> ? </ol>
-										</ol>
+										{{notes_details}}
 										<p></p>
 										<div>
 											<a href="#lecture-table" onclick="createDisplayData()" role="button" class="blue" data-toggle="modal">Play Video</a>
@@ -50,40 +45,27 @@
 									</div>
 								</div>
 							</div>
-
+							{{/first_note}}
+							{{#more_notes}}
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-											<i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-											&nbsp;Group Item #2
+										<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse" + {{note_number}}>
+											{{{notes_details}}}
 										</a>
 									</h4>
 								</div>
-
 								<div class="panel-collapse collapse" id="collapseTwo">
 									<div class="panel-body">
-										Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+										{{notes_details}}
+										<p></p>
+										<div>
+											<a href="#lecture-table" onclick="createDisplayData()" role="button" class="blue" data-toggle="modal">Play Video</a>
+										</div>
 									</div>
 								</div>
 							</div>
-
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-											<i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-											&nbsp;Group Item #3
-										</a>
-									</h4>
-								</div>
-
-								<div class="panel-collapse collapse" id="collapseThree">
-									<div class="panel-body">
-										Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-									</div>
-								</div>
-							</div>
+							{{/more_notes}}
 						</div>
 					</div>
 				</div>
