@@ -1,15 +1,12 @@
-var arg = require('argh').argv; //read & parse arguements
-var engine_name = ('engine' in arg && arg['engine'] == "mustache") ? "mustache" : "hogan";//hogan or mustache
-var engine = require(engine_name == "hogan" ? "hogan.js" : "mustache")
+var engine_name = "hogan";
+var engine = require("hogan.js")
   , fs    = require('fs')
-  , extend= require('xtend')
-  , AutoLoader = require('./classes/autoload-'+engine_name+'.js');
+  , AutoLoader = require('./classes/autoload-hogan.js');
 
-var output_folder = 'output_folder' in arg ? arg['output_folder'] : 'output'
-
+var output_folder = 'output';
 var compressor;
 try {
-	compressor = "compress" in arg && require('yuicompressor');
+	compressor = require('yuicompressor');	
 } catch(e) {
 	compressor = null;//unable to resolve, means yuicompressor is not available
 }
@@ -22,20 +19,21 @@ var path =
  assets : '../assets',
  images : '../assets/images'
 }
-for(var p in path) {
-	if ('path_'+p in arg) path[p] = arg['path_'+p]
-}
 
-
-var site = JSON.parse(fs.readFileSync(path['data']+'/common/site.json' , 'utf-8'));//this site some basic site variables
+//avoid any file reading in production because readFileSync is a synchronous process. Keep the config values in memory if possible
+//var site = JSON.parse(fs.readFileSync(path['data']+'/common/site.json' , 'utf-8'));//this site some basic site variables
+var site_json = "{" +
+ "\"title\" : \"Play N Note\", " +
+ "\"brand_text\" : \"Play N Note\", " +
+ "\"brand_icon\" : \"fa\", " +
+ "\"remote_jquery\" : false, " +
+ "\"remote_fonts\" : false, " +
+ "\"remote_bootstrap_js\" : false, " +
+ "\"remote_fontawesome\" : false, " +
+ "\"onpage_help\" : false}";
+var site = JSON.parse(site_json);
 site['protocol'] = 'http:'
-//override config file with command line options
-for(var k in site) {
-	if (k in arg) site[k] = arg[k]
-}
 if(site['protocol'] == false) site['protocol'] = '';
-
-
 
 var Sidenav_Class = require('./classes/Sidenav')
 var sidenav = new Sidenav_Class()
@@ -46,28 +44,51 @@ var autoload = new AutoLoader(engine , path);
 
 if(site['development'] == true) {
  site['ace_scripts'] = [];
- var scripts = JSON.parse(fs.readFileSync(__dirname + '/../../assets/js/ace/scripts.json' , 'utf-8'));
+ //var scripts_data = fs.readFileSync(__dirname + '/../../assets/js/ace/scripts.json' , 'utf-8');
+ var scripts_data = "{" +
+ 				 "\"elements.scroller.js\" : false, "+
+ 				 "\"elements.colorpicker.js\" : false, "+
+ 				 "\"elements.fileinput.js\" : false, "+ 
+ 				 "\"elements.typeahead.js\" : false, "+
+	 			 "\"elements.wysiwyg.js\" : true, "+
+	 			 "\"elements.spinner.js\" : false, "+
+	 			 "\"elements.treeview.js\" : false, "+
+	 			 "\"elements.wizard.js\" : false, "+
+	 			 "\"ace.js\" : true, "+
+	 			 "\"ace.touch-drag.js\" : false, "+
+	 			 "\"ace.sidebar.js\" : true, "+
+	 			 "\"ace.submenu-1.js\" : false, "+
+	 			 "\"ace.sidebar-scroll-1.js\" : false, "+
+	 			 "\"ace.submenu-hover.js\" : true, "+
+	 			 "\"ace.widget-box.js\" : false, "+
+	 			 "\"ace.settings.js\" : true, "+
+	 			 "\"ace.settings-rtl.js\" : true, "+
+	 			 "\"ace.settings-skin.js\" : true, "+
+	 			 "\"ace.widget-on-reload.js\" : false, "+
+	 			 "\"ace.searchbox-autocomplete.js\" : false, "+
+	 			 "\"ace.autohide-sidebar.js\" : true, "+
+	 			 "\"ace.auto-padding.js\" : false, "+
+	 			 "\"ace.auto-container.js\" : false}";
+ var scripts = JSON.parse(scripts_data);
+
  for(var name in scripts)
    if(scripts.hasOwnProperty(name) && scripts[name] == true) {
 	 site['ace_scripts'].push(name);
    }
 }
 
-
-
 //iterate over all pages and generate the static html file
 var page_views_folder = path["views"]+"/pages";
-if(fs.existsSync(page_views_folder) && (stats = fs.statSync(page_views_folder)) && stats.isDirectory()) {
-	var files = fs.readdirSync(page_views_folder)
-	files.forEach(function (name) {
-		var filename;//file name, which we use as the variable name
-		if (! (filename = name.match(/(.+?)\.(mustache|html)$/)) ) return;
-		var page_name = filename[1];
-		
-		generate(page_name);
-	})
-}
 
+//var files = fs.readdirSync(page_views_folder)
+var files = [ "timeline.mustache" ]	;
+files.forEach(function (name) {
+	var filename;//file name, which we use as the variable name
+	if (! (filename = name.match(/(.+?)\.(mustache|html)$/)) ) return;
+	var page_name = filename[1];
+	
+	generate(page_name);
+})
 
 function generate(page_name) {
 	var page = new Page_Class( {'engine':engine, 'path':path, 'name':page_name, 'type':'page', 'compressor': compressor} );
@@ -84,6 +105,22 @@ function generate(page_name) {
 
 		var context = { "page":page.get_vars() , "layout":layout.get_vars(), "path" : path , "site" : site }
 		context['breadcrumbs'] = sidenav.get_breadcrumbs();
+		context['user_name'] = 'Ashish';
+		context['timelines'] = [
+			{ "date" : "Tuesday Jun 3", "date_id" : "one"}, 
+			{ "date" : "Sunday, Jun 1", "date_id" : "two"},
+			{ "date" : "Sunday, May 24", "date_id" : "three"}
+		];
+		context['course1_name'] = 'First Course';
+		context['video1_name'] = 'First Video';
+		context['video1_timespan'] = '10:20';
+		context['first_note'] = true;
+		context['notes1_details'] = 'This would contain the <em>rich</em> and <i>important</i> content.<li> line bullet </li><ol> Indent in html?<ol> Double <em>indent</em> ? </ol></ol><p></p>';
+		var moreNotes = new Array(5);
+		for (var i=0; i< 5; i++) {
+			moreNotes[i] = {"note_number": i+1, "course_name" : "Course" + i, "video_name" : "Video"+i, "video_timespan" : "" + 5*i + ":" + 5*2*i, "notes_details" : "Note number " + i + " has these details "};
+		}
+		context['more_notes'] = moreNotes;
 		context['createLinkFunction'] = function(value) {
 			return value+'.html';
 		}

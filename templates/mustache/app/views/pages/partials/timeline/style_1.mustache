@@ -3,12 +3,13 @@
 
 
 <!-- #section:pages/timeline -->
+	{{#timelines}}
 	<div class="timeline-container">
 
 		<div class="timeline-label"> <!--iterate through it -->
 		<!-- #section:pages/timeline.label -->
 			<span class="label label-primary arrowed-in-right label-lg">
-				<b>Today</b>
+				<b>{{date}}</b>
 			</span>
 			<!-- /section:pages/timeline.label -->
 		</div>
@@ -25,19 +26,19 @@
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse0">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse0{{date_id}}">
 											<i class="ace-icon fa fa-angle-down bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-											&nbsp;{{course_name}} > {{video_name}} > Lecture Note&nbsp;&nbsp;
+											&nbsp;{{course1_name}} > {{video1_name}} > Lecture Note&nbsp;&nbsp;
 											<!--span class="widget-toolbar no-border"-->
 												<i class="ace-icon fa fa-clock-o bigger-110"></i>
-												{{video_timespan}}
+												{{video1_timespan}}
 											<!--/span-->
 										</a>
 									</h4>
 								</div>
-								<div class="panel-collapse collapse in" id="collapseOne">
+								<div class="panel-collapse collapse in" id="collapse0{{date_id}}">
 									<div class="panel-body">
-										{{notes_details}}
+										{{{notes1_details}}}
 										<p></p>
 										<div>
 											<a href="#lecture-table" onclick="createDisplayData()" role="button" class="blue" data-toggle="modal">Play Video</a>
@@ -50,14 +51,19 @@
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse" + {{note_number}}>
-											{{{notes_details}}}
+										<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{note_number}}{{date_id}}">
+										<i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+										&nbsp;{{course_name}} > {{video_name}} > Lecture Note&nbsp;&nbsp;
+											<!--span class="widget-toolbar no-border"-->
+												<i class="ace-icon fa fa-clock-o bigger-110"></i>
+												{{video_timespan}}
+											<!--/span-->
 										</a>
 									</h4>
 								</div>
-								<div class="panel-collapse collapse" id="collapseTwo">
+								<div class="panel-collapse collapse" id="collapse{{note_number}}{{date_id}}">
 									<div class="panel-body">
-										{{notes_details}}
+										{{{notes_details}}}
 										<p></p>
 										<div>
 											<a href="#lecture-table" onclick="createDisplayData()" role="button" class="blue" data-toggle="modal">Play Video</a>
@@ -73,5 +79,6 @@
 			 <!-- /section:pages/timeline.item -->
 		</div><!-- /.timeline-items -->
 	</div><!-- /.timeline-container -->
+	{{/timelines}}
 <!--/div-->
 </div>
