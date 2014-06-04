@@ -1,373 +1,416 @@
-!!! 5
+doctype html
 html(lang='en')
- head
-  meta(charset='utf-8')
-  title Play-n-Note - Play Videos · Take Notes
-  script(src='/javascripts/bootstrap/jquery.js')
-  script(src='/javascripts/bootstrap/bootstrap.js')
-  script(src='/javascripts/bootstrap/bootstrap-switch.js')
-  script(src='/javascripts/bootstrap/bootstrap-wysiwyg.js')
-  script(src='/javascripts/video.js/source-loader.js')
-  script(type='text/javascript')
-
-    vjs.options.flash.swf = '/swf/video-js.swf';
-    var ytHt, ytWd;
-
-    function getScreenRes() {
-      ytHt = '240';
-      ytWd = '384';
-    }
-
-    $('#enterSubmitSwitch').on('switch-change', function (e, data) {
-       alert(data);
-    });
-
-    function processNote() {
-      var elem = document.getElementById("commentTxt");
-      text = elem.value.trim();
-      text = text.replace(/\n/g, '<br>').trim();
-      instant = vjPlayer.currentTime();
-      displayNote(text, instant);
-      submitNote(text);
-      elem.value = "";
-    }
-    
-    function setListeners() {
-      if(document.addEventListener){ //code for Moz
-        document.addEventListener("keypress",keyCapt,false);
-      }else{
-        document.attachEvent("onkeypress",keyCapt); 
+  head
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    meta(charset='utf-8')
+    title Notes History - Play N Note
+    meta(name='description', content='Last Created/Modified Notes')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
+    // bootstrap & fontawesome
+    link(rel='stylesheet', href='/stylesheets/ace/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/ace/font-awesome.min.css')
+    // page specific plugin styles
+    // text fonts
+    link(rel='stylesheet', href='/stylesheets/ace/ace-fonts.css')
+    // ace styles
+    link(rel='stylesheet', href='/stylesheets/ace/ace.min.css')
+    //if lte IE 9
+      link(rel='stylesheet', href='/stylesheets/ace/ace-part2.min.css')
+    link(rel='stylesheet', href='/stylesheets/ace/ace-skins.min.css')
+    link(rel='stylesheet', href='/stylesheets/ace/ace-rtl.min.css')
+    //if lte IE 9
+      link(rel='stylesheet', href='/stylesheets/ace/ace-ie.min.css')
+    // inline styles related to this page
+    // ace settings handler
+    script(src='/javascripts/ace/ace-extra.min.js')
+    // HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries
+    //if lte IE 8
+      script(src='/javascripts/ace/html5shiv.js')
+      script(src='/javascripts/ace/respond.min.js')
+    script
+      function createDisplayData() {
+      var dataStr = '<div id="lecture-modal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="CodeDialog" aria-hidden="false" style="display: block;">\
+      <div class="modal-dialog modal-lg">\
+      <div class="modal-content">\
+      <div class="modal-header">\
+      <button aria-hidden="true" onclick="$(\'#lecture-modal\').remove(); $(\'#lecture-modal-backdrop\').remove()" class="close" type="button">×</button>\
+      <i class="fa fa-file-o"></i>\
+      <span></span>\
+      </div>\
+      <div class="modal-body">\
+      <div style="background-color: #000;border: 1px solid #DEDEDE;word-wrap: break-word;margin: 0;padding: 2px;color: #F8F8F8;font-size: 13px;line-height: 16px;margin-bottom: 0px">\
+      <div class="container-fluid">\
+      <div class="row-fluid">\
+      <div class="span9">\
+      <div class="hero-unit">\
+      <div class="row-fluid">\
+      <div id="divvid" class="span9">\
+      <video id="vid1" class="video-js vjs-default-skin vjs-paused" controls="controls" preload="auto" poster="http://video-js.zencoder.com/oceans-clip.png", data-setup={}>\
+      <source src="http://video-js.zencoder.com/oceans-clip.webm" type="video/webm"/>\
+      <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg"/>\
+      <p>Video Playback Not Supported</p>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      <div style="background-color: #000;color: #F8F8F8;">\
+      This would contain the<em>rich</em> and <i>important</i>content.\
+      <li> line bullet </li>\
+      <ol>Indent in html?\
+      <ol>Double <em>indent</em>?</ol>\
+      </ol>\
+      <p></p>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      <div id="lecture-modal-backdrop" class="modal-backdrop fade in"></div>';
+      $(dataStr).appendTo('body');
+      //showCourseVideos();
+      valw = document.getElementById('divvid').offsetWidth;
+      $("#vid1").width(valw).height(0.6*valw);
       }
-    }
-
-    function submitNote(text) {    
-      timenow = Math.round(parseFloat(vjPlayer.currentTime()));
-      $("#t_elapse").val(timenow);
-      uId = $("#uId").val();
-      vId = $("#vId").val();
-      text = text.replace(/\n/g, '<br>').trim();
-      $.ajax({
-           type: 'POST',
-           url: '/submitNote',
-           data: {googleId: uId, videoURL: vId, comments: text, noteId: new Date().getTime(), instant: timenow, ispublic: false},
-           success: function(data) { 
-             var lielem = document.getElementById("commentList").firstChild;
-             lielem.setAttribute('id', 'li' + data.noteId);
-             lielem.firstChild.setAttribute('href', 'javascript:deleteNote("' + data.noteId + '")');
-           },
-           error: function (xhr, error) {
-           }, 
-           dataType: "json"
-      });      
-    }
-
-    function keyCapt(e){
-      if(typeof window.event!="undefined"){
-        e=window.event;//code for IE
-      }
-      if(e.type=="keypress"){
-        if (e.keyCode == "13" && $('#enterSubmitSwitch').bootstrapSwitch('status')){
-          processNote();
-          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
-            vjPlayer.play();
-          }
-        }else{
-          if ($('#pauseTypeSwitch').bootstrapSwitch('status')) {
-            vjPlayer.pause();
-          }
-        }
-      }
-    }   
-
-    function showCourseVideos(data) {
-      //cleanup
-      var elem = document.getElementById('navlist');
-      if (elem) {
-        while (elem.firstChild) {
-          elem.removeChild(elem.firstChild);
-        }
-      }
-      document.getElementById('navlist').innerHTML = "";
-
-      //set header
-      var headerli = document.createElement('li');
-      headerli.setAttribute('class', 'nav-header');
-      headerli.innerHTML = "Startup Engineering";
-      elem.appendChild(headerli);
-
-      data = data.data;
-      document.getElementById('vId').value = data[0].courseId + '_' + data[0].videoId;
-      document.getElementById('vURL').value = data[0].url;
-      vjPlayer = videojs("vid1_html5_api");
-      vjPlayer.src(document.getElementById('vURL').value)
-      vjPlayer.ready(function(){
-        vjPlayer = this;
-        vjPlayer.play();
-      });
-      
-      var lgrpId = '';
-
-      for (i=0; i< data.length; i++) {
-        var name = data[i].videoName.trim();
-        var url = data[i].url.trim();
-        var lectGrpId = data[i].lectureGroup.trim();
-        //create a group header
-        if (lectGrpId != lgrpId) {
-          var headerli = document.createElement('li');        
-          headerli.setAttribute('id', 'li' + data[i].courseId + '_' + data[i].groupId);
-          headerli.innerHTML = "<h4>" + lectGrpId + "</h4>";
-          elem.appendChild(headerli);
-          lgrpId = lectGrpId;
-        }
-
-        var listli = document.createElement('li');        
-        idVal = data[i].courseId + '_' + data[i].groupId + '_' + data[i].videoId;
-        listli.setAttribute('id', idVal);
-        if (i == 0)
-          listli.setAttribute('class','active');
-        var a1 = document.createElement('a');
-        a1.setAttribute('href','javascript:playVideo("' + idVal + '", "' + url + '")');
-        a1.innerHTML = name;
-        listli.appendChild(a1);
-        elem.appendChild(listli);
-      }
-    }    
-    
-    //keep the onload as light as possible and make async requests to load the page
-    onload = function(req, res) {
-      $.ajax({
-           type: 'GET',
-           url: '/get_course_videos',
-           data: {cId: "startup-001"},
-           success: function(data) { 
-             showCourseVideos(data); 
-             loadNotes(); //has to be done after loading the videos
-           },
-           error: function (xhr, error) {
-           }, 
-           dataType: "json"
-      });
-      document.getElementById('uId').value = '#{googleId}';
-
-      setListeners();        
-      getScreenRes();
-      $("#vid1").width(ytWd).height(ytHt);
-      
-
-    }
-
-    playVideo = function(vid, url) {
-      oldvid = document.getElementById('vId').value;
-      document.getElementById('vURL').value = url;
-      document.getElementById('vId').value = vid;
-      setVideoAndPlay();
-      loadNotes();
-      $('#'+oldvid).removeAttr('class');
-      $('#'+vid).attr('class', 'active');
-    }
-
-    setVideoAndPlay = function(){
-      vjPlayer.src(document.getElementById('vURL').value);
-      vjPlayer.ready(function(){
-        vjPlayer = this;
-        vjPlayer.play();
-      });
-    }
-
-    moveTo = function(instant) {
-      vjPlayer.currentTime(instant);
-    }
-
-    displayNote = function(text, instant) {
-      instant = Math.round(parseFloat(instant));
-      var lst = document.getElementById("commentList");
-      var listli = document.createElement('li');
-      listli.innerHTML = '<a><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + text + '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
-      lst.insertBefore(listli, lst.firstChild);
-    }
-
-    function loadNotesInFrame(data) {
-      var elem = document.getElementById('commentList');
-      if (elem) {
-        while (elem.firstChild) {
-          elem.removeChild(elem.firstChild);
-        }
-      }
-      if (data == null || data.length == 0)
-        return;
-
-      for(i=0; i<data.length; i++) {
-        
-        var listli = document.createElement('li');
-        listli.setAttribute('id', 'li' + data[i].noteId);
-        var aelem = document.createElement('a');
-        aelem.setAttribute();
-        instant = data[i].instant;
-        listli.innerHTML = '<a alt="Delete" href=javascript:deleteNote("' + data[i].noteId + '")><img src="/images/deletecomment.png" alt="Delete"/></a> &nbsp;' + data[i].comments;
-        listli.innerHTML += '&nbsp;&nbsp;&nbsp;<a href=javascript:moveTo(' + instant + '); alt="Delete">' + instant + ' s</a>';
-        elem.insertBefore(listli, elem.firstChild);        
-      }
-    }    
-
-    //has to be called after the course videos have been loaded. The first video of the course would be played.
-    loadNotes = function() {
-      uId = $("#uId").val();
-      vId = $("#vId").val();
-      $.ajax({
-           type: 'GET',
-           url: '/getNotes',
-           data: {googleId: uId, videoURL: vId},
-           success: function(data) { 
-             loadNotesInFrame(data); 
-           },
-           error: function (xhr, error) {
-           }, 
-           dataType: "json"
-      });      
-
-    }
-
-    deleteNote = function(liId) {
-      googleId = $('#uId').val();
-      vId = $('#vId').val();
-      
-      $.ajax({
-           type: 'GET',
-           url: '/deleteNote',
-           data: {googleId: uId, videoURL: vId, noteId: liId},
-           success: function(data) { 
-             $('li#li' + liId ).remove();
-           },
-           error: function (xhr, error) {
-             alert(error);
-           }, 
-           dataType: "text"
-      });      
-    }
-
-    var tag = document.createElement('script');
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    var vjPlayer;
-        
-    var done = false;
-    function stopVideo() {
-      vjPlayer.stopVideo();
-    }
-
-
-  meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  meta(name='description', content='')
-  meta(name='author', content='')
-  link(href='/stylesheets/bootstrap.css', rel='stylesheet')
-  style(type='text/css')
-    body {
-          padding-top: 60px;
-          padding-bottom: 40px;
-         }
-         .sidebar-nav {
-          padding: 9px 0;
-         }
-         @media (max-width: 980px) {
-          /* Enable use of floated navbar text */
-           .navbar-text.pull-right {
-            float: none;
-            padding-left: 5px;
-            padding-right: 5px;
-           }
-         }
-         .notes2{
-          height: 330px;
-          float: left;
-          overflow: auto;
-          overflow-x:hidden;
-         }
-  link(href='/stylesheets/bootstrap-responsive.css', rel='stylesheet')
-  link(href='/stylesheets/bootstrap-switch.css', rel='stylesheet')
-  link(href='/stylesheets/bootstrap-wysiwyg.css', rel='stylesheet')
-  link(href='/stylesheets/video.js/css/video-js.css', rel='stylesheet')
-  link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/stylesheets/apple-touch-icon-144-precomposed.png')
-  link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/stylesheets/apple-touch-icon-114-precomposed.png')
-  link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/stylesheets/apple-touch-icon-72-precomposed.png')
-  link(rel='apple-touch-icon-precomposed', href='/stylesheets/apple-touch-icon-57-precomposed.png')
-  link(rel='shortcut icon', href='/stylesheets/favicon.png')
-
- body
- input#uId(type='hidden', value='')
- input#vId(type='hidden', value='')
- input#vURL(type='hidden', value='')
- input#t_elapse(type='hidden', value='')
- .navbar.navbar-inverse.navbar-fixed-top
-  .navbar-inner
-   .container-fluid
-     button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
-      span.icon-bar
-      span.icon-bar
-      span.icon-bar
-     a.brand(href='/landing') Play N Note
-      .nav-collapse.collapse
-        p.navbar-text.pull-right
-          //| Logged in as
-          a.navbar-link(href='/logout') Log out
-        ul.nav
+      vid = document.getElementById("vid1");
+  body.no-skin
+    #navbar.navbar.navbar-default
+      script(type='text/javascript')
+        try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+      #navbar-container.navbar-container
+        button#menu-toggler.navbar-toggle.menu-toggler.pull-left(type='button')
+          span.sr-only Toggle sidebar
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        .navbar-header.pull-left
+          a.navbar-brand(href='#')
+            small
+              // i class="fa"></i
+              img(src='')
+              | Play N Note
+        .navbar-buttons.navbar-header.pull-right(role='navigation')
+          ul.nav.ace-nav
+            li.light-blue
+              a.dropdown-toggle(data-toggle='dropdown', href='#')
+                img.nav-user-photo(src='../assets/avatars/user.jpg', alt="Ashish's Photo")
+                span.user-info
+                  small Welcome,
+                  | Ashish
+                i.ace-icon.fa.fa-caret-down
+              ul.user-menu.dropdown-menu-right.dropdown-menu.dropdown-yellow.dropdown-caret.dropdown-close
+                li
+                  a(href='/logout')
+                    i.ace-icon.fa.fa-power-off
+                    | Logout
+      // /.navbar-container
+    #main-container.main-container
+      script(type='text/javascript')
+        try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+      #sidebar.sidebar.responsive
+        script(type='text/javascript')
+          try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+        ul.nav.nav-list
           li.active
-            a(href='#') Home
-          li
-            a(href='mailto:playnnote@gmail.com') Contact 
-        form.navbar-form.pull-right
-          input.search-query(type='text', placeholder='Search')
-          button.btn(type='submit') Search
-        //
-         /.nav-collapse
-
-.container-fluid
-    .row-fluid
-      .span3
-        .well.sidebar-nav
-         ul.nav.nav-list#navlist 
-          
+            a(href='\\')
+              span.menu-text  Timeline 
+            b.arrow
+        // /.nav-list
+        #sidebar-collapse.sidebar-toggle.sidebar-collapse
+          i.ace-icon.fa.fa-angle-double-left(data-icon1='ace-icon fa fa-angle-double-left', data-icon2='ace-icon fa fa-angle-double-right')
+        script(type='text/javascript')
+          try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+      .main-content
+        #breadcrumbs.breadcrumbs
+          script(type='text/javascript')
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+          ul.breadcrumb
+            li
+              i.ace-icon.fa.fa-home.home-icon
+              a(href='#') Home
+            li.active Timeline
+          // /.breadcrumb
           //
-            /.well 
-        //
-          /span
-      .span9
-          .hero-unit
-            .row-fluid
-              .span4
-                video#vid1.video-js.vjs-default-skin(controls='controls', preload='auto', width='640', height='264', poster='http://video-js.zencoder.com/oceans-clip.png', data-setup='{}')
-                 source(src='http://d396qusza40orc.cloudfront.net/startup/recoded_videos%2Flecture4a-part1-intro.51d19cf5c052a.webm', type='video/mp4')
-                 source(src='http://video-js.zencoder.com/oceans-clip.webm', type='video/webm')
-                 source(src='http://video-js.zencoder.com/oceans-clip.ogv', type='video/ogg')
-                 track(kind='captions', src='../build/demo-files/demo.captions.vtt', srclang='en', label='English')
-                 p Video Playback Not Supported
-              .span1                
-              .span3#notes
-                label
-                  .span1
-                  label(for='pauseVideoWhenTyping') Pause On Typing
-                   .switch.switch-mini#pauseTypeSwitch
-                    input#pauseVideoWhenTyping(type='checkbox', checked=true) 
-                  label(for='submitOnEnter') Submit On Enter
-                   .switch.switch-mini#enterSubmitSwitch
-                    input#submitOnEnter(type='checkbox', checked=true) 
-                 textarea#commentTxt(placeholder='Type your comment here...', style='width: 100%; min-height: 200px;')
-
-                
-                input#commentBtn(type='button', value='Create Note', onclick='javascript:processNote()', disabled=false)
-
-              .span4.notes2#notes2
-                label Lecture Notes
-                p
-                ul#commentList(style='list-style-type: none')  
-
-      hr
-      footer
-        p © PlaynNote 2013    
-           a.brand(href='mailto:playnnote@gmail.com') Contact
-
-    //
-      /.fluid-container
-  
-  script(type='text/javascript')
-   vid = document.getElementById("vid1");
-
+             div class="nav-search" id="nav-search">
+          // /.nav-search
+        .page-content
+          .page-header
+            h1
+              | Notes History
+              small
+                i.ace-icon.fa.fa-angle-double-right
+                | Last Created/Modified Notes
+          // /.page-header
+          .row
+            .col-xs-12
+              // PAGE CONTENT BEGINS
+              #timeline-1
+                .row
+                  // div class="col-xs-12 col-sm-10 col-sm-offset-1"
+                  .timeline-container
+                    .timeline-label
+                      // iterate through it
+                      span.label.label-primary.arrowed-in-right.label-lg
+                        b Tuesday Jun 3
+                    .timeline-items
+                      // items within the timeline
+                      .timeline-item.clearfix
+                        .widget-box.transparent
+                          .widget-body
+                            #accordion.accordion-style1.panel-group
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0one')
+                                      i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | First Course &gt; First Video &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 10:20
+                                      // /span
+                                #collapse0one.panel-collapse.collapse.in
+                                  .panel-body
+                                    | This would contain the
+                                    em rich
+                                    | and
+                                    i important
+                                    | content.
+                                    li  line bullet 
+                                    ol
+                                      | Indent in html?
+                                      ol
+                                        | Double
+                                        em indent
+                                        | ?
+                                    p
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1one')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course0 &gt; Video0 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 0:0
+                                      // /span
+                                #collapse1one.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 0 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2one')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course1 &gt; Video1 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 5:10
+                                      // /span
+                                #collapse2one.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 1 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                    // /.timeline-items
+                  // /.timeline-container
+                  .timeline-container
+                    .timeline-label
+                      // iterate through it
+                      span.label.label-primary.arrowed-in-right.label-lg
+                        b Sunday, Jun 1
+                    .timeline-items
+                      // items within the timeline
+                      .timeline-item.clearfix
+                        .widget-box.transparent
+                          .widget-body
+                            #accordion.accordion-style1.panel-group
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0two')
+                                      i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | First Course &gt; First Video &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 10:20
+                                      // /span
+                                #collapse0two.panel-collapse.collapse.in
+                                  .panel-body
+                                    | This would contain the
+                                    em rich
+                                    | and
+                                    i important
+                                    | content.
+                                    li  line bullet 
+                                    ol
+                                      | Indent in html?
+                                      ol
+                                        | Double
+                                        em indent
+                                        | ?
+                                    p
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1two')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course0 &gt; Video0 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 0:0
+                                      // /span
+                                #collapse1two.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 0 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2two')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course1 &gt; Video1 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 5:10
+                                      // /span
+                                #collapse2two.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 1 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                    // /.timeline-items
+                  // /.timeline-container
+                  .timeline-container
+                    .timeline-label
+                      // iterate through it
+                      span.label.label-primary.arrowed-in-right.label-lg
+                        b Sunday, May 24
+                    .timeline-items
+                      // items within the timeline
+                      .timeline-item.clearfix
+                        .widget-box.transparent
+                          .widget-body
+                            #accordion.accordion-style1.panel-group
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0three')
+                                      i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | First Course &gt; First Video &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 10:20
+                                      // /span
+                                #collapse0three.panel-collapse.collapse.in
+                                  .panel-body
+                                    | This would contain the
+                                    em rich
+                                    | and
+                                    i important
+                                    | content.
+                                    li  line bullet 
+                                    ol
+                                      | Indent in html?
+                                      ol
+                                        | Double
+                                        em indent
+                                        | ?
+                                    p
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1three')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course0 &gt; Video0 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 0:0
+                                      // /span
+                                #collapse1three.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 0 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              .panel.panel-default
+                                .panel-heading
+                                  h4.panel-title
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2three')
+                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
+                                      | Course1 &gt; Video1 &gt; Lecture Note
+                                      // span class="widget-toolbar no-border"
+                                      i.ace-icon.fa.fa-clock-o.bigger-110
+                                      | 5:10
+                                      // /span
+                                #collapse2three.panel-collapse.collapse
+                                  .panel-body
+                                    | Note number 1 has these details
+                                    p
+                                    div
+                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                    // /.timeline-items
+                  // /.timeline-container
+                  // /div
+              // PAGE CONTENT ENDS
+            // /.col
+          // /.row
+        // /.page-content
+      // /.main-content
+      .footer
+        .footer-inner
+          .footer-content
+            span.bigger-120
+              span.blue.bolder Play n Note
+              | &copy; 2014
+            span.action-buttons
+              a(href='http://twitter.com/playnnote')
+                i.ace-icon.fa.fa-twitter-square.light-blue.bigger-150
+              //
+                 a href="#">
+      a#btn-scroll-up.btn-scroll-up.btn.btn-sm.btn-inverse(href='#')
+        i.ace-icon.fa.fa-angle-double-up.icon-only.bigger-110
+    // /.main-container
+    // basic scripts
+    //if !IE
+    script(type='text/javascript')
+      window.jQuery || document.write("<script src='/javascripts/ace/jquery.min.js'>"+"<"+"/script>");
+    // <![endif]
+    //if IE
+      script(type='text/javascript')
+        window.jQuery || document.write("<script src='/javascripts/ace/jquery1x.min.js'>"+"<"+"/script>");
+    script(type='text/javascript')
+      if('ontouchstart' in document.documentElement) document.write("<script src='/javascripts/ace/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+    script(src='/javascripts/ace/bootstrap.min.js')
+    // page specific plugin scripts
+    // ace scripts
+    script(src='/javascripts/ace/ace-elements.min.js')
+    script(src='/javascripts/ace/ace.min.js')
+    // inline scripts related to this page
+    script(type='text/javascript')
+      jQuery(function($) {
+      $('[data-toggle="buttons"] .btn').on('click', function(e){
+      var target = $(this).find('input[type=radio]');
+      var which = parseInt(target.val());
+      $('[id*="timeline-"]').addClass('hide');
+      $('#timeline-'+which).removeClass('hide');
+      });
+      });
