@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+</html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Play N Note - Watch. Note. Share</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="Video Notes. Coursera Notes. Notes.">
+    <link href="stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="stylesheets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="stylesheets/social-buttons.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+    <link href="stylesheets/style-hearty.css" rel="stylesheet">
+    <link href="stylesheets/custom-hearty.css" rel="stylesheet">
+    <script type="text/javascript" src="javascripts/jquery.js"></script>
+    <script src="javascripts/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="javascripts/custom-hearty.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            window.prettyPrint && prettyPrint()
+            var logoStyle = $('#logo')[0].style;
+            var headingStyle = $('h1')[0].style;
+            $('#cp').colorpicker().on('changeColor', function (ev) {
+                logoStyle.backgroundColor = ev.color.toHex();
+                headingStyle.color = ev.color.toHex();
+            });
+        });
+
+        function postIt() {
+            email = $("#email").val();
+            $.ajax({
+                type: "POST",
+                url: "/registerBeta",
+                data: {
+                    email: email
+                },
+                success: function () {
+                    $('#email').val('');
+                    $('div.hero-unit').text('All Done! You would be notified on ' + email + ' when we are ready.');
+                },
+                error: function (xhr, error) {
+                    $('#email').val('');
+                    $('div.hero-unit').text('test');
+                },
+                dataType: 'json'
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="gradient">
+            <div class="row">
+                <div id="logo">
+                    <img src="images/playnnote.png">
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    <div class="content">
+                        <h1>Welcome, Coursera Users!</h1>
+                        <p>We are working hard to bring to you a new Notes taking App.
+                            <br>Leave us your email below to be an early user.</p>
+                        <form action="javascript:postIt()" method="POST" class="form-horizontal">
+                            <input id="email" type="email" name="email" placeholder="Enter your email" class="input-large">
+                            <input type="submit" value="Notify me!" class="btn btn-large">
+                            <p>
+                                <div id="result" class="hero-unit"></div>
+                            </p>
+                        </form>
+                        <p><a href="http://twitter.com/playnnote" title="Twitter" class="sb circle twitter mytooltip">Twitter</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
