@@ -12,8 +12,8 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 
-var GOOGLE_CLIENT_ID = "309473016272.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "5RWOQ_dKETyHtRoi8OS9lgfP";
+var GOOGLE_CLIENT_ID = "89641588136-b8emjpqgninnjgkqdciig7bno5c6t4bf.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "p3dFv41TQ_muXDUjGFHMCRJW";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
@@ -26,8 +26,8 @@ var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 */
 
-var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
-//var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
+//var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
+var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
 
 var express = require('express')
   , routes = require('./routes')
@@ -42,6 +42,9 @@ var express = require('express')
   , youtube = require('youtube-feeds')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
+//if we can catch the InternalOAuthError with CERT_DENIED, this call can be made to get the access token
+//handle to oauth2 to get access token is GoogleStrategy._oauth2.getOAuthAccessToken(code, {'grant_type':'refresh_token'}, callback)
+
 passport.serializeUser(function(user, done) {
   done(null, user); 
 });
@@ -51,37 +54,35 @@ passport.deserializeUser(function(obj, done) {
 });
 
 passport.use(new GoogleStrategy({
+    //authorizationURL: 'https://accounts.google.com/o/oauth2/auth', //this is the URL presented for getting consent from the user about access to various google apps
+    //tokenURL: 'https://accounts.google.com/o/oauth2/token',
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: CALLBACK_URL,
-    //authorizationURL: 'https://accounts.google.com/o/oauth2/auth', //this is the URL presented for getting consent from the user about access to various google apps
-    //tokenURL: 'https://accounts.google.com/o/oauth2/token'
+    callbackURL: CALLBACK_URL
   },
-    function (accessToken, refreshToken, profile, done) {
-      //to handle async verification, call this in a nextTick() ...
-      process.nextTick (function() {
-        if (profile != null) {
-          id = profile.id;
-        }
-        if (profile.emails != undefined) {
-          email = profile.emails[0].value;
-        }
-
-        user = User.findOne({ googleId: profile.id }, function(err, user){
-          if (err != null || user == null) {
+  function (accessToken, refreshToken, profile, done) {
+    //to handle async verification, call this in a nextTick() ...
+    process.nextTick (function() {
+      try {
+        User.find({ googleId: profile.id }, function(err, user) {
+          if (err != null || user.googleId == undefined) {
             console.log("New User getting created: ");
-            user = User.create({googleId: profile.id, accessToken: accessToken, refreshToken: refreshToken, 
-                email: profile.emails[0].value, provider: "google", displayName: profile.displayName},
-                  function(err, data) {
-                    if (err) {
-                      return done(err);
-                    }
-                  });
+            User.create({googleId: profile.id, accessToken: accessToken, refreshToken: refreshToken, 
+              email: profile.emails[0].value, provider: "google", displayName: profile.displayName},
+              function(er, usr) {
+                if (er)
+                  return done(er);
+                return done(null, profile);
+              }
+            );
           }
         });
-        return done(null, user);//this return statements was missing when login was messed up, DO NOT MOVE!
-      });
-    } 
+      } catch (e) {
+        return done(e);
+        console.log('problem with token');
+      }
+    });
+  } 
 ));
 
 
@@ -123,13 +124,12 @@ if ('development' == app.get('env')) {
   //'https://www.googleapis.com/auth/youtube.readonly',
   //'https://www.googleapis.com/auth/youtube.upload'],
 
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile',
-                                             'https://www.googleapis.com/auth/userinfo.email'],
-                                    }),
+app.get('/auth/google', 
+    passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.profile'] }),
     function(req, res) {
       console.log("google authenticate in process? THIS SHOULD NEVER BE SHOWN in console.log");
-    });
+    }
+);
 
 app.get('/auth/google/return',
   passport.authenticate('google', {failureRedirect: '/' }),
@@ -152,16 +152,51 @@ app.get('/logout', function(req, res){
 app.get('/landing', ensureAuthenticated, function (req, res) { 
   var usr; 
   var googleId;
+  var date_changed = false;
   try {
-    usr = req._passport.session.user;
-    googleId = usr._conditions.googleId || usr.googleId;
-    if (usr != undefined && usr != null) {
-      res.render('landing', {googleId: googleId}); 
-    }else {
-      res.render('/');
-    }
+    usr = (req._passport != undefined && req._passport.session != undefined && req._passport.session.user != undefined) ? req._passport.session.user : req.user;
+    googleId = (usr.id != undefined) ? usr.id : usr.googleId;
+    firstName = usr.displayName.split(" ")[0];
+    //mongodb query
+    //db.user_notes.aggregate( {$match: {"googleId": "116344056495429556007"}}, {$group: {_id: '$videoURL', "comments": { $push: "$comments"}, "instant": {$push: "$instant"}, date: {$push: '$date'}}}, {$sort: {date: -1}})
+    User_Note.aggregate( {$match: {"googleId": googleId}}, {$group: {_id: '$videoURL', "comments": { $push: "$comments"}, "instant": {$push: "$instant"}, date: {$max: "$date"}}}, {$sort: {date: -1}}).exec(function(err, data) {
+    //User_Note.find({googleId: googleId}).sort('-date').exec(function(err, data) {
+      if (err)
+        return console.log(err);
+      else{        
+        if (usr != undefined && usr != null) {
+          //iterate through the data here and pass it to landing.jade
+          notes_data = "{\"googleId\": \"" + googleId + "\", \"firstName\": \"" + firstName + "\", \"data\": [";
+          for (i=0; i < data.length; i++) {
+            if (i == 0) {
+              date_changed = true;
+              notes_data += "{\"date\": \"" + data[i].date.toDateString() + "\", \"videos\": [";
+            }else if (data[i].date.toDateString() != data[i-1].date.toDateString()) {
+              notes_data += "]}, ";
+              notes_data += "{\"date\": \"" + data[i].date.toDateString() + "\", \"videos\": [";
+              date_changed = true;
+            } else {
+              date_changed = false;
+            }
+            notes_data += "{\"lecture\": \"" + data[i]._id + "\", \"notes\": [";
+            
+            for (j=0; j<data[i].comments.length; j++) {
+              if (j > 0)
+                notes_data += ", ";
+              notes_data += "{\"comments\": \"" + data[i].comments[j] + "\", \"instant\":"  + data[i].instant[j] + "}";
+            }
+            notes_data += "]} ";
+          }
+          notes_data += "] } ] }";
+          res.render('landing', JSON.parse(notes_data)); 
+        }else {
+          res.render('index');
+        }
+      }
+    });
+    
   } catch (e) {
-    res.render('/');
+    res.render('index');
   }
   
 });
@@ -235,7 +270,9 @@ app.post('/submitNoteExtn', function(req, res) {
   cmts_txt = escape(cmts_txt);
   noteId = temp[3][1].replace(/"/g, '').trim(); 
   inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
-  ispblc = temp[5][1].trim(); 
+  ispblc = temp[5][1].replace(/"/g, '').trim(); 
+  title = temp[6][1].replace(/"/g, '').trim() + ':' + temp[6][2].replace(/"/g, '').trim();
+  url = temp[7][1].replace(/"/g, '').trim() + ':' + temp[7][2].replace(/"/g, '').trim();
   if (ispblc == "true")
     ispblc = true;
   else
@@ -260,7 +297,24 @@ app.post('/submitNoteExtn', function(req, res) {
                                                      }
                                         })
                                   .end(function (response) {
-                                        console.log(response.body);
+                                    Course_Video.find({videoId: vRL}, function(err, cv) {
+                                      if (cv.length < 1) { // assuming format https://class.coursera.org/courseId/lecture/lectureId
+                                        courseId = url.substring(url.indexOf("/", 27), 27);
+                                        videoId = url.substring(url.lastIndexOf("/")+1, url.length);
+                                        duration = "";
+                                        videoName = title;
+                                        if (title.indexOf("(") > -1)
+                                        {
+                                          duration = title.substring(title.indexOf("(")+1, title.indexOf(")"));
+                                          videoName = title.split("(")[0].trim();
+                                        }
+                                        Course_Video.create({courseId: courseId, videoId: vRL, videoName: videoName, duration: duration, url: url}, 
+                                          function(er, cv2) {
+                                            if (er)
+                                              console.log("course video could not be created");
+                                          })
+                                      }
+                                    });   
                           });
                       
                       }
@@ -325,12 +379,15 @@ app.get('/getNotesExtn', function(req, res) {
                       res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
                       val = JSON.stringify(data);
                       val = val.substring(0, val.length-1);
-                      if (val == "[")
+                      if (val == "[") { //no notes present
                         val = '[{"ispublic":"' + ispublic + '"}]';
-                      else
+                        res.write(val);
+                        res.end('\n');
+                      }else {
                         val += ',{"ispublic":"' + ispublic + '"}]';
-                      res.write(val);
-                      res.end('\n');
+                        res.write(val);
+                        res.end('\n');
+                      }
                     }
                   });
           });
@@ -631,6 +688,8 @@ http.createServer(app).listen(app.get('port'), function(){
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
+  if (req.isAuthenticated()) { 
+    return next(); 
+  }
   res.redirect('/');
 }

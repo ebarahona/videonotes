@@ -111,8 +111,13 @@ function getCurrentTime() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    var time = getCurrentTime();
-    sendResponse({currTime: time});
+    sendResponse('ok');
+  }
+);
+
+chrome.runtime.onMessageExternal.addListener(
+  function(request, sender, sendResponse) {
+    sendResponse('yes');
   }
 );
 

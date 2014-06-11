@@ -117,9 +117,9 @@ loadSchemas = function() {
 
   var CourseVideoSchema = new mongoose.Schema({
     courseId: String
-    , videoId: Number
+    , videoId: String
     , videoName: String
-    , duration: Number
+    , duration: String
     , url: String
     , flashSupported: Boolean
     , html5Supported: Boolean

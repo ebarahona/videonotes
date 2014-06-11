@@ -6,6 +6,7 @@ html(lang='en')
     title Notes History - Play N Note
     meta(name='description', content='Last Created/Modified Notes')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
+    link(rel='shortcut icon', type='image/x-icon', href='images/play_n_note16.jpg')
     // bootstrap & fontawesome
     link(rel='stylesheet', href='/stylesheets/ace/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/ace/font-awesome.min.css')
@@ -96,10 +97,10 @@ html(lang='en')
           ul.nav.ace-nav
             li.light-blue
               a.dropdown-toggle(data-toggle='dropdown', href='#')
-                img.nav-user-photo(src='../assets/avatars/user.jpg', alt="Ashish's Photo")
+                //img.nav-user-photo(src='../assets/avatars/user.jpg', alt="Ashish's Photo")
                 span.user-info
                   small Welcome,
-                  | Ashish
+                  | #{firstName}
                 i.ace-icon.fa.fa-caret-down
               ul.user-menu.dropdown-menu-right.dropdown-menu.dropdown-yellow.dropdown-caret.dropdown-close
                 li
@@ -130,7 +131,7 @@ html(lang='en')
           ul.breadcrumb
             li
               i.ace-icon.fa.fa-home.home-icon
-              a(href='#') Home
+              a(href='/') Home
             li.active Timeline
           // /.breadcrumb
           //
@@ -142,7 +143,7 @@ html(lang='en')
               | Notes History
               small
                 i.ace-icon.fa.fa-angle-double-right
-                | Last Created/Modified Notes
+                |  Last Created/Modified Notes
           // /.page-header
           .row
             .col-xs-12
@@ -150,11 +151,12 @@ html(lang='en')
               #timeline-1
                 .row
                   // div class="col-xs-12 col-sm-10 col-sm-offset-1"
+                  - for (var i=0; i<data.length; i++) {
                   .timeline-container
                     .timeline-label
                       // iterate through it
                       span.label.label-primary.arrowed-in-right.label-lg
-                        b Tuesday Jun 3
+                        b #{data[i].date}
                     .timeline-items
                       // items within the timeline
                       .timeline-item.clearfix
@@ -166,29 +168,19 @@ html(lang='en')
                                   h4.panel-title
                                     a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0one')
                                       i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | First Course &gt; First Video &gt; Lecture Note
+                                      | #{data[i].videos[0].lecture} &gt; Lecture Note
                                       // span class="widget-toolbar no-border"
                                       i.ace-icon.fa.fa-clock-o.bigger-110
                                       | 10:20
                                       // /span
                                 #collapse0one.panel-collapse.collapse.in
                                   .panel-body
-                                    | This would contain the
-                                    em rich
-                                    | and
-                                    i important
-                                    | content.
-                                    li  line bullet 
-                                    ol
-                                      | Indent in html?
-                                      ol
-                                        | Double
-                                        em indent
-                                        | ?
+                                    | #{data[i].videos[0].notes[0].comments}
                                     p
                                     p
                                     div
                                       a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              - for (var j=1; j < data[i].videos[0].notes.length; j++) {
                               .panel.panel-default
                                 .panel-heading
                                   h4.panel-title
@@ -201,173 +193,13 @@ html(lang='en')
                                       // /span
                                 #collapse1one.panel-collapse.collapse
                                   .panel-body
-                                    | Note number 0 has these details
+                                    | #{data[i].videos[0].notes[j].comments}
                                     p
                                     div
                                       a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2one')
-                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course1 &gt; Video1 &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 5:10
-                                      // /span
-                                #collapse2one.panel-collapse.collapse
-                                  .panel-body
-                                    | Note number 1 has these details
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              - }
                     // /.timeline-items
-                  // /.timeline-container
-                  .timeline-container
-                    .timeline-label
-                      // iterate through it
-                      span.label.label-primary.arrowed-in-right.label-lg
-                        b Sunday, Jun 1
-                    .timeline-items
-                      // items within the timeline
-                      .timeline-item.clearfix
-                        .widget-box.transparent
-                          .widget-body
-                            #accordion.accordion-style1.panel-group
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0two')
-                                      i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | First Course &gt; First Video &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 10:20
-                                      // /span
-                                #collapse0two.panel-collapse.collapse.in
-                                  .panel-body
-                                    | This would contain the
-                                    em rich
-                                    | and
-                                    i important
-                                    | content.
-                                    li  line bullet 
-                                    ol
-                                      | Indent in html?
-                                      ol
-                                        | Double
-                                        em indent
-                                        | ?
-                                    p
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1two')
-                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course0 &gt; Video0 &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 0:0
-                                      // /span
-                                #collapse1two.panel-collapse.collapse
-                                  .panel-body
-                                    | Note number 0 has these details
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2two')
-                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course1 &gt; Video1 &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 5:10
-                                      // /span
-                                #collapse2two.panel-collapse.collapse
-                                  .panel-body
-                                    | Note number 1 has these details
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                    // /.timeline-items
-                  // /.timeline-container
-                  .timeline-container
-                    .timeline-label
-                      // iterate through it
-                      span.label.label-primary.arrowed-in-right.label-lg
-                        b Sunday, May 24
-                    .timeline-items
-                      // items within the timeline
-                      .timeline-item.clearfix
-                        .widget-box.transparent
-                          .widget-body
-                            #accordion.accordion-style1.panel-group
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0three')
-                                      i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | First Course &gt; First Video &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 10:20
-                                      // /span
-                                #collapse0three.panel-collapse.collapse.in
-                                  .panel-body
-                                    | This would contain the
-                                    em rich
-                                    | and
-                                    i important
-                                    | content.
-                                    li  line bullet 
-                                    ol
-                                      | Indent in html?
-                                      ol
-                                        | Double
-                                        em indent
-                                        | ?
-                                    p
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1three')
-                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course0 &gt; Video0 &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 0:0
-                                      // /span
-                                #collapse1three.panel-collapse.collapse
-                                  .panel-body
-                                    | Note number 0 has these details
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              .panel.panel-default
-                                .panel-heading
-                                  h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse2three')
-                                      i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course1 &gt; Video1 &gt; Lecture Note
-                                      // span class="widget-toolbar no-border"
-                                      i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 5:10
-                                      // /span
-                                #collapse2three.panel-collapse.collapse
-                                  .panel-body
-                                    | Note number 1 has these details
-                                    p
-                                    div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                    // /.timeline-items
+                  - }
                   // /.timeline-container
                   // /div
               // PAGE CONTENT ENDS

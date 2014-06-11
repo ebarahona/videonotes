@@ -100,8 +100,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     }
 
     $(".icon-remove").on('click', function(event) { $("#dialog").remove();}); 
-    var SERVER_URL = 'https://playnnote.herokuapp.com';
-    //var SERVER_URL = 'http://localhost:3000';
+    //var SERVER_URL = 'https://playnnote.herokuapp.com';
+    var SERVER_URL = 'http://localhost:3000';
     var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
 
     var fnsExist = false;
@@ -376,7 +376,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                             "nth_1=parseInt(nth)+1; $(\'tbody tr:nth-child(' + nth_1 + ')\').remove(); " + 
                             "$.ajax({ " + 
                                 "type: 'POST', url: SERVER_URL + '/submitNoteExtn', dataType: 'json', " + 
-                                "data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false} " + 
+                                "data: {googleId: 's' + gId + 's', videoURL: vId, comments: escape(text), noteId: tn, instant: instant, ispublic: false, title: $(\"title\").html(), url: document.URL} " + 
                             "}); " + 
                         "} ";
         var importNotesStr ="function importNotes(gIdvId) { " + 
@@ -595,7 +595,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                     type: 'POST',
                     url: SERVER_URL + '/submitNoteExtn',
                     dataType: 'json',
-                    data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false}
+                    data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false, title: $("title").html(), url: document.URL}
                   });
                 text = "";                
             }
@@ -673,8 +673,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-var SERVER_URL = "https://playnnote.herokuapp.com";
-//var SERVER_URL = "http://localhost:3000";
+//var SERVER_URL = "https://playnnote.herokuapp.com";
+var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
@@ -699,5 +699,6 @@ cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 5
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
 var injected = false;
-//alert(richDataStr);
+//alert($(".mejs-duration").html());
+//alert($(".course-lecture-view").html());
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, richDataStr, txtDataStr);

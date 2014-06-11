@@ -5,6 +5,7 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
     meta(name='description', content='Coursera Notes. Video Notes. Play N Note.')
+    link(rel='shortcut icon', type='image/x-icon', href='images/play_n_note16.jpg')
     title Play N Note
     //
        Bootstrap core CSS 
@@ -23,9 +24,9 @@ html(lang='en')
     link(rel="chrome-webstore-item", href='https://chrome.google.com/webstore/detail/chadkpkckdaneoadajielnmpkaaepifj')
     script(src='/javascripts/ace/ace-extra.min.js')
   body.no-skin
-    //if user
-    script(type='text/javascript')
-      window.location='/register.html'
+    if user
+      script(type='text/javascript')
+        window.location='/landing'
 
     #navbar.navbar.navbar-default.navbar-fixed-top
       script(type='text/javascript')
