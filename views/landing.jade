@@ -78,6 +78,7 @@ html(lang='en')
       }
       vid = document.getElementById("vid1");
   body.no-skin
+
     #navbar.navbar.navbar-default
       script(type='text/javascript')
         try{ace.settings.check('navbar' , 'fixed')}catch(e){}
@@ -166,35 +167,38 @@ html(lang='en')
                               .panel.panel-default
                                 .panel-heading
                                   h4.panel-title
-                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse0one')
+                                    a.accordion-toggle(data-toggle='collapse', data-parent='#accordion', href='#collapse'+i+'0')
                                       i.ace-icon.fa.fa-angle-down.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | #{data[i].videos[0].lecture} &gt; Lecture Note
+                                      | #{data[i].videos[0].lecture} 
                                       // span class="widget-toolbar no-border"
                                       i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 10:20
+                                      |  #{data[i].videos[0].duration}
                                       // /span
-                                #collapse0one.panel-collapse.collapse.in
+                                div(id='collapse'+i+'0').panel-collapse.collapse.in
                                   .panel-body
-                                    | #{data[i].videos[0].notes[0].comments}
-                                    p
-                                    p
+                                    - for (k=0; k<data[i].videos[0].notes.length; k++) {
+                                      div(id='comment'+i+'0'+k)
+                                        | !{data[i].videos[0].notes[k].comments}
+                                    - }
                                     div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
-                              - for (var j=1; j < data[i].videos[0].notes.length; j++) {
+                                      a.blue(href='', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                              - for (var j=1; j < data[i].videos.length; j++) {
                               .panel.panel-default
                                 .panel-heading
                                   h4.panel-title
-                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse1one')
+                                    a.accordion-toggle.collapsed(data-toggle='collapse', data-parent='#accordion', href='#collapse'+i+j)
                                       i.ace-icon.fa.fa-angle-right.bigger-110(data-icon-hide='ace-icon fa fa-angle-down', data-icon-show='ace-icon fa fa-angle-right')
-                                      | Course0 &gt; Video0 &gt; Lecture Note
+                                      | #{data[i].videos[j].lecture} 
                                       // span class="widget-toolbar no-border"
                                       i.ace-icon.fa.fa-clock-o.bigger-110
-                                      | 0:0
+                                      |   #{data[i].videos[j].duration}
                                       // /span
-                                #collapse1one.panel-collapse.collapse
+                                div(id='collapse'+i+j).panel-collapse.collapse
                                   .panel-body
-                                    | #{data[i].videos[0].notes[j].comments}
-                                    p
+                                    - for (k=0; k<data[i].videos[j].notes.length; k++) {
+                                      div(id='comment'+i+j+k)
+                                        | !{data[i].videos[j].notes[k].comments}
+                                    - }
                                     div
                                       a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
                               - }

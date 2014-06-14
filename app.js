@@ -12,8 +12,8 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 
-var GOOGLE_CLIENT_ID = "89641588136-b8emjpqgninnjgkqdciig7bno5c6t4bf.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "p3dFv41TQ_muXDUjGFHMCRJW";
+var GOOGLE_CLIENT_ID = "89641588136-e6p6psdbbd0r6btr55vqn0kjsk5i8b65.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "AxVRERgDNmb6qTK4XF7lyErL";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
@@ -26,8 +26,8 @@ var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 */
 
-//var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
-var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
+var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
+//var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
 
 var express = require('express')
   , routes = require('./routes')
@@ -157,6 +157,8 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
     usr = (req._passport != undefined && req._passport.session != undefined && req._passport.session.user != undefined) ? req._passport.session.user : req.user;
     googleId = (usr.id != undefined) ? usr.id : usr.googleId;
     firstName = usr.displayName.split(" ")[0];
+    var where_lectures = "[";
+    var delim = Math.random().toString(36).substring(0,5);
     //mongodb query
     //db.user_notes.aggregate( {$match: {"googleId": "116344056495429556007"}}, {$group: {_id: '$videoURL', "comments": { $push: "$comments"}, "instant": {$push: "$instant"}, date: {$push: '$date'}}}, {$sort: {date: -1}})
     User_Note.aggregate( {$match: {"googleId": googleId}}, {$group: {_id: '$videoURL', "comments": { $push: "$comments"}, "instant": {$push: "$instant"}, date: {$max: "$date"}}}, {$sort: {date: -1}}).exec(function(err, data) {
@@ -176,9 +178,13 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
               notes_data += "{\"date\": \"" + data[i].date.toDateString() + "\", \"videos\": [";
               date_changed = true;
             } else {
+              notes_data += ", ";
               date_changed = false;
             }
-            notes_data += "{\"lecture\": \"" + data[i]._id + "\", \"notes\": [";
+            notes_data += "{" + delim + data[i]._id + ", \"notes\": [";
+            if (i > 0)
+              where_lectures += ", ";
+            where_lectures += "{\"courseId\": \"" + data[i]._id.split("$")[0] + "\", \"videoId\": \"" + data[i]._id.trim() + "\"}";
             
             for (j=0; j<data[i].comments.length; j++) {
               if (j > 0)
@@ -188,7 +194,25 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
             notes_data += "]} ";
           }
           notes_data += "] } ] }";
-          res.render('landing', JSON.parse(notes_data)); 
+          where_lectures += "]";
+          var videos_data = "";
+          Course_Video.find({ $or:[ where_lectures ]}, function (err1, cv) {
+            for (i=0; i < data.length; i++) {
+              lecturedata = "\"lecture\": \"" + cv[i]._doc.videoName + "\", \"duration\": \"" + cv[i]._doc.duration + "\"";
+              notes_data = notes_data.replace(delim + data[i]._id, lecturedata);
+            }
+            var obj = JSON.parse(notes_data);
+            for (i=0; i<obj.data.length; i++) {
+              for (j=0; j<obj.data[i].videos.length; j++) {
+                for (k=0; k<obj.data[i].videos[j].notes.length; k++){
+                  console.log(obj.data[i].videos[j].notes[k].comments);
+                  obj.data[i].videos[j].notes[k].comments = unescape(obj.data[i].videos[j].notes[k].comments);
+                  console.log(obj.data[i].videos[j].notes[k].comments);
+                }
+              }
+            }
+            res.render('landing', obj); 
+          })
         }else {
           res.render('index');
         }
