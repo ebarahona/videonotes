@@ -12,8 +12,8 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 /*
-var GOOGLE_CLIENT_ID = "89641588136-e6p6psdbbd0r6btr55vqn0kjsk5i8b65.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "AxVRERgDNmb6qTK4XF7lyErL";
+var GOOGLE_CLIENT_ID = "89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "cma_qHvZRuCQ3cO6tdnmF9XS";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
@@ -21,8 +21,8 @@ var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 
 //heroku deployment info
 
-var GOOGLE_CLIENT_ID = "89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "cma_qHvZRuCQ3cO6tdnmF9XS";
+var GOOGLE_CLIENT_ID = "89641588136-djcp69o62ogb5nl3bb310ea6ngl94dbl.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "oIDAUGPLLuKMcK-L6wW08Q1j";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 
 
