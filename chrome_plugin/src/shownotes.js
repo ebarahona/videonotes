@@ -705,8 +705,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-//var SERVER_URL = "https://playnnote.herokuapp.com";
-var SERVER_URL = "http://localhost:3000";
+var SERVER_URL = "https://playnnote.herokuapp.com";
+//var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
