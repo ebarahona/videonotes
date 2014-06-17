@@ -98,11 +98,43 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         $("#dialog").html('');
         $("#dialog").remove();
     }
+    var SERVER_URL = 'https://playnnote.herokuapp.com';
+    //var SERVER_URL = 'http://localhost:3000';
+    var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
+
+    var tab_url = window.location.href;
+    var source_url = tab_url.substring(0,tab_url.lastIndexOf("/")) + "/view?lecture_id=" + tab_url.substring(tab_url.lastIndexOf("/")+1);
+    
+    $.ajax({
+      type: 'GET',
+      url: source_url,
+      dataType: 'html',
+      success: function(data) {
+        var sources = [];
+        var start_index = 0, open_start_index, close_start_index;
+        var sources_count = 0;
+        while (data.indexOf("<source", start_index) > -1) {
+            open_start_index = data.indexOf("<source", start_index);
+            close_start_index = data.indexOf(">", open_start_index);
+            sources[sources_count++] = data.substring(open_start_index, close_start_index+1);
+            start_index = close_start_index;
+        }
+
+        $.ajax({
+            type: 'GET',
+            crossDomain: true,
+            url: SERVER_URL + '/getSourceVideosExtn',
+            data: {url: window.location.href, title: $('title').html(), source_tags: sources.join()},
+            success: function(data){
+                console.log('course video created');
+            }
+        });
+
+        }
+    });
+
 
     $(".icon-remove").on('click', function(event) { $("#dialog").remove();}); 
-    //var SERVER_URL = 'https://playnnote.herokuapp.com';
-    var SERVER_URL = 'http://localhost:3000';
-    var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
 
     var fnsExist = false;
     if (document.getElementById("fns") != null) {
@@ -699,6 +731,4 @@ cssHTML += "<span id='closeDlg' style='float:right;height:20px;width:20px; 50% 5
 var endDiv = "</div>";
 notesHTML = cssHTML + notesHTML + endDiv;
 var injected = false;
-//alert($(".mejs-duration").html());
-//alert($(".course-lecture-view").html());
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, richDataStr, txtDataStr);

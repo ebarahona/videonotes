@@ -26,8 +26,8 @@ var GOOGLE_CLIENT_SECRET = "IXAl0puPskwAPGk0qVLfidol";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 */
 
-var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
-//var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
+//var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
+var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
 
 var express = require('express')
   , routes = require('./routes')
@@ -321,28 +321,35 @@ app.post('/submitNoteExtn', function(req, res) {
                                                      }
                                         })
                                   .end(function (response) {
-                                    Course_Video.find({videoId: vRL}, function(err, cv) {
-                                      if (cv.length < 1) { // assuming format https://class.coursera.org/courseId/lecture/lectureId
-                                        courseId = url.substring(url.indexOf("/", 27), 27);
-                                        videoId = url.substring(url.lastIndexOf("/")+1, url.length);
-                                        duration = "";
-                                        videoName = title;
-                                        if (title.indexOf("(") > -1)
-                                        {
-                                          duration = title.substring(title.indexOf("(")+1, title.indexOf(")"));
-                                          videoName = title.split("(")[0].trim();
-                                        }
-                                        Course_Video.create({courseId: courseId, videoId: vRL, videoName: videoName, duration: duration, url: url}, 
-                                          function(er, cv2) {
-                                            if (er)
-                                              console.log("course video could not be created");
-                                          })
-                                      }
-                                    });   
-                          });
-                      
+                                      console.log(response);   
+                                  });
                       }
-                  }); 
+  }); 
+});
+
+app.get('/getSourceVideosExtn', function(req, res){
+  var title = req.query.title.trim();
+  var url =  req.query.url.replace(/"/g,'').trim();
+  var source_tags = req.query.source_tags.trim();
+  Course_Video.find({videoId: vRL}, function(err, cv) {
+    if (cv.length < 1) { // assuming format https://class.coursera.org/courseId/lecture/lectureId
+      
+      courseId = url.substring(url.indexOf("/", 27), 27);
+      videoId = courseId + url.substring(url.lastIndexOf("/")+1, url.length);
+      duration = "";
+      videoName = title;
+      if (title.indexOf("(") > -1)
+      {
+        duration = title.substring(title.indexOf("(")+1, title.indexOf(")"));
+        videoName = title.split("(")[0].trim();
+      }          
+      Course_Video.create({courseId: courseId, videoId: videoId, videoName: videoName, duration: duration, url: url, sources: source_tags}, 
+        function(er, cv2) {
+          if (er)
+            console.log("course video could not be created");
+        });
+    }
+  });
 });
 
 app.get('/getNotes', function(req, res) {
@@ -605,6 +612,7 @@ app.get('/getLectureNotesExtn', function(req, res) {
                   });
 
 });
+ 
 
 app.get('/subscriptions', function (req, res) {
   var usr = req._passport.session.user;
