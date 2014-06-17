@@ -23,7 +23,7 @@ var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 
 var GOOGLE_CLIENT_ID = "89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "cma_qHvZRuCQ3cO6tdnmF9XS";
-var CALLBACK_URL =  'http://playnnote.herokuappc.com/auth/google/return';
+var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
 
 
 //var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
