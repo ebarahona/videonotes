@@ -12,8 +12,8 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 /*
-var GOOGLE_CLIENT_ID = "89641588136-sjr8kvn7bg4pel7qkrvaji8cg697ap79.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "cma_qHvZRuCQ3cO6tdnmF9XS";
+var GOOGLE_CLIENT_ID = "89641588136-aiai2jsasgjg05sie7a79s5u1c1sma4p.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "H_8crHZmwCeY9sqwgQBzagl8";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
@@ -193,7 +193,10 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
             }
             notes_data += "]} ";
           }
-          notes_data += "] } ] }";
+          if (i == 0)
+            notes_data += "] }";
+          else
+            notes_data += "] } ] }";
           where_lectures += "]";
           var videos_data = "";
           Course_Video.find({ $or:[ where_lectures ]}, function (err1, cv) {
