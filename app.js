@@ -338,7 +338,7 @@ app.get('/getSourceVideosExtn', function(req, res){
     if (cv.length < 1) { // assuming format https://class.coursera.org/courseId/lecture/lectureId
       
       courseId = url.substring(url.indexOf("/", 27), 27);
-      videoId = courseId + url.substring(url.lastIndexOf("/")+1, url.length);
+      videoId = courseId + "$" + url.substring(url.lastIndexOf("/")+1, url.length);
       duration = "";
       videoName = title;
       if (title.indexOf("(") > -1)
