@@ -29,7 +29,19 @@ html(lang='en')
       script(src='/javascripts/ace/html5shiv.js')
       script(src='/javascripts/ace/respond.min.js')
     script
-      function createDisplayData() {
+      function createDisplayData(i, j) {
+      var source = unescape($("#vidsrc"+i+j).val());
+      var sources = source.split(",");
+      var source_vals = "";
+      for (x=0; x< sources.length; x++){
+        source_vals += sources[x];
+      }
+      var k=0; 
+      var comments = "<p></p>";
+      while ($("#comment"+i+j+k).length) {
+        comments += $("#comment"+i+j+k).html()+ "<p></p>";
+        k++;
+      }
       var dataStr = '<div id="lecture-modal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="CodeDialog" aria-hidden="false" style="display: block;">\
       <div class="modal-dialog modal-lg">\
       <div class="modal-content">\
@@ -46,10 +58,9 @@ html(lang='en')
       <div class="hero-unit">\
       <div class="row-fluid">\
       <div id="divvid" class="span9">\
-      <video id="vid1" class="video-js vjs-default-skin vjs-paused" controls="controls" preload="auto" poster="http://video-js.zencoder.com/oceans-clip.png", data-setup={}>\
-      <source src="http://video-js.zencoder.com/oceans-clip.webm" type="video/webm"/>\
-      <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg"/>\
-      <p>Video Playback Not Supported</p>\
+      <video id="vid1" class="video-js vjs-default-skin vjs-paused" controls="controls" preload="auto" poster="http://video-js.zencoder.com/oceans-clip.png", data-setup={}>' +
+      source_vals+
+      '<p>Video Playback Not Supported</p>\
       </div>\
       </div>\
       </div>\
@@ -57,13 +68,9 @@ html(lang='en')
       </div>\
       </div>\
       </div>\
-      <div style="background-color: #000;color: #F8F8F8;">\
-      This would contain the<em>rich</em> and <i>important</i>content.\
-      <li> line bullet </li>\
-      <ol>Indent in html?\
-      <ol>Double <em>indent</em>?</ol>\
-      </ol>\
-      <p></p>\
+      <div style="background-color: #000;color: #F8F8F8;">'
+      +comments+
+      '<p></p>\
       </div>\
       </div>\
       </div>\
@@ -173,6 +180,7 @@ html(lang='en')
                                       // span class="widget-toolbar no-border"
                                       i.ace-icon.fa.fa-clock-o.bigger-110
                                       |  #{data[i].videos[0].duration}
+                                      input(id='vidsrc'+i+'0', type='hidden', value='#{data[i].videos[0].sources}')
                                       // /span
                                 div(id='collapse'+i+'0').panel-collapse.collapse.in
                                   .panel-body
@@ -181,7 +189,7 @@ html(lang='en')
                                         | !{data[i].videos[0].notes[k].comments}
                                     - }
                                     div
-                                      a.blue(href='', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                                      a.blue(href='', onclick='createDisplayData('+i+',0)', role='button', data-toggle='modal') Play Video
                               - for (var j=1; j < data[i].videos.length; j++) {
                               .panel.panel-default
                                 .panel-heading
@@ -192,6 +200,7 @@ html(lang='en')
                                       // span class="widget-toolbar no-border"
                                       i.ace-icon.fa.fa-clock-o.bigger-110
                                       |   #{data[i].videos[j].duration}
+                                      input(id='vidsrc'+i+j, type='hidden', value='#{data[i].videos[j].sources}')
                                       // /span
                                 div(id='collapse'+i+j).panel-collapse.collapse
                                   .panel-body
@@ -200,7 +209,7 @@ html(lang='en')
                                         | !{data[i].videos[j].notes[k].comments}
                                     - }
                                     div
-                                      a.blue(href='#lecture-table', onclick='createDisplayData()', role='button', data-toggle='modal') Play Video
+                                      a.blue(href='#lecture-table', onclick='createDisplayData('+i+','+j+')', role='button', data-toggle='modal') Play Video
                               - }
                     // /.timeline-items
                   - }

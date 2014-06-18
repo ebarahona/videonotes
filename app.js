@@ -200,9 +200,20 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
           where_lectures += "]";
           var videos_data = "";
           Course_Video.find({ $or:[ where_lectures ]}, function (err1, cv) {
+            var keys=[], vals=[];
+            for (k=0; k<cv.length; k++) {
+              keys[k] = cv[k]._doc.videoId;
+              vals[k] = "\"lecture\": \"" + cv[k]._doc.videoName + "\", \"duration\": \"" + cv[k]._doc.duration + "\", \"sources\": \"" + escape(cv[k]._doc.sources) + "\""; //cv[k]._doc.videoName;
+            }
+            videoVal="";
             for (i=0; i < data.length; i++) {
-              lecturedata = "\"lecture\": \"" + cv[i]._doc.videoName + "\", \"duration\": \"" + cv[i]._doc.duration + "\"";
-              notes_data = notes_data.replace(delim + data[i]._id, lecturedata);
+              for (j=0; j<keys.length; j++) {
+                if (keys[j] == data[i]._id) {
+                  videoVal = vals[j];
+                  break;
+                }
+              }
+              notes_data = notes_data.replace(delim + data[i]._id, videoVal);
             }
             var obj = JSON.parse(notes_data);
             for (i=0; i<obj.data.length; i++) {

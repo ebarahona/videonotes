@@ -121,6 +121,7 @@ loadSchemas = function() {
     , videoName: String
     , duration: String
     , url: String
+    , sources: String
     , flashSupported: Boolean
     , html5Supported: Boolean
     , format: String //mp4 etc
