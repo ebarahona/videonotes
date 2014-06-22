@@ -86,6 +86,7 @@ loadSchemas = function() {
     , noteId : Number
     , comments : String
     , commentsTxt : String
+    , importedFrom: String
     , instant: Number
     , date: Date
     , ispublic : Boolean

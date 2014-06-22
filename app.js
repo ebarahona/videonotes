@@ -12,8 +12,8 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 /*
-var GOOGLE_CLIENT_ID = "89641588136-aiai2jsasgjg05sie7a79s5u1c1sma4p.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "H_8crHZmwCeY9sqwgQBzagl8";
+var GOOGLE_CLIENT_ID = "89641588136-4fkcm8mv0005mi0oubssdl077pv90p5p.apps.googleusercontent.com";
+var GOOGLE_CLIENT_SECRET = "sauIpPYt5qkMUxisHGgPq0LC";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
@@ -309,8 +309,6 @@ app.post('/submitNoteExtn', function(req, res) {
   noteId = temp[3][1].replace(/"/g, '').trim(); 
   inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
   ispblc = temp[5][1].replace(/"/g, '').trim(); 
-  title = temp[6][1].replace(/"/g, '').trim() + ':' + temp[6][2].replace(/"/g, '').trim();
-  url = temp[7][1].replace(/"/g, '').trim() + ':' + temp[7][2].replace(/"/g, '').trim();
   if (ispblc == "true")
     ispblc = true;
   else
