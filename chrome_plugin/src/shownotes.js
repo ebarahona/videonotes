@@ -94,9 +94,9 @@ function injectScript(source)
 }
 
 function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
-    if ($("#dialog")) {
-        $("#dialog").html('');
-        $("#dialog").remove();
+    if ($("#dialog1")) {
+        $("#dialog1").html('');
+        $("#dialog1").remove();
     }
     var SERVER_URL = 'https://playnnote.herokuapp.com';
     //var SERVER_URL = 'http://localhost:3000';
@@ -134,7 +134,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     });
 
 
-    $(".icon-remove").on('click', function(event) { $("#dialog").remove();}); 
+    $(".icon-remove").on('click', function(event) { $("#dialog1").remove();}); 
 
     var fnsExist = false;
     if (document.getElementById("fns") != null) {
@@ -184,15 +184,20 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         juicss.href = RESOURCE_DOMAIN + "/stylesheets/jquery-ui.css";
         document.head.appendChild(juicss);
 
+        var jqjs = document.createElement('script');
+        jqjs.type = "text/javascript";
+        jqjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.js";
+        document.head.appendChild(jqjs);
+
         var juijs = document.createElement('script');
         juijs.type = "text/javascript";
         juijs.src = RESOURCE_DOMAIN + "/javascripts/jqueryui.js";
         document.head.appendChild(juijs);
 
-        var jqjs = document.createElement('script');
-        jqjs.type = "text/javascript";
-        jqjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.js";
-        document.head.appendChild(jqjs);
+        /*var juixjs = document.createElement('script');
+        juixjs.type = "text/javascript";
+        juixjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.dialogextend.js";
+        document.head.appendChild(juixjs);*/
 
         /*var ckeditorjs = document.createElement('script');
         ckeditorjs.type = "text/javascript";
@@ -267,7 +272,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
-        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; var rtdisplayed = ''; ";
+        var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; var rtdisplayed = ''; var display_state = 'normal'; ";
         var moveToStr = "function moveTo(toTime) { " +
                             "if (window.QL_player != null) { " +
                                 "window.QL_player.mediaelement_handle.setCurrentTime(toTime); " +
@@ -477,40 +482,97 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                     "} catch (e) {} " + 
                                 "} ";
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + removeShortcutsStr;//writeNotesStr + 
+        var collapseItStr = "function collapseIt() { $('.ui-dialog-titlebar-restore').show(); $('.ui-dialog-titlebar-collapse').hide(); $('#commentsTxt').hide(); $('#notesTbl').hide();} ";
+        var restoreItStr = "function restoreIt() { $('.ui-dialog-titlebar-restore').hide(); $('.ui-dialog-titlebar-collapse').show(); $('#commentsTxt').show(); $('#notesTbl').show();} ";
+        var closeItStr = "function closeIt() { $('#dialog1').remove(); } ";
+
+        var dialog_extend_css = ".ui-dialog .ui-dialog-titlebar-buttonpane>a { float: right; }.ui-dialog .ui-dialog-titlebar-restore { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-restore span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-restore:hover,.ui-dialog .ui-dialog-titlebar-restore:focus { padding: 0; }.ui-dialog .ui-dialog-titlebar ::selection { background-color: transparent; }"; 
+        var dialog_extend_collapse_css = ".ui-dialog .ui-dialog-titlebar-collapse { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-collapse span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-collapse:hover,.ui-dialog .ui-dialog-titlebar-collapse:focus { padding: 0; }"; 
+        var dialog_extend_maximize_css = ".ui-dialog .ui-dialog-titlebar-maximize { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-maximize span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-maximize:hover,.ui-dialog .ui-dialog-titlebar-maximize:focus { padding: 0; }"; 
+        var dialog_extend_minimize_css = ".ui-dialog .ui-dialog-titlebar-minimize { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-minimize span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-minimize:hover,.ui-dialog .ui-dialog-titlebar-minimize:focus { padding: 0; }";
+
+        var containerElem = document.createElement('div');
+        containerElem.setAttribute('id', 'dialog-extend-fixed-container');
+        containerElem.setAttribute('style', 'position: fixed; bottom: 1px; left: 1px; right: 1px; z-index: 50010;');
+        document.body.appendChild(containerElem);
+
+        var dec = document.createElement('style');
+        dec.type = 'text/css';
+        dec.className = 'dialog-extend-css';
+        dec.innerHTML = dialog_extend_css;
+        document.body.appendChild(dec);
+
+        var decc = document.createElement('style');
+        decc.type = 'text/css';
+        decc.className = 'dialog-extend-collapse-css';
+        decc.innerHTML = dialog_extend_collapse_css;
+        document.body.appendChild(decc);
+
+        var demac = document.createElement('style');
+        demac.type = 'text/css';
+        demac.className = 'dialog-extend-maximize-css';
+        demac.innerHTML = dialog_extend_maximize_css;
+        document.body.appendChild(demac);
+
+        var demic = document.createElement('style');
+        demic.type = 'text/css';
+        demic.className = 'dialog-extend-minimize-css';
+        demic.innerHTML = dialog_extend_minimize_css;
+        document.body.appendChild(demic);
+
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + removeShortcutsStr + collapseItStr + restoreItStr + closeItStr;// + minimizeItStr;// + writeNotesStr 
         document.body.appendChild(scriptElem);
     }
 
     var divElem = document.createElement('div');
-    divElem.setAttribute('id', 'dialog');
+    divElem.setAttribute('id', 'dialog1');
     divElem.setAttribute('title', 'Play-n-Note');
-    //divElem.setAttribute('style', 'position: relative; left: 12px; top: -1680px; z-index: 50000; display: block; height: 30px; width:294px; background-color: #428BCA;');
-    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 30px; width:294px; background-color: #428BCA;');
-    divElem.setAttribute('class', 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable');
+    //divElem.setAttribute('option', 'autoOpen', 'false');
+    divElem.setAttribute('style', 'position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 36px; width:294px; background-color: #428BCA; display:none');
+    divElem.setAttribute('class', 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable draggable'); // ui-resizable
     divElem.setAttribute('role', 'dialog');
-    divElem.setAttribute('aria-describedby', 'notesTbl');
-    divElem.setAttribute('aria-labelledby', 'closeDlg');
+    divElem.setAttribute('aria-describedby', 'contentval');
+    divElem.setAttribute('aria-labelledby', 'dlgtitle');
+    //divElem.setAttribute('show', '{ effect: "slide", complete: function() { alert("123"); } }');
     divElem.innerHTML = notesHTML;
 
+    /*var divElem = $(document.createElement('div'));
+    alert(1);
+    $(divElem).attr('id', 'dialog1');
+    $(divElem).attr('title', 'Play-n-Note');
+    $(divElem).attr('autoOpen', 'false');
+    $(divElem).attr('style', 'position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 36px; width:294px; background-color: #428BCA;');
+    $(divElem).attr('class', 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable draggable'); // ui-resizable
+    $(divElem).attr('role', 'dialog');
+    $(divElem).attr('aria-describedby', 'contentval');
+    $(divElem).attr('aria-labelledby', 'dlgtitle');
+    alert(2);
+    $(divElem).html(notesHTML);
+    alert(3);
 
-    var richEditElem = document.createElement('textarea');
-    richEditElem.setAttribute('id','richEdit');
-    richEditElem.setAttribute('name', 'richEdit');
-    richEditElem.setAttribute('width', '100%');
-    richEditElem.setAttribute('style', 'margin:30px 0 0 0;min-height:1px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;');
+    var dialogOptions = {
+      "title" : "Play-n-Note",
+      "id" : "dialog1",
+      "width" : 294,
+      "style": "position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 36px; width:294px; background-color: #428BCA",
+      "class": "ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable draggable",
+      "height" : 36,
+      "modal" : false,
+      "resizable" : true,
+      "draggable" : true
+    };
+    alert(4);
+    $("<div />").dialog(dialogOptions);
+    alert(5);*/
 
-    
+
     if ($(".course-modal-frame")) {
-        $(".course-modal-frame").after(divElem);
-        if ($("#richEdit").length == 0) {
-            $(".course-modal-frame").after(richEditElem);
-        }
+        $(".course-modal-frame").after(function() { return divElem; });
     } else if ($(".course-modal-frame.course-modal-frame-with-slides")) {
-        $(".course-modal-frame.course-modal-frame-with-slides").after(divElem);
-        if ($("#richEdit").length == 0) {
-            $(".course-modal-frame.course-modal-frame-with-slides").after(richEditElem);
-        }
+        $(".course-modal-frame.course-modal-frame-with-slides").after(function() { return divElem; });
     }
+    //create extend container element /*<div id="dialog-extend-fixed-container" style="position: fixed; bottom: 1px; left: 1px; right: 1px; z-index: 9999;"></div>*/
+    
     var rtdisplayed = '';
     if (notesData !== "" && notesData.length > 0) {
         notes = notesData.split(delimiter);
@@ -543,16 +605,16 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
 
                     rtdisplayed = $(this).attr("id");
                     
-                    //alert('left ' + p.left + ' top ' + p.top);
                 });
-                //alert($(this).parent().next().find("div:first-child ").html());
-                //$(this).parent().next().darkTooltip({
-                //     gravity:'west'
-                //});
                 
                 i++;
+                if (i == txtNotes.length) {
+                    setTimeout(makeItDraggable, 1000);
+                }
             }
         });
+    } else {
+        setTimeout(makeItDraggable, 1000);
     }
 
     var capsOn = false;
@@ -565,6 +627,14 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         removeShortCuts();
         pauseIt();
     });
+
+    function makeItDraggable() {
+        if ($("#dialog1").length) {
+            $("#dialog1").draggable({containment: "window"});
+        }
+        //alert("should be draggable now");
+        $("#dialog1").show();
+    }
 
     function pauseIt() {
         if (instant == 0) {
@@ -648,19 +718,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
 
     });
 
-    $(".icon-remove").on('click', function(event) { $("#dialog").remove(); if ($("#cke_richEdit").length > 0) $("#cke_richEdit").hide(); });    
+    $(".icon-remove").on('click', function(event) { $("#dialog1").remove(); if ($("#cke_richEdit").length > 0) $("#cke_richEdit").hide(); });    
 
-    $("#dialog").dialog(/*{
-      autoOpen: false,
-      height: 350,
-      width: 400,
-      draggable: true,
-      position: [0,0],  
-      modal: true
-    }*/);
-    
     $("#commentsTxt").focus();
-    
+
 }
 
 function createTableData(data, vId, uId) {
@@ -677,7 +738,7 @@ function createTableData(data, vId, uId) {
     else
         lockicon = "lock_closed.png";
 
-    tableHeaders = "<table id='notesTbl' style='table-layout:fixed; padding-right:0px;width=100%; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
+    tableHeaders = "<table id='notesTbl' style='table-layout:auto; position: relative; padding-right:0px;width:289px; margin: 0 0 0 -2px; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
     //tableHeaders += "&nbsp;<a href=javascript:writeRichNote()><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' alt='Rich Text Editor' /></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' alt='Import Video Notes' /></a>&nbsp;&nbsp;";
@@ -697,7 +758,7 @@ function createTableData(data, vId, uId) {
         tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><div id='div" + data[i].noteId + "'><a style='font-size:10px;z-index:50000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + RESOURCE_DOMAIN + "/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a></div><ins class='dark-tooltip dark medium west' style='max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none'><div></div><div class='tip'></div></ins></td></tr>";
     }
     tableEnd = "</tbody></table>";
-    var commentHTML = "<textarea id='commentsTxt' name='commentsTxt' placeholder='Write a note (Enter to play)... ' width='100%' style='margin:30px 0 0 0;min-height:104px;width:294px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;'></textarea>";
+    var commentHTML = "<textarea id='commentsTxt' name='commentsTxt' placeholder='Write a note (Enter to play)... ' width='100%' style='margin:-5px 0 0 -2px;min-height:104px;width:290px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none'></textarea>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
 
     return tableData;
@@ -727,9 +788,26 @@ if (notes === undefined || notes === 'undefined' || notes == "") {
         richDataStr += data[i].comments;
     }
 }
-var cssHTML = "<div id='dlghdr1' class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix' style='height:30px;border-radius:2px 2px 0 0;position:relative;z-index:2;'>";
-cssHTML += "<span id='closeDlg' class='ui-dialog-title' style='float:right;height:20px;width:20px; 50% 50% no-repeat;margin:5px 4px 0 0;cursor:pointer;display:none;'>BIG TITLE</span>";
-var endDiv = "</div>";
-notesHTML = cssHTML + notesHTML + endDiv;
+var cssHTML = "<div id='dlghdr1' class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix' style='border: 0px; background-image: none; background-color: #428BCA; margin: -4px -4px 4px -4px;'>";
+cssHTML += "<span id='dlgtitle' class='ui-dialog-title' style='margin: 5px 5px 5px 5px; background-color: #428BCA; color: #fff'>Play N Note</span>";
+
+cssHTML += "<div class='ui-dialog-titlebar-buttonpane' style='position: absolute; top: 50%; right: 0.3em; margin-top: -10px; height: 18px;'>" + 
+                "<a class='ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close' href='javascript:closeIt()' role='button' aria-disabled='false' title='close' style='position: relative; float: right; top: auto; right: auto; margin: 0px;'>" + 
+                    "<span class='ui-button-icon-primary ui-icon ui-icon-closethick'></span></a>" + 
+                    /*"<span class='ui-button-text'>close</span>" + 
+                "</button>" + */
+                "<a class='ui-dialog-titlebar-collapse ui-corner-all ui-state-default' href='javascript: collapseIt()' role='button' style='display: block;'>" +
+                    "<span class='ui-icon ui-icon-triangle-1-s'>collapse</span></a>" + 
+                /*"<a class='ui-dialog-titlebar-maximize ui-corner-all ui-state-default' href='#' role='button' style='display: block;'>" + 
+                    "<span class='ui-icon ui-icon-extlink'>maximize</span></a>" + 
+                "<a class='ui-dialog-titlebar-minimize ui-corner-all ui-state-default' href='javascript: minimizeIt()' role='button' style='display: block;'>" + 
+                    "<span class='ui-icon ui-icon-minus'>minimize</span></a>" +*/
+                "<a class='ui-dialog-titlebar-restore ui-corner-all ui-state-default' href='javascript: restoreIt()' role='button' style='display: none'>" + 
+                    "<span class='ui-icon ui-icon-newwin'>restore</span></a>" + 
+            "</div>";
+cssHTML += "</div>";
+var hdrcontent="<div id='contentval' class='ui-dialog-content ui-widget-content ui-dialog-normal' style='display: block; width: auto; min-height: 0px; max-height: none; height: auto;'>";
+
+notesHTML = cssHTML + notesHTML;//endDiv + hdrcontent + notesHTML + endDiv;
 var injected = false;
 injectScript(showNotes, notesHTML, ids.vId, ids.gId, delimiter, richDataStr, txtDataStr);
