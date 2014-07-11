@@ -423,54 +423,34 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                 "cId = gIdvId.split('$')[1]; " + 
                                 "lId = gIdvId.split('$')[2]; " + 
                                 "vId = cId + '$' + lId; " + 
-                                "if (rows_hidden == undefined || rows_hidden == false) { " + 
-                                    "$.ajax({type: 'GET',  url: SERVER_URL + '/getLectureNotesExtn', " +
-                                        "data: {uId: gId, vId: vId}, success: function(data) { setImportTableData(data, gId);} " + 
-                                    "}); " + 
-                                    "resetTable(); " + 
+                                "if (rows_hidden == undefined || rows_hidden == false) { " +
+                                    "createImportDlg(gId, vId); " + 
                                     "rows_hidden = true; " + 
+                                    "pauseIt(); " + 
                                 "} else { " + 
                                     "$.ajax({type: 'GET', dataType: 'json', url: SERVER_URL + '/reloadNotesExtn', " + 
                                         "data: {open:1, sortby: 'instant', googleId: 's' + gId + 's', lId: lId, cId: cId}, " + 
-                                        "success: function(data) { setTableData(data); } " + 
+                                        "success: function(data) { " + 
+                                            " resetTable(); " + 
+                                            " setTableData(data); " + 
+                                        "} " + 
                                     "}); " + 
-                                    "resetTable(); rows_hidden = false; " +
+                                    "rows_hidden = false; " +
+                                    //"playIt(); " + 
                                 "} " +  
                             "} ";
-        /*var writeNotesStr = "function writeRichNote() { " + 
-                                "removeShortCuts(); " + 
-                                "if (!rich_text) { " + 
-                                    "rich_text = true; " + 
-                                    "if($(\"#cke_richEdit\").length == 0) { " + 
-                                        "CKEDITOR.replace('richEdit', {on: { instanceReady : function(ev) { " + 
-                                                                                                "len = $(\"#cke_richEdit\").length; " + 
-                                                                                                "elem = document.getElementById(\"cke_richEdit\"); " + 
-                                                                                                "elem.setAttribute('style', 'position: absolute; left: 306px; top: 9px; width: 60%; z-index: 100001'); " + 
-                                                                                             "} " +
-                                                                            "} " +
-                                                                        "}); " + 
-                                    "} else {  " +
-                                        "$(\"#cke_richEdit\").show(); " + 
-                                    "} " + 
-                                    "if (window.QL_player != null) { " +
-                                        "window.QL_player.mediaelement_handle.pause(); " + 
-                                        "instant = window.QL_player.mediaelement_media.currentTime; " +
-                                    "} else " + 
-                                        "if ($('me_flash_0') != null) { " + 
-                                            "$('me_flash_0').pauseMedia(); " + 
-                                            "instant = $('me_flash_0').currentTime(); " +
-                                        "} " +
-                                "} else { " + 
-                                    "rich_text = false; " + 
-                                    "$(\"#cke_richEdit\").hide(); " + 
-                                    "$(\"#commentsTxt\").val(CKEDITOR.instances.richEdit.getData()); " + 
-                                    "CKEDITOR.instances.richEdit.setData('<p></p>'); " + 
-                                    "if (window.QL_player != null) { " + 
-                                        "window.QL_player.mediaelement_handle.play(); " + 
-                                    "} else " + 
-                                        "if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); } " +
-                                "} " + 
-                            "} ";*/
+
+        var importNotesDataStr ="function importNotesData(gId, vId) { " + 
+                                    "$.ajax({type: 'GET',  " + 
+                                        "url: SERVER_URL + '/getLectureNotesExtn', " +
+                                        "data: {uId: gId, vId: vId}, " + 
+                                        "success: function(data) { " + 
+                                            "resetTable(); " +
+                                            "setImportTableData(data, gId);" +
+                                        "} " + 
+                                    "}); " + 
+                                "} ";
+
         var removeShortcutsStr = "function removeShortCuts() { " + 
                                      "try { " +  
                                         "len = window.QL_player.mediaelement_handle.options.keyActions.length; " + 
@@ -482,9 +462,99 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                     "} catch (e) {} " + 
                                 "} ";
 
+        var createImportDlgStr = "function createImportDlg(gid, vid) { " + 
+                                    "removeShortCuts(); " +
+                                    "var dlgElem = document.createElement('div'); " + 
+                                    "dlgElem.setAttribute('id', 'dlgImport');" + 
+                                    "dlgElem.setAttribute('title', 'Import Notes');" +
+                                    "dlgElem.setAttribute('style', 'z-index: 50000;');" +
+                                    "document.body.appendChild(dlgElem);" + 
+                                    " var sliderHtml = '<p><label for=\"timeRange\">Time range:</label><input type=\"text\" id=\"timeRange\" readonly style=\"border:0; color:#f6931f; font-weight:bold;\"></p><div id=\"slider-range\"></div><hr>'; " +
+
+                                    " var usersListHtml = '<p><label for=\"notesOfUser\">Notes of:</label><input type=\"text\" id=\"notesOfUser\" value=\"All\"><input type=\"hidden\" id=\"notesOfUserVal\" value=\"dummy\">';  " +
+                                    "$(\"#dlgImport\").html(sliderHtml + usersListHtml);" + 
+                                    " var val = $('iframe').contents().find(\"body\").html(); var idx1 = val.indexOf(\"mejs-duration\")+15; var idx2 = val.indexOf(\"<\", idx1); " +
+                                    " var duration = val.substring(idx1, idx2); " +
+                                    " var mins = duration.split(\":\")[0]; var secs = duration.split(\":\")[1]; var total = parseInt(mins*60) + parseInt(secs); " + 
+                                    " var v0, v1; " +
+
+                                    "$(\"#dlgImport\").dialog({'modal' : true, resizable: false, " + 
+                                        "open: function(event, ui) {" + 
+                                            " var stl = $(\"div[aria-describedby='dlgImport']\").attr('style') + ' z-index: 50005;'; " +
+                                            " $(\"div[aria-describedby='dlgImport']\").attr('style', stl); " +
+                                            " $('.ui-widget-overlay.ui-front').attr('style', 'z-index: 50004'); " +
+                                            " $( \"#slider-range\" ).slider({ " +
+                                              " range: true, " +
+                                              " min: 0, " +
+                                              " max: total, " +
+                                              " values: [ 0, total ], " +
+                                              " slide: function( event, ui ) { " +
+                                                " $( \"#timeRange\" ).val( giveMinsSecs(ui.values[ 0 ])" + " + \" - \" + " + "giveMinsSecs(ui.values[ 1 ]) ); " +
+                                              " } " +
+                                              ", stop: function(event, ui) { " + 
+                                                    " v0 = giveMinsSecs(ui.values[ 0 ]); v1 = giveMinsSecs(ui.values[ 1 ]); " + 
+                                                    " $( \"#timeRange\" ).val( v0 + \" - \" + v1); " +
+                                              " } " +
+                                            " }); " +
+                                            " v0 = $( \"#slider-range\" ).slider( \"values\", 0 ); v0 = giveMinsSecs(v0); v1 = $( \"#slider-range\" ).slider( \"values\", 1 ); v1 = giveMinsSecs(v1); " + 
+                                            " $( \"#timeRange\" ).val( v0 + \" - \" + v1 ); " +
+
+                                            " var usersData; " +
+                                            " $(\"#notesOfUser\").autocomplete({ minLength:3, source: function (request, response) { "  +
+                                                " $.ajax({ type: 'GET', " + 
+                                                    " url: SERVER_URL + '/usersForVideoExtn', " +
+                                                    " dataType: 'json', " +
+                                                    " data: {gId: gid, nameContains: $(\"#notesOfUser\").val(), vRL: vid}, " +
+
+                                                    " success: function(data1) { " +
+                                                        " usersData = data1; " +
+                                                        " response($.map( data1, function( item ) { " +
+                                                            " return { " +
+                                                                " label : item.displayName, " +
+                                                                " value : item.displayName + \"                                                          \" + item.gId" + 
+                                                            " } " +
+                                                        "})); " +
+                                                    " }, " +
+                                                    " error: function (msg) { " +
+                                                        " alert(msg.status + ' ' + msg.statusText); " +
+                                                    " }" +
+                                                " }); " +
+                                            " } " + 
+                                            " }); " +
+                                        "}, " + 
+                                        "buttons : [ { text: 'OK' , style: 'margin-left: 30px; margin-right: 10px', click: function() { importNotesData(gid, vid); rows_hidden = true; closeImport(); } }, " + 
+                                                    "{ text: 'Cancel' , style: 'margin-left: 0px; margin-right: 40px', click: function() { rows_hidden = false; closeImport(); } } ], " +
+                                        "close: function(event, ui) {" + 
+                                            " rows_hidden = false; closeImport(); " + 
+                                        "}" + 
+                                    "});" + 
+                                 "}";
+
+        var closeImportStr = "function closeImport() { $(\"div[aria-describedby='dlgImport']\").empty(); $(\"div[aria-describedby='dlgImport']\").remove(); $('#dlgImport').empty(); $('#dlgImport').remove(); playIt(); } ";
         var collapseItStr = "function collapseIt() { $('.ui-dialog-titlebar-restore').show(); $('.ui-dialog-titlebar-collapse').hide(); $('#commentsTxt').hide(); $('#notesTbl').hide();} ";
         var restoreItStr = "function restoreIt() { $('.ui-dialog-titlebar-restore').hide(); $('.ui-dialog-titlebar-collapse').show(); $('#commentsTxt').show(); $('#notesTbl').show();} ";
         var closeItStr = "function closeIt() { $('#dialog1').remove(); } ";
+        var pauseItStr = "function pauseIt() { " + 
+                            "if (window.QL_player != null) { " +
+                                "window.QL_player.mediaelement_handle.pause(); " + 
+                            "} else if ($('me_flash_0') != null) { " + 
+                                "$('me_flash_0').pauseMedia(); " + 
+                            "} " +
+                        "}";
+        var playItStr = "function playIt() { " + 
+                            "if (window.QL_player != null) { " + 
+                                "window.QL_player.mediaelement_handle.play(); " +
+                            "} else if ($('me_flash_0') != null) { " + 
+                                "$('me_flash_0').playMedia(); " +
+                            "}" +
+                        "}";
+
+        var giveMinsSecsStr = "function giveMinsSecs(val) { " + 
+                                " var v = parseInt(val); " + 
+                                " var vrem = (v % 60 < 10) ? '0' + v%60 : v%60; " +
+                                " v = Math.floor(v / 60) + \":\" + vrem; " +
+                                " return v; " +
+                              "}";
 
         var dialog_extend_css = ".ui-dialog .ui-dialog-titlebar-buttonpane>a { float: right; }.ui-dialog .ui-dialog-titlebar-restore { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-restore span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-restore:hover,.ui-dialog .ui-dialog-titlebar-restore:focus { padding: 0; }.ui-dialog .ui-dialog-titlebar ::selection { background-color: transparent; }"; 
         var dialog_extend_collapse_css = ".ui-dialog .ui-dialog-titlebar-collapse { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-collapse span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-collapse:hover,.ui-dialog .ui-dialog-titlebar-collapse:focus { padding: 0; }"; 
@@ -520,7 +590,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         demic.innerHTML = dialog_extend_minimize_css;
         document.body.appendChild(demic);
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + removeShortcutsStr + collapseItStr + restoreItStr + closeItStr;// + minimizeItStr;// + writeNotesStr 
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + importNotesDataStr + removeShortcutsStr + collapseItStr + restoreItStr + closeItStr + createImportDlgStr + pauseItStr + playItStr + closeImportStr + giveMinsSecsStr;// + minimizeItStr;// + writeNotesStr 
         document.body.appendChild(scriptElem);
     }
 
@@ -535,36 +605,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     divElem.setAttribute('aria-labelledby', 'dlgtitle');
     //divElem.setAttribute('show', '{ effect: "slide", complete: function() { alert("123"); } }');
     divElem.innerHTML = notesHTML;
-
-    /*var divElem = $(document.createElement('div'));
-    alert(1);
-    $(divElem).attr('id', 'dialog1');
-    $(divElem).attr('title', 'Play-n-Note');
-    $(divElem).attr('autoOpen', 'false');
-    $(divElem).attr('style', 'position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 36px; width:294px; background-color: #428BCA;');
-    $(divElem).attr('class', 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable draggable'); // ui-resizable
-    $(divElem).attr('role', 'dialog');
-    $(divElem).attr('aria-describedby', 'contentval');
-    $(divElem).attr('aria-labelledby', 'dlgtitle');
-    alert(2);
-    $(divElem).html(notesHTML);
-    alert(3);
-
-    var dialogOptions = {
-      "title" : "Play-n-Note",
-      "id" : "dialog1",
-      "width" : 294,
-      "style": "position: absolute; left: 12px; top: 10px; z-index: 50000; display: block; height: 36px; width:294px; background-color: #428BCA",
-      "class": "ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable draggable",
-      "height" : 36,
-      "modal" : false,
-      "resizable" : true,
-      "draggable" : true
-    };
-    alert(4);
-    $("<div />").dialog(dialogOptions);
-    alert(5);*/
-
 
     if ($(".course-modal-frame")) {
         $(".course-modal-frame").after(function() { return divElem; });
@@ -646,6 +686,14 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                 instant = $('me_flash_0').currentTime();
             }
             instant = Math.round(parseFloat(instant));
+        }
+    }
+
+    function playIt() {
+        if (window.QL_player != null) {
+            window.QL_player.mediaelement_handle.play();
+        } else if ($('me_flash_0') != null) {
+            $('me_flash_0').playMedia();
         }
     }
 

@@ -134,7 +134,7 @@ app.get('/auth/google',
 app.get('/auth/google/return',
   passport.authenticate('google', {failureRedirect: '/' }),
     function(req, res) {
-      console.log("redirecting to landing page .. might be slower because of trying to get mongodb connection");
+      //console.log("redirecting to landing page .. might be slower because of trying to get mongodb connection");
       res.redirect('/landing');
     });
   
@@ -219,9 +219,8 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
             for (i=0; i<obj.data.length; i++) {
               for (j=0; j<obj.data[i].videos.length; j++) {
                 for (k=0; k<obj.data[i].videos[j].notes.length; k++){
-                  console.log(obj.data[i].videos[j].notes[k].comments);
+                  //console.log(obj.data[i].videos[j].notes[k].comments);
                   obj.data[i].videos[j].notes[k].comments = unescape(obj.data[i].videos[j].notes[k].comments);
-                  console.log(obj.data[i].videos[j].notes[k].comments);
                 }
               }
             }
@@ -291,6 +290,29 @@ var subHeader = "";
                     }
                   }); 
 });*/
+
+app.get('/registerUserExtn', function(req, res) {
+  var gId = req.query.gId.trim();
+  gId = gId.substring(1, gId.length-1);
+  var displayName = req.query.dispName.trim();
+
+  User.find({googleId: gId}, function(err0, data0){
+    if (data0.length == 0) {
+      User.create({googleId: gId, displayName: displayName, provider: "google"});
+      unirest.post(LOCAL_NEO4J_URL)
+        .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+        .send({ "query" : "MERGE (user: User { user_id : { user_id }, name: { display_name }})",
+                "params" : {
+                            "user_id" : gId,
+                            "display_name" : displayName
+                           }
+              })
+        .end(function (response) {
+            //console.log(response);   
+        });
+    }
+  });
+});
 
 app.post('/submitNoteExtn', function(req, res) {
   var str = JSON.stringify(req.body);
@@ -364,6 +386,42 @@ app.get('/getSourceVideosExtn', function(req, res){
   });
 });
 
+app.get('/usersForVideoExtn', function(req, res){
+
+  var gId = req.query.gId.trim();
+  var vRL = req.query.vRL.trim();
+  var nameContains = req.query.nameContains.trim();
+  var noteCreators = req.query.createdNotes;
+  var queryStr = "MATCH (video: Video { video_id : { video_id }})-[vu:video_user]->(user: User) WHERE user.user_id <> '" + gId + "' AND user.name =~ '.*" + nameContains + ".*' RETURN user"; 
+  if (noteCreators == undefined || noteCreators == 'false') {
+    unirest.post(LOCAL_NEO4J_URL)
+    .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
+    .send({ "query" : queryStr,
+            "params" : {
+                        "video_id" : vRL
+                       }
+          })
+    .end(function (response) {
+        var users = response.body.data;
+        var responseStr = "[";
+        for (i = 0; i < users.length; i++) {
+          if (i > 0)
+            responseStr += ",";
+          responseStr += "{ \"displayName\": \"" + users[i][0].data.name + "\", \"gId\": \"" + users[i][0].data.user_id + "\" } ";
+          /*responseStr += "{ \"displayName\": \"abc\", \"gId\": \"123123123\" }, ";
+          responseStr += "{ \"displayName\": \"def\", \"gId\": \"546456456\" } ";*/
+        }
+        responseStr += "]";
+        res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
+        res.write( responseStr );
+        res.end('\n');
+    });
+  }
+  
+
+
+});
+
 app.get('/getNotes', function(req, res) {
   
   gId = req.query.googleId.trim();
@@ -391,6 +449,7 @@ app.get('/getNotesExtn', function(req, res) {
   timenow = req.query.timenow;
   sortby = req.query.sortby;
   open = req.query.open;
+  displayName = req.query.dispName.trim();
   if (open == null || open == "0")
     open = -1;
   else
@@ -407,7 +466,7 @@ app.get('/getNotesExtn', function(req, res) {
                              }
                 })
           .end(function (response) {
-                console.log(response.body);
+                //console.log(response.body);
                 ispublic = false;
                 try{
                   if (response.body != null && response.body.data != null && response.body.data[0] != null) {
@@ -474,7 +533,7 @@ app.get('/deleteNoteExtn', function(req, res) {
                              }
                 })
           .end(function (response) {
-                console.log(response.body);
+                //console.log(response.body);
                 user_note = User_Note.findOneAndRemove({googleId : gId, noteId: noteId}, 
                   function(err, docs) {
                     if (err) 
@@ -526,7 +585,7 @@ app.get('/toggleVideoNotesExtn', function(req, res) {
                              }
                 })
           .end(function (response) {
-                console.log(response.body);
+                //console.log(response.body);
                 var user_note = User_Note.update({googleId: uId, videoURL: vId}, {ispublic: open}, {multi: true},
                   function(err, data) {
                     if (err) 
@@ -559,7 +618,7 @@ app.get('/toggleNoteExtn', function(req, res) {
                              }
                 })
           .end(function (response) {
-                console.log(response.body);
+                //console.log(response.body);
                 var user_note = User_Note.update({googleId: uId, noteId: noteId}, {ispublic: open}, {multi: false},
                 function(err, data) {
                   if (err) 
@@ -584,14 +643,14 @@ app.get('/toggleTimeSortExtn', function(req, res) {
           .headers({ 'Accept' : 'application/json', 'Content-Type' : 'application/json' })
           .send({ "query" : "MERGE (user : User { user_id: { user_id }}) SET user.notes_public=" + open + " MATCH (user)-[uv:user_video]->(video) SET uv.last_viewed={timestamp} RETURN user",
                   "params" : {
-                              "user_id" : gId,
+                              "user_id" : uId,
                               "course_id" : cId,
                               "video_id" : vRL,
                               "timestamp" : new Date().getTime()
                              }
                 })
           .end(function (response) {
-                console.log(response.body);
+                //console.log(response.body);
                 var user_note = User_Note.find({googleId: gId, videoURL: vRL}, //{ sort: {instant: 1} }, 
                   function(err, data) {
                     if (err) 

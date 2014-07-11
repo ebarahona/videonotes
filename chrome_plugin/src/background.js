@@ -22,7 +22,7 @@ function isAuthorized() {
         dispName = data.name;
         chrome.storage.local.set({'gId': uId, 'displayName': dispName});
         //store this user information in data store
-        triggerGetNotes(uId);
+        triggerGetNotes(uId, dispName);
       },
       
       error: function (xhr, error) {
@@ -30,6 +30,22 @@ function isAuthorized() {
       },
       dataType: "json"
     });  
+  });
+}
+
+//var SERVER_URL = "http://localhost:3000";
+var SERVER_URL = "http://playnnote.herokuapp.com";
+
+function registerUser(id, name) {
+  //console.log('registerUser');
+  chrome.storage.local.get('gId', function(result) {
+    $.ajax({
+      type: 'GET',
+      url: SERVER_URL + "/registerUserExtn",
+      crossDomain: true,
+      data: {gId: id, dispName: name},
+      dataType: 'json'
+    });
   });
 }
 
@@ -42,24 +58,23 @@ var displaying = false;
 var uId;
 var dispName;
 var tabId;
-//var SERVER_URL = "http://localhost:3000";
-var SERVER_URL = "http://playnnote.herokuapp.com";
 
-function triggerGetNotes(uId) {
+function triggerGetNotes(uId, displayName) {
   //alert('triggerGetNotes');
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     var url = tabs[0].url;
     var lastWord = url.substring(url.lastIndexOf("/") + 1);
     if (lastWord.indexOf('index') < 0) {
       tabId = tabs[0].id;
-      loadNotes(uId, url, tabId);
+      loadNotes(uId, url, tabId, displayName);
     }
   });
 }
 
-function loadNotes(uId, url, tabId) {
+function loadNotes(uId, url, tabId, displayName) {
   //WARNING - dont make URL-REGEX a class var because it would be cached and .exec would give match null alternately
   //alert('loadNotes');
+  registerUser(uId, displayName);
   attachPrevNextLinks();
   var URL_REGEX = /(http|https):\/\/class.coursera.org\/([a-zA-Z0-9-]*)\/lecture\/([0-9]{0,4})/g; 
   var match = URL_REGEX.exec(url); //this would match all the groups mentioned in parentheses in the regex
@@ -77,7 +92,7 @@ function loadNotes(uId, url, tabId) {
   $.ajax({
       type: 'GET',
       url: SERVER_URL + '/getNotesExtn',
-      data: { googleId: uId, lId: lectureCode, cId: courseCode, videoURL: vId, timenow: timenow },
+      data: { googleId: uId, lId: lectureCode, cId: courseCode, videoURL: vId, timenow: timenow, dispName: displayName },
       dataType: 'json', //json works
       crossDomain: true, //crossdomain works
       error: function (textStatus, xhr, error) {
