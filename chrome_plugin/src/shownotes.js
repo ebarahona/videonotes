@@ -98,8 +98,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         $("#dialog1").html('');
         $("#dialog1").remove();
     }
-    //var SERVER_URL = 'https://playnnote.herokuapp.com';
-    var SERVER_URL = 'http://localhost:3000';
+    var SERVER_URL = 'https://playnnote.herokuapp.com';
+    //var SERVER_URL = 'http://localhost:3000';
     var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
 
     var tab_url = window.location.href;
@@ -726,11 +726,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     divElem.setAttribute('aria-labelledby', 'dlgtitle');
     divElem.innerHTML = notesHTML;
 
-    /*var richEditElem = document.createElement('textarea');
-    richEditElem.setAttribute('id','richEdit');
-    richEditElem.setAttribute('name', 'richEdit');
-    richEditElem.setAttribute('width', '100%');
-    richEditElem.setAttribute('style', 'margin:30px 0 0 0;min-height:1px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;');*/
     var commentsTxtElem = document.getElementById('commentsTxt');
 
     if ($(".course-modal-frame")) {
@@ -970,8 +965,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-//var SERVER_URL = "https://playnnote.herokuapp.com";
-var SERVER_URL = "http://localhost:3000";
+var SERVER_URL = "https://playnnote.herokuapp.com";
+//var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
