@@ -98,8 +98,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         $("#dialog1").html('');
         $("#dialog1").remove();
     }
-    var SERVER_URL = 'https://playnnote.herokuapp.com';
-    //var SERVER_URL = 'http://localhost:3000';
+    //var SERVER_URL = 'https://playnnote.herokuapp.com';
+    var SERVER_URL = 'http://localhost:3000';
     var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
 
     var tab_url = window.location.href;
@@ -142,41 +142,41 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         sort_instant = undefined;
     } else {
 
-        /*var styleElem = document.createElement('style');
+        var styleElem = document.createElement('style');
         styleElem.type = "text/css";
         styleElem.innerText = ".uploadcare-dialog-tab:before,.uploadcare-dialog-tab:hover:before,.uploadcare-dialog-disabled-tab:hover:before{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/tab-icons.png\")}.uploadcare-dialog-tab_current:before,.uploadcare-dialog-tab_current:hover:before{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/tab-icons-active.png\")}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/crop-border-bg.gif\")}.uploadcare-dialog-file-sources:before{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/arrow.png\")}.uploadcare-crop-widget--loading{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/loading-spinner.gif\");background-size:25px 25px}.uploadcare-dpm-file-remove{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/remove-button.png\")}.uploadcare-dpm-file-error:before{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/error-icon.png\")}.uploadcare-dpm-file-preview{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/file-icon.png\")}.uploadcare-dialog-error-tab-illustration{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/error-default.png\")}.uploadcare-dialog-error-tab-image .uploadcare-dialog-error-tab-illustration{background-image:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/error-image.png\")}.uploadcare-dialog{background:url(\"http://ucarecdn.com/widget/1.0.0/uploadcare/images/dialog-overlay.png\");background:rgba(48,48,48,0.7)}html.uploadcare-dialog-opened{overflow:hidden}.uploadcare-dialog{font-family:\"Helvetica Neue\",Helvetica,Arial,\"Lucida Grande\",sans-serif;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;overflow:auto;white-space:nowrap;text-align:center}.uploadcare-dialog:before{display:inline-block;vertical-align:middle;content:'';height:100%;position:static;width:0}.uploadcare-dialog *{margin:0;padding:0}.uploadcare-dialog .uploadcare-dialog-panel{border-radius:8px;-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.35);-moz-box-shadow:0 1px 2px rgba(0,0,0,0.35);box-shadow:0 1px 2px rgba(0,0,0,0.35)}.uploadcare-dialog{-webkit-transition:opacity .25s cubic-bezier(0.05,0.7,0.25,1);-moz-transition:opacity .25s cubic-bezier(0.05,0.7,0.25,1);transition:opacity .25s cubic-bezier(0.05,0.7,0.25,1);opacity:0}.uploadcare-dialog .uploadcare-dialog-inner-wrap{-webkit-transition:-webkit-transform .25s cubic-bezier(0.05,0.7,0.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0.05,0.7,0.25,1);transition:transform .25s cubic-bezier(0.05,0.7,0.25,1);-webkit-transform:scale(0.8);-moz-transform:scale(0.8);transform:scale(0.8);-webkit-transform-origin:50% 100%;-moz-transform-origin:50% 100%;transform-origin:50% 100%}.uploadcare-dialog.uploadcare-active{opacity:1}.uploadcare-dialog.uploadcare-active .uploadcare-dialog-inner-wrap{-webkit-transform:none;-moz-transform:none;transform:none}.uploadcare-dialog-inner-wrap{display:inline-block;vertical-align:middle;white-space:normal;text-align:left;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;position:relative;width:100%;min-width:760px;max-width:944px;margin:0 auto;padding:0 33px 0 11px}.uploadcare-dialog-close{width:33px;height:33px;line-height:33px;font-size:29.7px;font-weight:bold;color:#fff;cursor:pointer;position:absolute;text-align:center;right:0}.uploadcare-dialog-panel{overflow:hidden;position:relative;background:#efefef;font-weight:normal}.uploadcare-dialog-tabs{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;width:75px;height:616px;float:left;background:#dee0e1;border-right:1px solid #c5cace}.uploadcare-dialog-tab{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;height:56px;position:relative;border-bottom:1px solid #c5cace;cursor:pointer}.uploadcare-dialog-tab .uploadcare-dialog-icon,.uploadcare-dialog-tab:before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;position:absolute;top:50%;left:50%;display:inline-block;width:50px;height:50px;margin:-25px;opacity:.66}.uploadcare-dialog-tab:before{content:''}.uploadcare-dialog-tab:hover{background-color:#e5e7e8}.uploadcare-dialog-tab:hover .uploadcare-dialog-icon{opacity:1}.uploadcare-dialog-tab:hover:before{opacity:1}.uploadcare-dialog-tab_current{margin-right:-1px;border-right:1px solid #efefef}.uploadcare-dialog-tab_current,.uploadcare-dialog-tab_current:hover{background-color:#efefef}.uploadcare-dialog-tab_current .uploadcare-dialog-icon{opacity:1}.uploadcare-dialog-tab_current:before{opacity:1}.uploadcare-dialog-tab_hidden{display:none!important}.uploadcare-dialog-disabled-tab{cursor:default}.uploadcare-dialog-disabled-tab:hover{background-color:#dee0e1}.uploadcare-dialog-tab-preview:before{display:none}.uploadcare-dialog-tab-file:before{background-position:0 -50px}.uploadcare-dialog-tab-url:before{background-position:0 -100px}.uploadcare-dialog-tab-facebook:before{background-position:0 -150px}.uploadcare-dialog-tab-dropbox:before{background-position:0 -200px}.uploadcare-dialog-tab-gdrive:before{background-position:0 -250px}.uploadcare-dialog-tab-instagram:before{background-position:0 -300px}.uploadcare-dialog-tab-vk:before{background-position:0 -350px}.uploadcare-dialog-tab-evernote:before{background-position:0 -400px}.uploadcare-dialog-tab-box:before{background-position:0 -450px}.uploadcare-dialog-tab-skydrive:before{background-position:0 -500px}.uploadcare-dialog-tabs-panel{position:relative;display:none;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;margin-left:75px;height:616px;line-height:22px;font-size:16px;color:black}.uploadcare-dialog-tabs-panel .uploadcare-dialog-input{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;width:100%;height:44px;margin-bottom:22px;padding:11px 12.5px;font-family:inherit;font-size:16px;border:1px solid #c5cace;background:white;color:black}.uploadcare-dialog-tabs-panel_current{display:block}.uploadcare-pre{white-space:pre;font-family:monospace;margin:22px auto;padding:22px 25px;background-color:white;border:1px solid #c5cace;border-radius:3px;text-align:left;font-size:15px;line-height:22px}.uploadcare-dialog-footer{font-size:13px;text-align:center;color:#ddd;margin:15px}.uploadcare-dialog .uploadcare-dialog-footer a{color:#c2c2c2;text-decoration:none}.uploadcare-dialog .uploadcare-dialog-footer a:hover{text-decoration:underline}.uploadcare-dialog-title{font-size:22px;line-height:1;margin-bottom:22px}.uploadcare-dialog-title.uploadcare-error{color:red}.uploadcare-dialog-title2{font-size:20px;line-height:1;padding-bottom:11px}.uploadcare-dialog-big-title{font-size:40px;font-weight:bold;line-height:1em;margin-bottom:50px}.uploadcare-dialog-label{font-size:15px;line-height:25px;margin-bottom:12.5px;word-wrap:break-word}.uploadcare-dialog-large-text{font-size:20px;font-weight:normal;line-height:1.5em}.uploadcare-dialog-large-text .uploadcare-pre{display:inline-block;font-size:18px}.uploadcare-dialog-section{margin-bottom:22px}.uploadcare-dialog-normal-text{font-size:13px;color:#545454}.uploadcare-dialog-button{display:inline-block;font-size:13px;line-height:31px;padding:0 12.5px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:#444}.uploadcare-dialog-button,.uploadcare-dialog-button[disabled]:active,.uploadcare-dialog-button.uploadcare-disabled-el:active,.uploadcare-dialog-button[disabled]:hover,.uploadcare-dialog-button.uploadcare-disabled-el:hover{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;border-color:gainsboro}.uploadcare-dialog-button:hover{background:#f8f8f8;background:-webkit-linear-gradient(#fbfbfb,#f6f6f6);background:-moz-linear-gradient(#fbfbfb,#f6f6f6);background:linear-gradient(#fbfbfb,#f6f6f6);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button:active{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button[disabled],.uploadcare-dialog-button.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button:active,.uploadcare-dialog-button:hover{border-color:#cbcbcb}.uploadcare-dialog-button-success{display:inline-block;font-size:13px;line-height:31px;padding:0 12.5px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:white}.uploadcare-dialog-button-success,.uploadcare-dialog-button-success[disabled]:active,.uploadcare-dialog-button-success.uploadcare-disabled-el:active,.uploadcare-dialog-button-success[disabled]:hover,.uploadcare-dialog-button-success.uploadcare-disabled-el:hover{background:#3786eb;background:-webkit-linear-gradient(#3b8df7,#347fdf);background:-moz-linear-gradient(#3b8df7,#347fdf);background:linear-gradient(#3b8df7,#347fdf);-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;border-color:#266fcb}.uploadcare-dialog-button-success:hover{background:#3279d6;background:-webkit-linear-gradient(#3986ea,#2c6dc2);background:-moz-linear-gradient(#3986ea,#2c6dc2);background:linear-gradient(#3986ea,#2c6dc2);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success:active{background:#3177d3;background:-webkit-linear-gradient(#3680e1,#2c6fc5);background:-moz-linear-gradient(#3680e1,#2c6fc5);background:linear-gradient(#3680e1,#2c6fc5);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success[disabled],.uploadcare-dialog-button-success.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button-success:active,.uploadcare-dialog-button-success:hover{border-color:#266eca #1f62b7 #1753a1}.uploadcare-dialog-button-success:hover{-webkit-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-moz-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5)}.uploadcare-dialog-button-success:active{-webkit-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-moz-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);box-shadow:inset 0 1px 3px rgba(22,82,160,0.4)}.uploadcare-dialog-big-button{border-radius:100px;font-size:20px;font-weight:normal;letter-spacing:1px;color:white;line-height:33px;border:solid 1px #276fcb;text-shadow:0 -1px #2a7ce5;display:inline-block;padding:16.5px 2em;cursor:pointer;-webkit-box-shadow:inset 0 -2px #1f66c1;-moz-box-shadow:inset 0 -2px #1f66c1;box-shadow:inset 0 -2px #1f66c1;background:#458dee;background:-webkit-linear-gradient(#4892f6,#4289e6);background:-moz-linear-gradient(#4892f6,#4289e6);background:linear-gradient(#4892f6,#4289e6)}.uploadcare-dialog-big-button:hover{-webkit-box-shadow:inset 0 -2px #1652a0;-moz-box-shadow:inset 0 -2px #1652a0;box-shadow:inset 0 -2px #1652a0;background:#3279d6;background:-webkit-linear-gradient(#3986eb,#2c6dc2);background:-moz-linear-gradient(#3986eb,#2c6dc2);background:linear-gradient(#3986eb,#2c6dc2)}.uploadcare-dialog-big-button:active{-webkit-box-shadow:inset 0 2px #2561b9;-moz-box-shadow:inset 0 2px #2561b9;box-shadow:inset 0 2px #2561b9;background:#2c6ec3;background:-webkit-linear-gradient(#2c6ec3,#2c6ec3);background:-moz-linear-gradient(#2c6ec3,#2c6ec3);background:linear-gradient(#2c6ec3,#2c6ec3)}.uploadcare-dialog-preview-image-wrap1{width:100%;height:462px;display:table}.uploadcare-dialog-preview-image-wrap2{display:table-cell;vertical-align:middle}.uploadcare-dialog-preview-image{max-width:100%;max-height:462px;display:block;margin:0 auto}.uploadcare-crop-widget .jcrop-handle:before{content:'';display:block;width:26px;height:26px;margin:-9px}.uploadcare-dialog-inner-footer{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;background:#fff3be;border-top:1px solid #efe2a9;height:66px;padding:16.5px 25px 0}.uploadcare-dialog-inner-footer .uploadcare-dialog-button-success{float:right}.uploadcare-dialog-inner-footer .uploadcare-dialog-button{float:left}.uploadcare-dialog-inner-footer .uploadcare-dialog-button-success,.uploadcare-dialog-inner-footer .uploadcare-dialog-button{min-width:100px;text-align:center;margin-right:0}.uploadcare-dialog-inner-footer .uploadcare-error{color:red}.uploadcare-dialog-inner-footer-text{text-align:center;color:#85732c;font-size:15px;line-height:33px}.uploadcare-dialog-message-center{text-align:center;padding-top:110px}.uploadcare-dialog-preview-center{text-align:center;padding-top:176px}.uploadcare-dialog-preview-circle{width:66px;height:66px;display:inline-block;margin-bottom:22px}.uploadcare-dialog-error-tab-wrap{height:100%;text-align:center;white-space:nowrap}.uploadcare-dialog-error-tab-wrap:before{display:inline-block;vertical-align:middle;content:'';height:100%;position:static;width:0}.uploadcare-dialog-error-tab-wrap .uploadcare-dialog-title{margin-bottom:12px}.uploadcare-dialog-error-tab-wrap .uploadcare-dialog-error-tab-illustration,.uploadcare-dialog-error-tab-wrap .uploadcare-dialog-normal-text{margin-bottom:38px}.uploadcare-dialog-error-tab-wrap .uploadcare-dialog-button-success{margin:0}.uploadcare-dialog-error-tab-wrap2{display:inline-block;vertical-align:middle;white-space:normal;margin-top:-22px}.uploadcare-dialog-error-tab-illustration{display:inline-block;width:170px;height:120px;background-position:center;background-repeat:no-repeat}.uploadcare-if-draganddrop{display:none}@media screen and (min-width:600px){.uploadcare-draganddrop .uploadcare-if-no-draganddrop{display:none}.uploadcare-draganddrop .uploadcare-if-draganddrop{display:block}.uploadcare-draganddrop .uploadcare-dialog-file-drop-area{border:dashed 3px #c5cacd;background:rgba(255,255,255,0.64)}.uploadcare-draganddrop .uploadcare-dialog-file-title{color:#dee0e1;text-shadow:0 1px white;margin-top:0}}.uploadcare-dialog-file-drop-area{width:100%;height:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;border:none;text-align:center;border-radius:3px;padding-top:70px}.uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{margin-top:11px;margin-bottom:55px}.uploadcare-dialog-file-title{font-size:40px;line-height:1;color:black;font-weight:bold;margin:66px 0}.uploadcare-dialog-file-or{font-size:13px;color:#8f9498;margin-bottom:33px}.uploadcare-dialog-file-sources{position:relative;display:inline-block;padding:0 80px 0 100px;line-height:2em}.uploadcare-dialog-file-sources:before{background-repeat:no-repeat;content:'';display:block;position:absolute;width:67px;height:44px;padding:0;top:-30px;left:10px}.uploadcare-dialog-file-source{display:inline;font-size:15px;margin-right:.2em;cursor:pointer;font-weight:300;white-space:nowrap}.uploadcare-dialog-file-source:after{content:'\00B7';color:#b7babc;margin-left:.5em}.uploadcare-dialog-file-source:last-child:after{display:none}.uploadcare-dragging .uploadcare-dialog-file-or,.uploadcare-dragging .uploadcare-dialog-file-sources,.uploadcare-dragging .uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{display:none}.uploadcare-dragging .uploadcare-dialog-file-drop-area{background-color:#f0f0f0;border-color:#b3b5b6;padding-top:264px}.uploadcare-dragging .uploadcare-dialog-file-title{color:#707478}.uploadcare-dragging.uploadcare-dialog-file-drop-area{background-color:#f2f7fe;border-color:#438ae7}.uploadcare-dragging.uploadcare-dialog-file-drop-area .uploadcare-dialog-file-title{color:#438ae7}.uploadcare-dpm-file-list{height:484px;overflow:auto;margin:0 -25px -22px 0}.uploadcare-dpm-file-item{border-top:1px solid #e3e3e3;border-bottom:1px solid #e3e3e3;margin-bottom:-1px;display:table;table-layout:fixed;width:100%;padding:10px 0;min-height:20px;font-size:13px;line-height:1.2}.uploadcare-dpm-file-item>*{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:table-cell;vertical-align:middle;padding-right:20px}.uploadcare-dpm-file-item:last-child{margin-bottom:0}.uploadcare-dpm-file-item:hover{background:#ececec}.uploadcare-dpm-file-item:hover .uploadcare-dpm-file-remove{display:inline-block}.uploadcare-dpm-uploaded .uploadcare-dpm-file-progressbar-wrap{display:none}.uploadcare-dpm-error .uploadcare-dpm-file-error{display:table-cell}.uploadcare-dpm-error .uploadcare-dpm-file-size,.uploadcare-dpm-error .uploadcare-dpm-file-progressbar-wrap{display:none}.uploadcare-dpm-file-preview,.uploadcare-dpm-file-error:before{content:'';display:inline-block;width:20px;height:20px;margin:-3.5px .7em -3.5px 0}.uploadcare-dpm-file-preview-wrap{width:45px;display:table-cell;text-align:center;line-height:0;padding-right:10px}.uploadcare-dpm-file-preview{margin:0}.uploadcare-dpm-file-name{width:100%;word-wrap:break-word}.uploadcare-dpm-file-size{width:3.5em;text-align:left}.uploadcare-dpm-file-progressbar-wrap{width:80px}.uploadcare-dpm-file-progressbar{width:100%;height:8px;background:#e0e0e0;border-radius:100px}.uploadcare-dpm-file-progressbar-value{height:100%;background:#d6b849;border-radius:100px}.uploadcare-dpm-file-error{width:200px;display:none;color:#f5444b}.uploadcare-dpm-file-remove-wrap{width:20px;text-align:right;line-height:0}.uploadcare-dpm-file-remove{display:none;width:20px;height:20px;cursor:pointer}.uploadcare-dialog-source-base-wrap{height:616px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.uploadcare-dialog-multiple .uploadcare-dialog-source-base-wrap{height:550px}.uploadcare-dialog-padding{padding:22px 25px}.uploadcare-dialog-remote-iframe-wrap{overflow:auto;-webkit-overflow-scrolling:touch}.uploadcare-dialog-remote-iframe{display:block;width:100%;height:100%;border:0;opacity:0}.uploadcare-dialog-source-base-footer{display:none}.uploadcare-dialog-multiple .uploadcare-dialog-source-base-footer{display:block}.uploadcare-dialog-source-base-counter{display:none}.uploadcare-if-mobile{display:none}@media screen and (max-width:600px){.uploadcare-dialog-opened{overflow:visible!important;position:static!important;width:auto!important;height:auto!important;min-width:0!important;background:#efefef!important}body.uploadcare-dialog-opened>:not(.uploadcare-dialog){display:none!important}.uploadcare-if-mobile{display:block}.uploadcare-if-no-mobile{display:none}.uploadcare-dialog{position:absolute;overflow:visible}.uploadcare-dialog:before{display:none}.uploadcare-dialog-inner-wrap{padding:0;min-width:310px;height:100%}.uploadcare-dialog-close{position:fixed;z-index:2;color:#000;width:50px;height:50px;line-height:45px}.uploadcare-dialog-footer{display:none}.uploadcare-dialog .uploadcare-dialog-panel{overflow:visible;height:100%;border-radius:0;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none}.uploadcare-dialog .uploadcare-dialog-tabs-panel{padding:50px 0 0;margin:0;height:100%}.uploadcare-dialog .uploadcare-dialog-source-base-wrap{height:auto}.uploadcare-dialog .uploadcare-dialog-remote-iframe-wrap{overflow:visible;height:100%}.uploadcare-dialog .uploadcare-dialog-padding{padding:22px 15px}.uploadcare-dialog .uploadcare-dialog-preview-image-wrap1{height:auto;padding-bottom:50px}.uploadcare-dialog .uploadcare-dpm-file-list{height:auto;margin:0 -15px 0 0}.uploadcare-dialog .uploadcare-dpm-file-item>*{padding-right:10px}.uploadcare-dialog .uploadcare-dpm-file-progressbar-wrap{width:40px}.uploadcare-dialog .uploadcare-dpm-file-remove{display:inline-block}.uploadcare-dialog .uploadcare-dialog-file-sources,.uploadcare-dialog .uploadcare-dialog-file-or{display:none}.uploadcare-dialog .uploadcare-dialog-file-title{font-size:30px;margin:22px 0}.uploadcare-dialog .uploadcare-dialog-file-drop-area{padding-top:0}.uploadcare-dialog .uploadcare-dialog-inner-footer{position:fixed;left:0;bottom:0;width:100%;min-width:310px;height:50px;padding:8.5px 15px 0;background:rgba(255,243,190,0.95)}.uploadcare-dialog .uploadcare-dialog-inner-footer-text{display:none}.uploadcare-dialog .uploadcare-dialog-source-base-counter{display:inline}.uploadcare-dialog .uploadcare-dialog-multiple .uploadcare-dialog-remote-iframe-wrap:after{content:'';display:block;height:50px}.uploadcare-dialog .uploadcare-dialog-multiple .uploadcare-dialog-source-base-wrap{padding-bottom:50px}.uploadcare-dialog .uploadcare-dialog-multiple .uploadcare-dialog-padding{padding-bottom:72px}.uploadcare-dialog .uploadcare-dialog-tabs{position:fixed;top:0;left:0;width:100%;min-width:310px;height:auto;float:none;z-index:1;background:transparent}.uploadcare-dialog .uploadcare-dialog-tab{display:none;height:50px;white-space:nowrap;background:#dee0e1}.uploadcare-dialog .uploadcare-dialog-tab .uploadcare-dialog-icon,.uploadcare-dialog .uploadcare-dialog-tab:before{position:static;margin:0 6px;vertical-align:middle;opacity:1}.uploadcare-dialog .uploadcare-dialog-tab_current{display:block;background:rgba(239,239,239,0.95)}.uploadcare-dialog .uploadcare-dialog-tab:after{content:attr(title);font-size:20px;vertical-align:middle}.uploadcare-dialog .uploadcare-dialog-opened-tabs .uploadcare-dialog-tabs-panel_current{display:none}.uploadcare-dialog .uploadcare-dialog-opened-tabs .uploadcare-dialog-tabs{position:relative;z-index:3}.uploadcare-dialog .uploadcare-dialog-opened-tabs .uploadcare-dialog-tab{display:block}.uploadcare-dialog .uploadcare-dialog-opened-tabs .uploadcare-dialog-tab_current{background:#efefef}.uploadcare-dialog .uploadcare-dialog-panel:not(.uploadcare-dialog-opened-tabs) .uploadcare-dialog-tab_current{text-align:center}.uploadcare-dialog .uploadcare-dialog-panel:not(.uploadcare-dialog-opened-tabs) .uploadcare-dialog-tab_current:after{content:'';position:absolute;top:16px;left:14px;display:block;width:22px;height:18px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAOCAQAAAD+6Ta3AAAARklEQVR4Ae3SsRFEIQhAwW1IR2s3s6zTGUN+AxdK5tucAIBmOuKSY2pQbHHZVhgiweAnEixW1uC0VdSU41Xo19+te73+9AGOg1FzTMH13gAAAABJRU5ErkJggg==);background-size:22px}}.uploadcare-crop-widget .jcrop-holder{direction:ltr;text-align:left}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-color:white;background-position:top left;background-repeat:repeat;font-size:0;position:absolute}.uploadcare-crop-widget .jcrop-vline{height:100%;width:1px!important}.uploadcare-crop-widget .jcrop-hline{height:1px!important;width:100%}.uploadcare-crop-widget .jcrop-vline.right{right:0}.uploadcare-crop-widget .jcrop-hline.bottom{bottom:0}.uploadcare-crop-widget .jcrop-handle{background-color:#333;border:1px #eee solid;font-size:1px}.uploadcare-crop-widget .jcrop-tracker{height:100%;width:100%;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none}.uploadcare-crop-widget .jcrop-handle.ord-n{left:50%;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-s{bottom:0;left:50%;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-handle.ord-e{margin-right:-4px;margin-top:-4px;right:0;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-w{left:0;margin-left:-4px;margin-top:-4px;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-nw{left:0;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-ne{margin-right:-4px;margin-top:-4px;right:0;top:0}.uploadcare-crop-widget .jcrop-handle.ord-se{bottom:0;margin-bottom:-4px;margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-handle.ord-sw{bottom:0;left:0;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-n,.uploadcare-crop-widget .jcrop-dragbar.ord-s{height:7px;width:100%}.uploadcare-crop-widget .jcrop-dragbar.ord-e,.uploadcare-crop-widget .jcrop-dragbar.ord-w{height:100%;width:7px}.uploadcare-crop-widget .jcrop-dragbar.ord-n{margin-top:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-s{bottom:0;margin-bottom:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-e{margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-dragbar.ord-w{margin-left:-4px}.uploadcare-crop-widget .jcrop-light .jcrop-vline,.uploadcare-crop-widget .jcrop-light .jcrop-hline{background:#FFF;filter:Alpha(opacity=70)!important;opacity:.7!important}.uploadcare-crop-widget .jcrop-light .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#000;border-color:#FFF;border-radius:3px}.uploadcare-crop-widget .jcrop-dark .jcrop-vline,.uploadcare-crop-widget .jcrop-dark .jcrop-hline{background:#000;filter:Alpha(opacity=70)!important;opacity:.7!important}.uploadcare-crop-widget .jcrop-dark .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#FFF;border-color:#000;border-radius:3px}.uploadcare-crop-widget .jcrop-holder img,.uploadcare-crop-widget img.jcrop-preview{max-width:none}.uploadcare-crop-widget{font-family:\"Helvetica Neue\",Helvetica,Arial,\"Lucida Grande\",sans-serif;position:relative}.uploadcare-crop-widget .jcrop-holder{margin:0 auto;-webkit-transform:translateZ(0)}.uploadcare-crop-widget--loading{background-repeat:no-repeat;background-position:center}.uploadcare-crop-widget img{display:block}.uploadcare-crop-widget__error{text-align:center;display:none}.uploadcare-crop-widget--error .uploadcare-crop-widget__error{display:block}.uploadcare-crop-widget__error__title{font-size:20px}.uploadcare-crop-widget__error__text{font-size:15px}.uploadcare-widget{position:relative;display:inline-block;vertical-align:baseline;line-height:2;white-space:nowrap}.uploadcare-widget-status-ready .uploadcare-widget-button-open,.uploadcare-widget-status-started .uploadcare-widget-status,.uploadcare-widget-status-started .uploadcare-widget-text,.uploadcare-widget-status-started .uploadcare-widget-button-cancel,.uploadcare-widget-status-loaded .uploadcare-widget-text,.uploadcare-widget-status-loaded .uploadcare-widget-button-remove,.uploadcare-widget-status-error .uploadcare-widget-text,.uploadcare-widget-status-error .uploadcare-widget-button-open{display:inline-block!important}.uploadcare-widget-status{display:none!important;width:1.8em;height:1.8em;margin:-1em 0;margin-right:1ex;line-height:0;vertical-align:middle}.uploadcare-widget-circle--text .uploadcare-widget-circle-back{width:100%;height:100%;border-radius:50%;display:table;white-space:normal}.uploadcare-widget-circle--text .uploadcare-widget-circle-text{display:table-cell;vertical-align:middle;text-align:center;font-size:60%;line-height:1}.uploadcare-widget-circle--canvas canvas{width:100%;height:100%}.uploadcare-widget-text{display:none!important;margin-right:1ex}.uploadcare-widget-file-name{display:inline}.uploadcare-link,.uploadcare-link:link,.uploadcare-link:visited{cursor:pointer;color:#1a85ad;text-decoration:none;border-bottom:1px dotted #1a85ad;border-color:-moz-initial;border-color:initial}.uploadcare-link:hover,.uploadcare-link:active{color:#176e8f}.uploadcare-widget-button{display:none!important;color:white;padding:.4em .6em;line-height:1;margin:-1em 0;margin-right:.5ex;border-radius:.25em;background:#c3c3c3;cursor:default}.uploadcare-widget-button:hover{background:#b3b3b3}.uploadcare-widget-button-open{padding:.5em .8em;background:#18a5d0}.uploadcare-widget-button-open:hover{background:#0094c0}.uploadcare-widget-dragndrop-area{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:none;position:absolute;top:50%;margin-top:-1.3em;left:-1em;padding:0 1em;line-height:2.6;min-width:100%;text-align:center;background-color:#f0f0f0;color:#707478;border:1px dashed #b3b5b6;border-radius:100px}.uploadcare-widget.uploadcare-dragging .uploadcare-widget-dragndrop-area{background-color:#f2f7fe;border-color:#438ae7;color:#438ae7}.uploadcare-dragging .uploadcare-widget-dragndrop-area{display:block}.uploadcare-dialog-opened .uploadcare-widget-dragndrop-area{display:none}";
         document.head.appendChild(styleElem);
 
         var ckeditorjs = document.createElement('script');
         ckeditorjs.type = "text/javascript";
-        ckeditorjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/ckeditor.js";
+        ckeditorjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/ckeditor.js";
         document.head.appendChild(ckeditorjs);
 
         var ckestyle = document.createElement('style');
         ckestyle.type = "text/css";
-        ckestyle.innerText = '.cke{visibility:hidden;}';
+        ckestyle.innerText = '.cke{visibility:hidden;} .cke_textarea_inline{padding: 10px;height: 200px; overflow: auto; border: 1px solid gray; background-color: white; color: black; font-size: 12px; -webkit-appearance: textfield;}';
         document.head.appendChild(ckestyle);
 
         var configjs = document.createElement('script');
         configjs.type = "text/javascript";
-        configjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/config.js";
+        configjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/config.js";
         document.head.appendChild(configjs);
 
         var editorcss = document.createElement('link');
         editorcss.type = "text/css";
         editorcss.rel = "stylesheet";
-        editorcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/skins/moono/editor.css";
+        editorcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor/skins/bootstrapck/editor.css";
         document.head.appendChild(editorcss);
 
         var langen = document.createElement('script');
         langen.type = "text/javascript";
-        langen.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/lang/en.js";
+        langen.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/lang/en.js";
         document.head.appendChild(langen);
 
         var stylesjs = document.createElement('script');
         stylesjs.type = "text/javascript";
-        stylesjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/styles.js";
-        document.head.appendChild(stylesjs);*/
+        stylesjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/styles.js";
+        document.head.appendChild(stylesjs);
 
         var juicss = document.createElement('link');
         juicss.type = "text/css";
@@ -199,13 +199,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         juixjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.dialogextend.js";
         document.head.appendChild(juixjs);*/
 
-        /*var ckeditorjs = document.createElement('script');
-        ckeditorjs.type = "text/javascript";
-        ckeditorjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/ckeditor.js";
-        document.head.appendChild(ckeditorjs);
-
-        var ckestyle = document.createElement('style');*/
-
         var ttjs = document.createElement('script');
         ttjs.type = "text/javascript";
         ttjs.src = RESOURCE_DOMAIN + "/javascripts/jquery.darktooltip.min.js";
@@ -218,11 +211,11 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         document.head.appendChild(ttcss);
 
         //This reset css messes up the format in the table. If commented out, the <ins> stops to work. Removed the table from reset.css
-        /*var resetcss = document.createElement('link');
+        var resetcss = document.createElement('link');
         resetcss.type = "text/css";
         resetcss.rel = "stylesheet";
         resetcss.href = RESOURCE_DOMAIN + "/stylesheets/reset.css";
-        document.head.appendChild(resetcss);*/
+        document.head.appendChild(resetcss);
 
         /*var eq_configjs = document.createElement('script');
         eq_configjs.type = "text/javascript";
@@ -250,7 +243,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var highlightpackjs = document.createElement('script');
         highlightpackjs.type = "text/javascript";
         highlightpackjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js";
-        document.head.appendChild(highlightpackjs);
+        document.head.appendChild(highlightpackjs);*/
 
         var stylecss = document.createElement('link');
         stylecss.type = "text/css";
@@ -263,15 +256,12 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         findjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/find/dialogs/find.js";
         document.head.appendChild(findjs);
 
-        var dialogcss = document.createElement('link');
-        dialogcss.type = "text/css";
-        dialogcss.rel = "stylesheet";
-        dialogcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor_basic/plugins/skins/moono/dialog.css";
-        document.head.appendChild(dialogcss);*/
-
         var scriptElem = document.createElement('script');
         scriptElem.type = "text/javascript";
         scriptElem.id = "fns";
+        var scriptElem2 = document.createElement('script');
+        scriptElem2.type = "text/javascript";
+        scriptElem2.id = "fns2";
         var vardefs = "var notes_public, sort_instant, rows_hidden; var SERVER_URL='" + SERVER_URL + "'; var RESOURCE_DOMAIN='" + RESOURCE_DOMAIN + "'; var rich_text = false; var rtdisplayed = ''; var display_state = 'normal'; ";
         var moveToStr = "function moveTo(toTime) { " +
                             "if (window.QL_player != null) { " +
@@ -451,14 +441,143 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                     "}); " + 
                                 "} ";
 
+        var createCommentsTextStr = "function createCommentsTextarea() {    return \"<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:104px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>\";} ";
+
+        var createCommentsDivStr = "function createCommentsDiv() {    return \"<div id='commentsTxt' contenteditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='min-height:104px;width:100%;background-color:#fcfbf7; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'><p></p></div>\";} ";
+
+
+        var writeNotesStr = "function writeRichNote(gIdvId) { " + 
+                                "removeShortCuts(); " +
+                                "gId = gIdvId.split('$')[0]; vId = gIdvId.split('$')[1] + '$' + gIdvId.split('$')[2]; " + 
+                                
+                                "if (!rich_text) { " + 
+//" alert(\"not rich_text\"); " +                                
+                                    "$('textarea').remove('#commentsTxt'); " +
+                                    "rich_text = true; " + 
+                                    "var richeditor = createCommentsDiv(); " +
+                                    "$(\"#notesTbl\").before(richeditor); " + 
+//" alert(\"cke_commentsTxt not present\"); " +                                
+                                        "CKEDITOR.disableAutoInline = true; " +
+                                        "CKEDITOR.inline('commentsTxt', {on: { instanceReady : function(ev) { " + 
+                                                                                    "var dlg = document.getElementById(\"dialog1\"); " + 
+                                                                                    "var dlgleft = $(\"#dialog1\").css('left'); dlgleft = parseInt(dlgleft.substring(0, dlgleft.length-2)); " +
+                                                                                    "elem = document.getElementById(\"cke_commentsTxt\"); " + 
+    //"alert ('elem created'); " +
+                                                                                    "$(\"#cke_commentsTxt\").css('top','0px'); " +
+                                                                                    "$(\"#cke_commentsTxt\").css('position','fixed'); " + 
+                                                                                    "$(\"#cke_commentsTxt\").css('left','16px'); " + 
+                                                                                    "$(\"#cke_commentsTxt\").css('z-index','100020'); $(\"#cke_commentsTxt\").show(); " +
+    //"alert ('z-index hchanged'); " +
+                                                                                 "} " +
+                                                                            "} " +
+                                                                        "}); " + 
+                                        "$(\"#notesTbl\").css('top', '90px'); " +
+                                        "$(\"#dialog1\").css('width', '60%'); $(\"#notesTbl\").css('width', '100%'); $(\"div[contenteditable='true']\").css('width', '100%'); " + 
+                                        "$(\"#dialog1\").css('top','65px'); " +
+                                        "if (window.QL_player != null) { " +
+                                            "window.QL_player.mediaelement_handle.pause(); " + 
+                                            "instant = window.QL_player.mediaelement_media.currentTime; " +
+                                        "} else {" + 
+                                            "if ($('me_flash_0') != null) { " + 
+                                                "$('me_flash_0').pauseMedia(); " + 
+                                                "instant = $('me_flash_0').currentTime(); " +
+                                            " } " +
+                                        "} " +
+                                "} else { " + 
+                                    "$('div').remove('#cke_commentsTxt'); " +
+                                    "$('div').remove('#commentsTxt'); " +
+                                    "rich_text = false; " + 
+                                    "$(\"#dialog1\").css('top','10px'); " +
+                                    "$(\"#notesTbl\").css('top', '94px'); " +
+                                    "var txteditor = createCommentsTextarea(); " +
+                                    "$(\"#notesTbl\").before(txteditor); " + 
+
+                                    "$('#commentsTxt').keydown(function (e) { " +
+                                        "pauseIt(); " +
+                                        "if (e.keyCode == 8) { " +
+                                            "if ($('#commentsTxt').val().length < 2) { " +
+                                                "if (window.QL_player != null) { " +
+                                                    "window.QL_player.mediaelement_handle.play(); " +
+                                                "} else if ($('me_flash_0') != null) { " +
+                                                    "$('me_flash_0').playMedia(); " +
+                                                "} " +
+                                                "instant = 0; " +
+                                            "} " +            
+                                        "} else if (e.keyCode == 13) { " + 
+                                            "if (window.QL_player != null) { " +
+                                                "window.QL_player.mediaelement_handle.play(); " +
+                                            "} else if ($('me_flash_0') != null) { " +
+                                                "$('me_flash_0').playMedia(); " +
+                                            "} " +
+                                            "text = $('#commentsTxt').val(); " +
+                                            "timenow = new Date().getTime(); " +
+                                            "if ($.trim(text) != '') { " +
+                                                "uId = '' + gId; " + 
+                                                "uId1 = uId.substring(1, 10); " +
+                                                "uId2 = uId.substring(10, uId.length-1); " +
+                                                "prms = timenow + \"$\" + uId1  + \"$\" + uId2 + \"$\" + vId ; " +
+                                                "content = '<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td><div id=\"div' + timenow + '\"><a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(\"' + prms +'\")><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;&nbsp;<a style=\"float:right\" href=\"javascript:moveTo(' + instant + ')\" >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',' + timenow + ')><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a></div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"></ins></td></tr>'; " +
+                                                "var rich_content_white = content; " +
+                                                "if ($('#notesTbl > tbody > tr').length == 0 ) { " +
+                                                    "$(rich_content_white).insertAfter($('table > tbody')); " +
+                                                "} else { " +
+                                                    "$(rich_content_white).insertBefore($('table > tbody > tr:first')); " +
+                                                "} " +
+                                                "if ($('#div' + timenow).length > 0) { " +
+                                                    "textval = $('#div' + timenow).next().find('div:first-child').text(); " +
+                                                    "if (textval.length > 100) { " +
+                                                        "textval = textval.substring(0, 97) + '...'; " +
+                                                    "} " +
+                                                    "$(\"#div\" + timenow).find(\"a:first-child\").after(textval); " +
+                                                    "$(\"#div\" + timenow).mousedown(function() { " +
+                                                        "p = $(this).parent().position(); " +
+                                                        "if($(this).next().css('display') == 'none') " +
+                                                            "$(this).next().css({'display': 'block', 'width': '250%', 'top': p.top}); " +
+                                                        "else " +
+                                                            "$(this).next().css('display','none'); " +                                                    
+                                                    "}); " +
+                                                "} " +
+//"text = text.replace(/\n/g, '<br>').trim(); " +
+                                                "$.support.cors = true; " +                                            
+                                                "$.ajax({ " +
+                                                    "type: 'POST', " +
+                                                    "url: SERVER_URL + '/submitNoteExtn', " +
+                                                    "dataType: 'json', " +
+                                                    "data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false, title: $(\"title\").html(), url: document.URL} " +
+                                                "}); " +
+                                                "text = ''; " +
+                                            "} " +
+                                            "$('#commentsTxt').val(''); " +
+                                            "shiftOn = false; " +
+                                            "instant = 0; " +
+                                            "return false; " +
+                                        "} " +
+                                        "shiftOn = false; " +
+                                    "}); " +                                    
+                                    "$(\"#dialog1\").css('width', '294px'); $(\"#notesTbl\").css('width', '100%'); $(\"div[contenteditable='true']\").css('width', '100%'); " + 
+                                    "$(\"#commentsTxt\").val(CKEDITOR.instances.commentsTxt.getData()); " + 
+                                    "CKEDITOR.instances.commentsTxt.setData(''); " + 
+                                    "if (window.QL_player != null) { " + 
+                                        "window.QL_player.mediaelement_handle.play(); " + 
+                                    "} else " + 
+                                        "if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); } " +
+                                "} " + 
+                            "} ";
+
+        /*var dialogLoadStr = "$(\"div[role='dialog']\" ).on('load', function() { " +
+                                "alert('dialog created'); " +
+                                "console.log('dialog created'); " + 
+                            "}); ";*/
+
         var removeShortcutsStr = "function removeShortCuts() { " + 
                                      "try { " +  
+//"alert('removeShortCuts'); " +                                     
                                         "len = window.QL_player.mediaelement_handle.options.keyActions.length; " + 
                                         "for (i=0; i < len; i++) { " +  
                                             "delete window.QL_player.mediaelement_handle.options.keyActions[i]; " + 
                                         "} " + 
                                         "window.QL_player.mediaelement_handle.enableKeyboard = false; " + 
-                                        "window.QL_player.mediaelement_handle.options.keyActions = null; " + 
+//"window.QL_player.mediaelement_handle.options.keyActions = null; " + 
                                     "} catch (e) {} " + 
                                 "} ";
 
@@ -528,33 +647,33 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                             " rows_hidden = false; closeImport(); " + 
                                         "}" + 
                                     "});" + 
-                                 "}";
+                                 "} ";
 
         var closeImportStr = "function closeImport() { $(\"div[aria-describedby='dlgImport']\").empty(); $(\"div[aria-describedby='dlgImport']\").remove(); $('#dlgImport').empty(); $('#dlgImport').remove(); playIt(); } ";
         var collapseItStr = "function collapseIt() { $('.ui-dialog-titlebar-restore').show(); $('.ui-dialog-titlebar-collapse').hide(); $('#commentsTxt').hide(); $('#notesTbl').hide();} ";
         var restoreItStr = "function restoreIt() { $('.ui-dialog-titlebar-restore').hide(); $('.ui-dialog-titlebar-collapse').show(); $('#commentsTxt').show(); $('#notesTbl').show();} ";
-        var closeItStr = "function closeIt() { $('#dialog1').remove(); } ";
+        var closeItStr = "function closeIt() { rich_text = false; $('#dialog1').remove(); } ";
         var pauseItStr = "function pauseIt() { " + 
                             "if (window.QL_player != null) { " +
                                 "window.QL_player.mediaelement_handle.pause(); " + 
                             "} else if ($('me_flash_0') != null) { " + 
                                 "$('me_flash_0').pauseMedia(); " + 
                             "} " +
-                        "}";
+                        "} ";
         var playItStr = "function playIt() { " + 
                             "if (window.QL_player != null) { " + 
                                 "window.QL_player.mediaelement_handle.play(); " +
                             "} else if ($('me_flash_0') != null) { " + 
                                 "$('me_flash_0').playMedia(); " +
                             "}" +
-                        "}";
+                        "} ";
 
         var giveMinsSecsStr = "function giveMinsSecs(val) { " + 
                                 " var v = parseInt(val); " + 
                                 " var vrem = (v % 60 < 10) ? '0' + v%60 : v%60; " +
                                 " v = Math.floor(v / 60) + \":\" + vrem; " +
                                 " return v; " +
-                              "}";
+                              "} ";
 
         var dialog_extend_css = ".ui-dialog .ui-dialog-titlebar-buttonpane>a { float: right; }.ui-dialog .ui-dialog-titlebar-restore { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-restore span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-restore:hover,.ui-dialog .ui-dialog-titlebar-restore:focus { padding: 0; }.ui-dialog .ui-dialog-titlebar ::selection { background-color: transparent; }"; 
         var dialog_extend_collapse_css = ".ui-dialog .ui-dialog-titlebar-collapse { width: 19px; height: 18px; }.ui-dialog .ui-dialog-titlebar-collapse span { display: block; margin: 1px; }.ui-dialog .ui-dialog-titlebar-collapse:hover,.ui-dialog .ui-dialog-titlebar-collapse:focus { padding: 0; }"; 
@@ -590,8 +709,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         demic.innerHTML = dialog_extend_minimize_css;
         document.body.appendChild(demic);
 
-        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + importNotesDataStr + removeShortcutsStr + collapseItStr + restoreItStr + closeItStr + createImportDlgStr + pauseItStr + playItStr + closeImportStr + giveMinsSecsStr;// + minimizeItStr;// + writeNotesStr 
+        scriptElem.innerHTML = vardefs + moveToStr + deleteNoteStr + toggleLockStr + toggleLockOneStr + toggleSortStr + resetTableStr + setTableDataStr + setRowDataStr + setImportTableDataStr + setImportRowDataStr + copyNoteStr + importNotesStr + importNotesDataStr ;// + minimizeItStr;// 
+        scriptElem2.innerHTML = removeShortcutsStr + collapseItStr + restoreItStr + closeItStr + createImportDlgStr + pauseItStr + playItStr + closeImportStr + giveMinsSecsStr + writeNotesStr + createCommentsTextStr + createCommentsDivStr;// + minimizeItStr;// 
         document.body.appendChild(scriptElem);
+        document.body.appendChild(scriptElem2);
     }
 
     var divElem = document.createElement('div');
@@ -603,13 +724,25 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     divElem.setAttribute('role', 'dialog');
     divElem.setAttribute('aria-describedby', 'contentval');
     divElem.setAttribute('aria-labelledby', 'dlgtitle');
-    //divElem.setAttribute('show', '{ effect: "slide", complete: function() { alert("123"); } }');
     divElem.innerHTML = notesHTML;
+
+    /*var richEditElem = document.createElement('textarea');
+    richEditElem.setAttribute('id','richEdit');
+    richEditElem.setAttribute('name', 'richEdit');
+    richEditElem.setAttribute('width', '100%');
+    richEditElem.setAttribute('style', 'margin:30px 0 0 0;min-height:1px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;resize:none!important;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word;');*/
+    var commentsTxtElem = document.getElementById('commentsTxt');
 
     if ($(".course-modal-frame")) {
         $(".course-modal-frame").after(function() { return divElem; });
+        if ($("#commentsTxt").length == 0) {
+            $(".course-modal-frame").after(commentsTxtElem);
+        }
     } else if ($(".course-modal-frame.course-modal-frame-with-slides")) {
         $(".course-modal-frame.course-modal-frame-with-slides").after(function() { return divElem; });
+        if ($("#commentsTxt").length == 0) {
+            $(".course-modal-frame.course-modal-frame-with-slides").after(commentsTxtElem);
+        }
     }
     //create extend container element /*<div id="dialog-extend-fixed-container" style="position: fixed; bottom: 1px; left: 1px; right: 1px; z-index: 9999;"></div>*/
     
@@ -668,12 +801,30 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         pauseIt();
     });
 
+    $( "div[role='dialog']" ).on('load', function() {
+        alert('dialog created');
+        console.log('dialog created');
+    });
+
+
+    $( "div[contenteditable='true']" ).mousedown(function() {
+        alert('123');
+        $("#cke_commentsTxt").css('z-index','100016');
+        removeShortCuts();
+        pauseIt();
+    });
+
     function makeItDraggable() {
-        if ($("#dialog1").length) {
-            $("#dialog1").draggable({containment: "window"});
+        try {
+            if ($("#dialog1").length) {
+                $("#dialog1").draggable({containment: "window"});
+            }
+        } catch (e) {
+            console.log("couldn't make the comment window draggable");
         }
-        //alert("should be draggable now");
+            //alert("should be draggable now");
         $("#dialog1").show();
+
     }
 
     function pauseIt() {
@@ -698,8 +849,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
     }
 
     $("#commentsTxt").keydown(function (e) { //this should take care of special characters not being trapped.
-        pauseIt();
-        
+        pauseIt();        
         if (e.keyCode == 8) { //backspace = 8
             if ($("#commentsTxt").val().length < 2) { //one or zero character left for backspace
                 if (window.QL_player != null) {
@@ -742,13 +892,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                             $(this).next().css({'display': 'block', 'width': '250%', 'top': p.top});
                         else
                             $(this).next().css('display','none');
-                        
                     });
                 }
-
                 text = text.replace(/\n/g, '<br>').trim();
                 $.support.cors = true;
-                
                 $.ajax({
                     type: 'POST',
                     url: SERVER_URL + '/submitNoteExtn',
@@ -763,13 +910,20 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
             return false;
         }
         shiftOn = false;
-
     });
 
-    $(".icon-remove").on('click', function(event) { $("#dialog1").remove(); if ($("#cke_richEdit").length > 0) $("#cke_richEdit").hide(); });    
+    $(".icon-remove").on('click', function(event) { $("#dialog1").remove(); if ($("#cke_commentsTxt").length > 0) $("#cke_commentsTxt").hide(); });    
 
     $("#commentsTxt").focus();
 
+}
+
+function createCommentsTextarea() {
+    return "<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:150px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>";
+}
+
+function createCommentsDiv() {
+    return "<div id='commentsTxt' contenteditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:200px;width:100%;background-color:#fcfbf7; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'><p></p></div>";
 }
 
 function createTableData(data, vId, uId) {
@@ -786,9 +940,9 @@ function createTableData(data, vId, uId) {
     else
         lockicon = "lock_closed.png";
 
-    tableHeaders = "<table id='notesTbl' style='table-layout:auto; position: relative; padding-right:0px;width:289px; margin: 0 0 0 -2px; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
+    tableHeaders = "<table id='notesTbl' style='font-size:12px; table-layout:auto; position: relative; padding-right:0px;width:289px;top:94px; margin: 0 0 0 0; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
-    //tableHeaders += "&nbsp;<a href=javascript:writeRichNote()><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' alt='Rich Text Editor' /></a>&nbsp;&nbsp;";
+    tableHeaders += "&nbsp;<a href=javascript:writeRichNote('" + uId + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' alt='Rich Text Editor' /></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' alt='Import Video Notes' /></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:toggleTimeSort('" + uId.substring(1,uId.length-1) + "$" + vId + "')>&nbsp;<img width=16 height=16 id='sorticon' src='" + RESOURCE_DOMAIN + "/images/sort_up.png' alt='Sort By Instant/Timestamp'  align='right'/>&nbsp;</a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:toggleLock('" + uId.substring(1,uId.length-1) + "$" + vId + "')>&nbsp;<img width=16 height=16 id='lockall' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "'  alt='Latest Comments' align='right'/>&nbsp;</a>&nbsp;&nbsp;";
@@ -806,7 +960,7 @@ function createTableData(data, vId, uId) {
         tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><div id='div" + data[i].noteId + "'><a style='font-size:10px;z-index:50000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + RESOURCE_DOMAIN + "/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a></div><ins class='dark-tooltip dark medium west' style='max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none'><div></div><div class='tip'></div></ins></td></tr>";
     }
     tableEnd = "</tbody></table>";
-    var commentHTML = "<textarea id='commentsTxt' name='commentsTxt' placeholder='Write a note (Enter to play)... ' width='100%' style='margin:-5px 0 0 -2px;min-height:104px;width:290px;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none'></textarea>";
+    var commentHTML = createCommentsTextarea(); //"<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:104px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>";
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
 
     return tableData;
@@ -816,8 +970,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-var SERVER_URL = "https://playnnote.herokuapp.com";
-//var SERVER_URL = "http://localhost:3000";
+//var SERVER_URL = "https://playnnote.herokuapp.com";
+var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
