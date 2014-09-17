@@ -476,7 +476,8 @@
 						size: 38,
 						onChange: function() {
 							var that = this;
-							var inputfile = $("iframe[id$='_fileInput']")[0].contentWindow.$("input[id$='_fileInput_input']").files[0];
+							var myiframe = document.getElementsByClassName("cke_dialog_ui_labeled_content cke_dialog_ui_input_file")[0].firstChild.contentWindow.document;
+							var inputfile = myiframe.getElementsByName("upload")[0].files[0];
 							onUpload(inputfile);
 						}
 					},
