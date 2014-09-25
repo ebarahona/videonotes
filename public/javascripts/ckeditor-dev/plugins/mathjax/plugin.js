@@ -11,7 +11,9 @@
 
 ( function() {
 
-	var cdn = 'http:\/\/cdn.mathjax.org\/mathjax\/2.2-latest\/MathJax.js?config=TeX-AMS_HTML';
+	//NOTE: making it https, this resource can be loaded within chrome extension by adding the https://cdn.mathjax.org in content_security_policy manifest.json 
+	var cdn = 'https:\/\/cdn.mathjax.org\/mathjax\/2.2-latest\/MathJax.js?config=TeX-AMS_HTML'; 
+
 
 	CKEDITOR.plugins.add( 'mathjax', {
 		lang: 'ar,ca,cs,cy,de,el,en,en-gb,eo,es,fa,fi,fr,gl,he,hr,hu,it,ja,km,nb,nl,no,pl,pt,pt-br,ro,ru,sl,sv,tt,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
