@@ -98,9 +98,10 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         $("#dialog1").html('');
         $("#dialog1").remove();
     }
-    var SERVER_URL = 'https://playnnote.herokuapp.com';
-    //var SERVER_URL = 'http://localhost:3000';
+    //var SERVER_URL = 'https://playnnote.herokuapp.com';
+    var SERVER_URL = 'http://localhost:3000';
     var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
+    var CKEDITOR_FOLDER = 'https://playnnote.herokuapp.com/javascripts/ckeditor/'; //'https://localhost:9000/ckeditor-dev/'; //
 
     var tab_url = window.location.href;
     var source_url = tab_url.substring(0,tab_url.lastIndexOf("/")) + "/view?lecture_id=" + tab_url.substring(tab_url.lastIndexOf("/")+1);
@@ -149,7 +150,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
 
         var ckeditorjs = document.createElement('script');
         ckeditorjs.type = "text/javascript";
-        ckeditorjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/ckeditor.js";
+        ckeditorjs.src = CKEDITOR_FOLDER + "ckeditor.js";
         document.head.appendChild(ckeditorjs);
 
         var ckestyle = document.createElement('style');
@@ -159,23 +160,23 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
 
         var configjs = document.createElement('script');
         configjs.type = "text/javascript";
-        configjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/config.js";
+        configjs.src = CKEDITOR_FOLDER + "config.js";
         document.head.appendChild(configjs);
 
         var editorcss = document.createElement('link');
         editorcss.type = "text/css";
         editorcss.rel = "stylesheet";
-        editorcss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor/skins/bootstrapck/editor.css";
+        editorcss.href = CKEDITOR_FOLDER + "skins/bootstrapck/editor.css";
         document.head.appendChild(editorcss);
 
         var langen = document.createElement('script');
         langen.type = "text/javascript";
-        langen.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/lang/en.js";
+        langen.src = CKEDITOR_FOLDER + "lang/en.js";
         document.head.appendChild(langen);
 
         var stylesjs = document.createElement('script');
         stylesjs.type = "text/javascript";
-        stylesjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/styles.js";
+        stylesjs.src = CKEDITOR_FOLDER + "styles.js";
         document.head.appendChild(stylesjs);
 
         var juicss = document.createElement('link');
@@ -248,12 +249,12 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         var stylecss = document.createElement('link');
         stylecss.type = "text/css";
         stylecss.rel = "stylesheet";
-        stylecss.href = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/pbckcode/dialogs/style.css";
+        stylecss.href = CKEDITOR_FOLDER + "plugins/pbckcode/dialogs/style.css";
         document.head.appendChild(stylecss);
 
         var findjs = document.createElement('script');
         findjs.type = "text/javascript";
-        findjs.src = RESOURCE_DOMAIN + "/javascripts/ckeditor/plugins/find/dialogs/find.js";
+        findjs.src = CKEDITOR_FOLDER + "plugins/find/dialogs/find.js";
         document.head.appendChild(findjs);
 
         var scriptElem = document.createElement('script');
@@ -441,9 +442,9 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                     "}); " + 
                                 "} ";
 
-        var createCommentsTextStr = "function createCommentsTextarea() {    return \"<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:104px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>\";} ";
+        var createCommentsTextStr = "function createCommentsTextarea() {    return \"<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:204px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>\";} ";
 
-        var createCommentsDivStr = "function createCommentsDiv() {    return \"<div id='commentsTxt' contenteditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='min-height:104px;width:100%;background-color:#fcfbf7; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'><p></p></div>\";} ";
+        var createCommentsDivStr = "function createCommentsDiv() {    return \"<div id='commentsTxt' contenteditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='min-height:204px;width:100%;background-color:#fcfbf7; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'><p></p></div>\";} ";
 
 
         var writeNotesStr = "function writeRichNote(gIdvId) { " + 
@@ -456,22 +457,37 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                     "rich_text = true; " + 
                                     "var richeditor = createCommentsDiv(); " +
                                     "$(\"#notesTbl\").before(richeditor); " + 
-//" alert(\"cke_commentsTxt not present\"); " +                                
                                         "CKEDITOR.disableAutoInline = true; " +
-                                        "CKEDITOR.inline('commentsTxt', {on: { instanceReady : function(ev) { " + 
+                                        "CKEDITOR.inline('commentsTxt', {extraPlugins: 'mathjax', on: { instanceReady : function(ev) { " + 
                                                                                     "var dlg = document.getElementById(\"dialog1\"); " + 
                                                                                     "var dlgleft = $(\"#dialog1\").css('left'); dlgleft = parseInt(dlgleft.substring(0, dlgleft.length-2)); " +
                                                                                     "elem = document.getElementById(\"cke_commentsTxt\"); " + 
-    //"alert ('elem created'); " +
+//"alert ('elem created'); " +
                                                                                     "$(\"#cke_commentsTxt\").css('top','0px'); " +
                                                                                     "$(\"#cke_commentsTxt\").css('position','fixed'); " + 
                                                                                     "$(\"#cke_commentsTxt\").css('left','16px'); " + 
+                                                                                    "$(\"#cke_commentsTxt\").css('margin: -4px 0px 4px -4px'); " + 
                                                                                     "$(\"#cke_commentsTxt\").css('z-index','100020'); $(\"#cke_commentsTxt\").show(); " +
-    //"alert ('z-index hchanged'); " +
+                                                                                    "$(\"a[title='Remove Format']\").click(); " +
+// list of all the buttons which should be deleted before display
+                                                                                    "$(\".cke_button.cke_button__eqneditor.cke_button_off\").remove(); " +
+                                                                                    "$(\".cke_button.cke_button__specialchar.cke_button_off\").remove(); " +
+                                                                                    "$(\".cke_button.cke_button__bold.cke_button_off\").remove(); " +
+                                                                                    "$(\".cke_button.cke_button__italic.cke_button_off\").remove(); " +
+//end of the list of buttons to be deleted
+                                                                                    "$(\"#commentsTxt\").keydown(function(e) { " +
+                                                                                        "if(e.keyCode == 13 || e.keyCode == 8 || e.keyCode == 46) {" +
+//" alert ('enter pressed'); " +
+                                                                                            "var ht = $(\"#commentsTxt\")[0].offsetHeight - 6; " +
+                                                                                            "$(\"#notesTbl\").css('top', ht + 'px'); " +
+                                                                                        "}" +
+
+                                                                                    "}) " +
+//"alert ('z-index hchanged'); " +
                                                                                  "} " +
                                                                             "} " +
                                                                         "}); " + 
-                                        "$(\"#notesTbl\").css('top', '90px'); " +
+                                        "$(\"#notesTbl\").css('top', '198px'); " +
                                         "$(\"#dialog1\").css('width', '60%'); $(\"#notesTbl\").css('width', '100%'); $(\"div[contenteditable='true']\").css('width', '100%'); " + 
                                         "$(\"#dialog1\").css('top','65px'); " +
                                         "if (window.QL_player != null) { " +
@@ -485,10 +501,31 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                         "} " +
                                 "} else { " + 
                                     "$('div').remove('#cke_commentsTxt'); " +
+                                    "var chNodes = CKEDITOR.instances.commentsTxt.container.$.childNodes; " + 
+                                    "var chlen = chNodes.length; var mathjaxData = new Array(); var richData = ''; var innerlen = 0; " +
+                                    " for (i=0; i<chlen; i++) { " +
+                                        "innerlen = chNodes[i].childNodes.length; " +
+                                        " for (j=0; j<innerlen; j++) { " +
+                                            " if (chNodes[i].childNodes[j].nodeType == 3) {" + //this is text data
+                                                "richData += chNodes[i].childNodes[j].nodeValue; " +
+                                            " } else if (chNodes[i].childNodes[j].nodeType == 1) {" + //this is element data" +
+//"alert(chNodes[i].childNodes[j].hasAttribute('class')); " +
+                                                " if (chNodes[i].childNodes[j].hasAttribute('class') && chNodes[i].childNodes[j].getAttribute('class').indexOf(\"cke_widget_wrapper cke_widget_inline\") == 0) { " + //this is Tex
+                                                    " richData += chNodes[i].childNodes[j].outerHTML; " +
+//"alert('i ' + i + ' j ' + j + ' nodeType ' + chNodes[i].childNodes[j].nodeType); " +
+//"alert(chNodes[i].childNodes[j].childNodes[0].childNodes[0].contentDocument); " + 
+                                                    " mathjaxData.push('<html>' + chNodes[i].childNodes[j].childNodes[0].childNodes[0].contentDocument.documentElement.innerHTML + '</html>');" +
+                                                " }" +                                            
+                                            " } " +
+                                        " } " +
+                                    " } " +
+                                    
+//"richData = CKEDITOR.instances.commentsTxt.getData(); " +
+//"alert('rich data is: ' + richData); " +
                                     "$('div').remove('#commentsTxt'); " +
                                     "rich_text = false; " + 
                                     "$(\"#dialog1\").css('top','10px'); " +
-                                    "$(\"#notesTbl\").css('top', '94px'); " +
+                                    "$(\"#notesTbl\").css('top', '193px'); " +
                                     "var txteditor = createCommentsTextarea(); " +
                                     "$(\"#notesTbl\").before(txteditor); " + 
 
@@ -509,22 +546,41 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                             "} else if ($('me_flash_0') != null) { " +
                                                 "$('me_flash_0').playMedia(); " +
                                             "} " +
+                                            "instant = Math.round(parseFloat(instant)); " +                                            
                                             "text = $('#commentsTxt').val(); " +
+//"alert(text); " +
                                             "timenow = new Date().getTime(); " +
                                             "if ($.trim(text) != '') { " +
                                                 "uId = '' + gId; " + 
                                                 "uId1 = uId.substring(1, 10); " +
                                                 "uId2 = uId.substring(10, uId.length-1); " +
                                                 "prms = timenow + \"$\" + uId1  + \"$\" + uId2 + \"$\" + vId ; " +
-                                                "content = '<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td><div id=\"div' + timenow + '\"><a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(\"' + prms +'\")><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;&nbsp;<a style=\"float:right\" href=\"javascript:moveTo(' + instant + ')\" >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',' + timenow + ')><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a></div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"></ins></td></tr>'; " +
+                                                "content = '<tr bgcolor=\"white\" id=\"cmt' + timenow + '\"><td><div id=\"div' + timenow + '\"><a style=\"font-size:10px;z-index:50000;padding-right:0px;\" href=javascript:deleteNote(\"' + prms +'\")><img src=\"' + RESOURCE_DOMAIN + '/images/deletecomment.png\" alt=\"Delete\"/></a> &nbsp;&nbsp;<a style=\"float:right\" href=\"javascript:moveTo(' + instant + ')\" >' + instant + 's</a> &nbsp;<a href=javascript:toggleLockOne(' + uId1 + ',' + uId2 + ',' + timenow + ')><img width=16 height=16 id=\"lock' + timenow + '\" src=\"' + RESOURCE_DOMAIN + '/images/lock_closed.png\" style=\"float:right\"/></a></div><ins class=\"dark-tooltip dark medium west\" style=\"max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none\"><div id=\"txt' + timenow + '\">' + text + '</div><div class=\"tip\"></div></ins></td></tr>'; " +
                                                 "var rich_content_white = content; " +
                                                 "if ($('#notesTbl > tbody > tr').length == 0 ) { " +
                                                     "$(rich_content_white).insertAfter($('table > tbody')); " +
                                                 "} else { " +
                                                     "$(rich_content_white).insertBefore($('table > tbody > tr:first')); " +
                                                 "} " +
+
                                                 "if ($('#div' + timenow).length > 0) { " +
+//"alert(timenow); " +
+//TO DO: set the data from the mathjaxData into the text
+                                                    "var frames = $('#txt' + timenow + ' > span > span > iframe'); " +
+//"alert('frames length ' + frames.length); alert('mathjaxData length ' + mathjaxData.length); " +
+//"alert('number of equations ' + frames.length); " +                                                    
+                                                    "for (i=0; i<frames.length; i++) { " +
+
+                                                        "startidx = mathjaxData[i].indexOf('rgb(34, 34, 34)'); " +
+                                                        "if (startidx > -1) { " +
+                                                            "endidx = mathjaxData[i].indexOf(';', startidx); " +
+                                                            "mathjaxData[i] = mathjaxData[i].substring(0, startidx) + 'white' + mathjaxData[i].substring(endidx); " +
+                                                        "} " +
+                                                        "frames[i].contentWindow.document.write(mathjaxData[i]); " + 
+                                                    "}" +
+                                                    "mathjaxData = []; " +
                                                     "textval = $('#div' + timenow).next().find('div:first-child').text(); " +
+//"textval = $('#div' + timenow).next().find('div:first-child'); " + 
                                                     "if (textval.length > 100) { " +
                                                         "textval = textval.substring(0, 97) + '...'; " +
                                                     "} " +
@@ -538,7 +594,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                     "}); " +
                                                 "} " +
 //"text = text.replace(/\n/g, '<br>').trim(); " +
-                                                "$.support.cors = true; " +                                            
+                                                "$.support.cors = true; " +               
                                                 "$.ajax({ " +
                                                     "type: 'POST', " +
                                                     "url: SERVER_URL + '/submitNoteExtn', " +
@@ -555,19 +611,16 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                         "shiftOn = false; " +
                                     "}); " +                                    
                                     "$(\"#dialog1\").css('width', '294px'); $(\"#notesTbl\").css('width', '100%'); $(\"div[contenteditable='true']\").css('width', '100%'); " + 
-                                    "$(\"#commentsTxt\").val(CKEDITOR.instances.commentsTxt.getData()); " + 
+                                    "$(\"#commentsTxt\").val(richData); " + 
+                                    "var e = jQuery.Event(\"keydown\"); e.keyCode = 13; $(\"#commentsTxt\").trigger(e); " +
                                     "CKEDITOR.instances.commentsTxt.setData(''); " + 
+
                                     "if (window.QL_player != null) { " + 
                                         "window.QL_player.mediaelement_handle.play(); " + 
                                     "} else " + 
                                         "if ($('me_flash_0') != null) { $('me_flash_0').playMedia(); } " +
                                 "} " + 
                             "} ";
-
-        /*var dialogLoadStr = "$(\"div[role='dialog']\" ).on('load', function() { " +
-                                "alert('dialog created'); " +
-                                "console.log('dialog created'); " + 
-                            "}); ";*/
 
         var removeShortcutsStr = "function removeShortCuts() { " + 
                                      "try { " +  
@@ -796,14 +849,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         pauseIt();
     });
 
-    $( "div[role='dialog']" ).on('load', function() {
-        alert('dialog created');
-        console.log('dialog created');
-    });
-
 
     $( "div[contenteditable='true']" ).mousedown(function() {
-        alert('123');
         $("#cke_commentsTxt").css('z-index','100016');
         removeShortCuts();
         pauseIt();
@@ -861,6 +908,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                 $('me_flash_0').playMedia();
             }
             text = $("#commentsTxt").val();
+alert(text);
             timenow = new Date().getTime();
             if ($.trim(text) != "") {
                 uId = "" + gId; //put the s back together 
@@ -935,7 +983,7 @@ function createTableData(data, vId, uId) {
     else
         lockicon = "lock_closed.png";
 
-    tableHeaders = "<table id='notesTbl' style='font-size:12px; table-layout:auto; position: relative; padding-right:0px;width:289px;top:94px; margin: 0 0 0 0; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
+    tableHeaders = "<table id='notesTbl' style='font-size:12px; table-layout:auto; position: relative; padding-right:0px;width:289px;top:139px; margin: 0 0 0 0; word-wrap:break-word' class='table table-striped table-bordered table-condensed'>";
     tableHeaders += "<thead><tr bgcolor='white' ><td>";
     tableHeaders += "&nbsp;<a href=javascript:writeRichNote('" + uId + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/editor.png' alt='Rich Text Editor' /></a>&nbsp;&nbsp;";
     tableHeaders += "&nbsp;<a href=javascript:importNotes('" + uId.substring(1,uId.length-1) + "$" + vId + "')><img width=16 height=16 src='" + RESOURCE_DOMAIN + "/images/import.png' alt='Import Video Notes' /></a>&nbsp;&nbsp;";
@@ -955,7 +1003,7 @@ function createTableData(data, vId, uId) {
         tableData = tableData + "<tr bgcolor='white' id='cmt" + data[i].noteId + "'><td><div id='div" + data[i].noteId + "'><a style='font-size:10px;z-index:50000;padding-right:0px;' href=javascript:deleteNote(" + prms + ")><img src='" + RESOURCE_DOMAIN + "/images/deletecomment.png' alt='Delete'/></a><a  style='float:right' href=javascript:moveTo(" + data[i].instant + "); alt='Delete'>" + data[i].instant + "s</a> &nbsp;<a href='javascript:toggleLockOne(" + uId1  + ", " + uId2 + ", " + data[i].noteId + ")'><img width=16 height=16 id='lock" + data[i].noteId + "' src='" + RESOURCE_DOMAIN + "/images/" + lockicon + "' style='float:right'/></a></div><ins class='dark-tooltip dark medium west' style='max-width: none; left: 306px; opacity: 0.9; width: 250%; display: none'><div></div><div class='tip'></div></ins></td></tr>";
     }
     tableEnd = "</tbody></table>";
-    var commentHTML = createCommentsTextarea(); //"<textarea id='commentsTxt' contentdeditable='true' name='commentsTxt' placeholder='Write a note (Enter to play)... ' style='margin:-5px 0 0 -2px;min-height:104px;width:100%;background-color:#fcfbf7;border:none;outline:none;overflow-y:visible;border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size:12px;line-height:18px;word-wrap:break-word; resize: none; top:40px; position:absolute'></textarea>";
+    var commentHTML = createCommentsTextarea(); 
     tableData = commentHTML + tableHeaders + tableData + tableEnd;
 
     return tableData;
@@ -965,8 +1013,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-var SERVER_URL = "https://playnnote.herokuapp.com";
-//var SERVER_URL = "http://localhost:3000";
+//var SERVER_URL = "https://playnnote.herokuapp.com";
+var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
