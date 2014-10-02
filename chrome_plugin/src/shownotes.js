@@ -898,7 +898,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                 $('me_flash_0').playMedia();
             }
             text = $("#commentsTxt").val();
-alert(text);
             timenow = new Date().getTime();
             if ($.trim(text) != "") {
                 uId = "" + gId; //put the s back together 
