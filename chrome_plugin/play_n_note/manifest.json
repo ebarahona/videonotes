@@ -13,7 +13,7 @@
     ] 
   },
  "externally_connectable" : {
-    "matches" : ["http://playnnote.herokuapp.com/*, http://localhost:3000/*" ]
+    "matches" : ["http://playnnote.herokuapp.com/*, http://localhost:3000/*, http://localhost:9000/*" ]
   },
  "browser_action": {
     "default_title": "",
@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "matches": ["http://www.google.com/robots.txt*"],
-      "js": ["oauth2/oauth2_inject.js", "oauth2/oauth2_finish.js"],
+      "js": ["oauth2/oauth2_inject.js", "oauth2/oauth2_finish.js", "ckeditor/ckeditor.js"],
         "run_at": "document_start"
     }
   ],
@@ -33,7 +33,8 @@
     "images/*.png",
     "jquery.js",
     "jqueryui.js",
-    "jquery-ui.css"
+    "jquery-ui.css",
+    "ckeditor/ckeditor.js"
   ],
   "permissions" : [
     "tabs",
@@ -43,6 +44,9 @@
     "https://playnnote.herokuapp.com/*",
     "http://playnnote.herokuapp.com/*",
     "http://localhost:3000/*",
+    "http://localhost:9000/*",
+    "https://localhost:9000/*",
+    "https://cdn.mathjax.org/*",
     "https://class.coursera.org/*",
     "https://ssl.gstatic.com/",
     "https://accounts.google.com/*",
@@ -61,5 +65,5 @@
       "scopes": ["https://www.googleapis.com/auth/userinfo.profile"]
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://playnnote.herokuapp.com ; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://playnnote.herokuapp.com https://cdn.mathjax.org https://localhost:9000 ; object-src 'self' "
 }
