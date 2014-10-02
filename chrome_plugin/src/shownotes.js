@@ -98,8 +98,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
         $("#dialog1").html('');
         $("#dialog1").remove();
     }
-    //var SERVER_URL = 'https://playnnote.herokuapp.com';
-    var SERVER_URL = 'http://localhost:3000';
+    var SERVER_URL = 'https://playnnote.herokuapp.com';
+    //var SERVER_URL = 'http://localhost:3000';
     var RESOURCE_DOMAIN = 'https://playnnote.herokuapp.com';
     var CKEDITOR_FOLDER = 'https://playnnote.herokuapp.com/javascripts/ckeditor/'; //'https://localhost:9000/ckeditor-dev/'; //
 
@@ -509,19 +509,16 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                             " if (chNodes[i].childNodes[j].nodeType == 3) {" + //this is text data
                                                 "richData += chNodes[i].childNodes[j].nodeValue; " +
                                             " } else if (chNodes[i].childNodes[j].nodeType == 1) {" + //this is element data" +
-//"alert(chNodes[i].childNodes[j].hasAttribute('class')); " +
-                                                " if (chNodes[i].childNodes[j].hasAttribute('class') && chNodes[i].childNodes[j].getAttribute('class').indexOf(\"cke_widget_wrapper cke_widget_inline\") == 0) { " + //this is Tex
+                                                "if (chNodes[i].childNodes[j].hasAttribute('class') && chNodes[i].childNodes[j].getAttribute('class').indexOf(\"cke_widget_wrapper cke_widget_inline\") == 0) { " + //this is Tex
                                                     " richData += chNodes[i].childNodes[j].outerHTML; " +
-//"alert('i ' + i + ' j ' + j + ' nodeType ' + chNodes[i].childNodes[j].nodeType); " +
-//"alert(chNodes[i].childNodes[j].childNodes[0].childNodes[0].contentDocument); " + 
                                                     " mathjaxData.push('<html>' + chNodes[i].childNodes[j].childNodes[0].childNodes[0].contentDocument.documentElement.innerHTML + '</html>');" +
-                                                " }" +                                            
+                                                "} else {" +
+                                                    " richData += chNodes[i].childNodes[j].outerHTML; " +
+                                                "}" +
                                             " } " +
                                         " } " +
+                                        "richData += '<p/>'; " +
                                     " } " +
-                                    
-//"richData = CKEDITOR.instances.commentsTxt.getData(); " +
-//"alert('rich data is: ' + richData); " +
                                     "$('div').remove('#commentsTxt'); " +
                                     "rich_text = false; " + 
                                     "$(\"#dialog1\").css('top','10px'); " +
@@ -548,7 +545,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                             "} " +
                                             "instant = Math.round(parseFloat(instant)); " +                                            
                                             "text = $('#commentsTxt').val(); " +
-//"alert(text); " +
                                             "timenow = new Date().getTime(); " +
                                             "if ($.trim(text) != '') { " +
                                                 "uId = '' + gId; " + 
@@ -564,13 +560,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                 "} " +
 
                                                 "if ($('#div' + timenow).length > 0) { " +
-//"alert(timenow); " +
-//TO DO: set the data from the mathjaxData into the text
                                                     "var frames = $('#txt' + timenow + ' > span > span > iframe'); " +
-//"alert('frames length ' + frames.length); alert('mathjaxData length ' + mathjaxData.length); " +
-//"alert('number of equations ' + frames.length); " +                                                    
                                                     "for (i=0; i<frames.length; i++) { " +
-
                                                         "startidx = mathjaxData[i].indexOf('rgb(34, 34, 34)'); " +
                                                         "if (startidx > -1) { " +
                                                             "endidx = mathjaxData[i].indexOf(';', startidx); " +
@@ -593,7 +584,6 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                             "$(this).next().css('display','none'); " +                                                    
                                                     "}); " +
                                                 "} " +
-//"text = text.replace(/\n/g, '<br>').trim(); " +
                                                 "$.support.cors = true; " +               
                                                 "$.ajax({ " +
                                                     "type: 'POST', " +
@@ -1013,8 +1003,8 @@ var delimiter = "" + Math.random().toString(36).substring(0,5);
 var notesHTML = "";
 var richDataStr = "";
 var txtDataStr = "";
-//var SERVER_URL = "https://playnnote.herokuapp.com";
-var SERVER_URL = "http://localhost:3000";
+var SERVER_URL = "https://playnnote.herokuapp.com";
+//var SERVER_URL = "http://localhost:3000";
 var RESOURCE_DOMAIN = "https://playnnote.herokuapp.com";
 if (notes === undefined || notes === 'undefined' || notes == "") {
     notesHTML = createTableData("", ids.vId, ids.gId);
