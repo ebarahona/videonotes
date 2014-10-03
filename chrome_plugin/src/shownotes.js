@@ -474,6 +474,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                                                     "$(\".cke_button.cke_button__specialchar.cke_button_off\").remove(); " +
                                                                                     "$(\".cke_button.cke_button__bold.cke_button_off\").remove(); " +
                                                                                     "$(\".cke_button.cke_button__italic.cke_button_off\").remove(); " +
+                                                                                    "$(\".cke_button.cke_button__symbol.cke_button_off\").remove(); " +
 //end of the list of buttons to be deleted
                                                                                     "$(\"#commentsTxt\").keydown(function(e) { " +
                                                                                         "if(e.keyCode == 13 || e.keyCode == 8 || e.keyCode == 46) {" +
@@ -560,7 +561,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                 "} " +
 
                                                 "if ($('#div' + timenow).length > 0) { " +
-                                                    "var frames = $('#txt' + timenow + ' > span > span > iframe'); " +
+                                                    "var frames = $('#txt' + timenow + ' > span > span > iframe:first'); " +
                                                     "for (i=0; i<frames.length; i++) { " +
                                                         "startidx = mathjaxData[i].indexOf('rgb(34, 34, 34)'); " +
                                                         "if (startidx > -1) { " +
