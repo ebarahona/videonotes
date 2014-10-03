@@ -478,6 +478,10 @@
 							var that = this;
 							var myiframe = document.getElementsByClassName("cke_dialog_ui_labeled_content cke_dialog_ui_input_file")[0].firstChild.contentWindow.document;
 							var inputfile = myiframe.getElementsByName("upload")[0].files[0];
+							if (inputfile.size > 1000000) {
+								alert("Files greater than 1 MB size can't be uploaded");
+								return;
+							}
 							onUpload(inputfile);
 						}
 					},
