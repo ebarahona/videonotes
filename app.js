@@ -11,20 +11,20 @@ connecting it from the macbook (even with login and password) won't work. So, th
  //start google API info
 
 //LOCAL INFO
-/*
+
 var GOOGLE_CLIENT_ID = "89641588136-4fkcm8mv0005mi0oubssdl077pv90p5p.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "sauIpPYt5qkMUxisHGgPq0LC";
 var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
-*/
+
 
 //heroku deployment info
-
+/*
 var GOOGLE_CLIENT_ID = "89641588136-djcp69o62ogb5nl3bb310ea6ngl94dbl.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "oIDAUGPLLuKMcK-L6wW08Q1j";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
-
+*/
 
 //var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
 var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
@@ -40,6 +40,7 @@ var express = require('express')
   , passport = require('passport')
   , html_to_text = require('html-to-text')
   , youtube = require('youtube-feeds')
+  , cheerio = require('cheerio')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 //if we can catch the InternalOAuthError with CERT_DENIED, this call can be made to get the access token
@@ -221,6 +222,7 @@ app.get('/landing', ensureAuthenticated, function (req, res) {
                 for (k=0; k<obj.data[i].videos[j].notes.length; k++){
                   //console.log(obj.data[i].videos[j].notes[k].comments);
                   obj.data[i].videos[j].notes[k].comments = unescape(obj.data[i].videos[j].notes[k].comments);
+                  //console.log(obj.data[i].videos[j].notes[k].comments);
                 }
               }
             }
@@ -326,8 +328,26 @@ app.post('/submitNoteExtn', function(req, res) {
   gId = gId.substring(1, gId.length-1);
   vRL = temp[1][1].replace(/"/g, '').trim();
   cmts = temp[2][1].replace(/"/g, '').trim(); 
-  cmts_txt = html_to_text.fromString(unescape(cmts), {wordwrap: 100});
-  cmts_txt = escape(cmts_txt);
+  
+  cmts_txt = '';
+  $ = cheerio.load(unescape(cmts));
+  
+  numframes = $('span > span > iframe').length;
+  if (numframes > 0) {
+    frames = $('span > span > iframe').parent().parent().parent().parent()._root[0].children;
+    for (j=0; j < frames.length; j++) {
+      if (frames[j].type == "text") {
+        cmts_txt += frames[j].data;
+      } else if (frames[j].type == "tag") {
+        if (frames[j].name == "span") {
+          cmts_txt += $('span > span > iframe > html > body > span > script')[j].children[0].data;
+        }
+      }
+    }
+  } else {
+    cmts_txt = html_to_text.fromString(unescape(cmts), {wordwrap: 100});
+  }
+
   noteId = temp[3][1].replace(/"/g, '').trim(); 
   inst = parseFloat(temp[4][1].replace(/"/g, '').trim());
   ispblc = temp[5][1].replace(/"/g, '').trim(); 
@@ -355,7 +375,9 @@ app.post('/submitNoteExtn', function(req, res) {
                                                      }
                                         })
                                   .end(function (response) {
-                                      console.log(response);   
+                                      res.writeHead(200, {'content-type': 'text/plain', 'Access-Control-Allow-Origin': 'https://class.coursera.org' });
+                                      res.write( cmts_txt );
+                                      res.end('\n');
                                   });
                       }
   }); 
@@ -539,7 +561,7 @@ app.get('/deleteNoteExtn', function(req, res) {
                     if (err) 
                       return console.log(err);
                     else{
-                      res.writeHead(200, {'content-type': 'text/plain' });
+                      res.writeHead(200, {'content-type': 'text/plain', 'Access-Control-Allow-Origin': 'https://class.coursera.org'  });
                       res.write('done');
                       res.end('\n');
                       console.log("delete notes successful");
@@ -591,7 +613,7 @@ app.get('/toggleVideoNotesExtn', function(req, res) {
                     if (err) 
                       return console.log(err);
                     else {
-                      res.writeHead(200, {'content-type': 'application/json' });
+                      res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org'  });
                       val = JSON.stringify(data);
                       res.write(val);
                       res.end('\n');
@@ -624,7 +646,7 @@ app.get('/toggleNoteExtn', function(req, res) {
                   if (err) 
                     return console.log(err);
                   else {
-                    res.writeHead(200, {'content-type': 'application/json' });
+                    res.writeHead(200, {'content-type': 'application/json', 'Access-Control-Allow-Origin': 'https://class.coursera.org'  });
                     val = JSON.stringify(data);
                     res.write(val);
                     res.end('\n');

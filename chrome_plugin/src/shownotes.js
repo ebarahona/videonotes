@@ -561,7 +561,8 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                 "} " +
 
                                                 "if ($('#div' + timenow).length > 0) { " +
-                                                    "var frames = $('#txt' + timenow + ' > span > span > iframe:first'); " +
+                                                    "var iframeid = '#txt' + timenow ; " +
+                                                    "var frames = $(iframeid).find('span > span > iframe'); " +
                                                     "for (i=0; i<frames.length; i++) { " +
                                                         "startidx = mathjaxData[i].indexOf('rgb(34, 34, 34)'); " +
                                                         "if (startidx > -1) { " +
@@ -576,7 +577,7 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                     "if (textval.length > 100) { " +
                                                         "textval = textval.substring(0, 97) + '...'; " +
                                                     "} " +
-                                                    "$(\"#div\" + timenow).find(\"a:first-child\").after(textval); " +
+//                                                    "$(\"#div\" + timenow).find(\"a:first-child\").after(textval); " +
                                                     "$(\"#div\" + timenow).mousedown(function() { " +
                                                         "p = $(this).parent().position(); " +
                                                         "if($(this).next().css('display') == 'none') " +
@@ -590,7 +591,12 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                                     "type: 'POST', " +
                                                     "url: SERVER_URL + '/submitNoteExtn', " +
                                                     "dataType: 'json', " +
-                                                    "data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false, title: $(\"title\").html(), url: document.URL} " +
+                                                    "data: {googleId: gId, videoURL: vId, comments: escape(text), noteId: timenow, instant: instant, ispublic: false, title: $(\"title\").html(), url: document.URL}, " +
+                                                    "success: function(d) {" +
+                                                    "}, " +
+                                                    " error: function (err) { " +
+                                                        "$(\"#div\" + timenow).find(\"a:first-child\").after(err.responseText); " +
+                                                    " }" +
                                                 "}); " +
                                                 "text = ''; " +
                                             "} " +
@@ -602,8 +608,33 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                                         "shiftOn = false; " +
                                     "}); " +                                    
                                     "$(\"#dialog1\").css('width', '294px'); $(\"#notesTbl\").css('width', '100%'); $(\"div[contenteditable='true']\").css('width', '100%'); " + 
-                                    "$(\"#commentsTxt\").val(richData); " + 
-                                    "var e = jQuery.Event(\"keydown\"); e.keyCode = 13; $(\"#commentsTxt\").trigger(e); " +
+                                    //"$(\"#commentsTxt\").val(richData); " + 
+//"alert(richData); " +
+                                    "var iframeidx = -1; startidx = 0; endidx = 0;" +
+                                    "startidx = richData.indexOf('<iframe', startidx); " +
+                                    " i=0; " +
+                                    "while (startidx > -1) {" +
+//"alert('startidx ' + startidx);" +
+                                        "endidx = richData.indexOf('</iframe>', startidx); " +
+//"alert('endidx ' + endidx);" +
+                                        "richData = richData.substring(0, endidx) + mathjaxData[i] + richData.substring(endidx); " +
+                                        "startidx = endidx+mathjaxData[i].length; " +
+                                        "startidx = richData.indexOf('<iframe', startidx); " +
+                                        "i++; " +
+//"alert('startidx2 ' + startidx);" +
+//"alert(richData); " +
+                                    "}" +
+                                    "val = richData.replace(/<br>/g, ''); " + //supposed to remove the <br> and <p>
+                                    "val = val.replace(/<p[\/]>/g, ''); " + //supposed to remove the <br> and <p>
+//"alert(val); " +
+//"alert(val.length); " +
+                                    "if (val.trim() != '') { " + 
+                                        "val = richData;" +
+                                        "$(\"#commentsTxt\").val(val); " + 
+                                        "var e = jQuery.Event(\"keydown\"); e.keyCode = 13; $(\"#commentsTxt\").trigger(e); " +
+                                    "} else {" +
+                                        "$(\"#commentsTxt\").val(''); " +
+                                    "}" +
                                     "CKEDITOR.instances.commentsTxt.setData(''); " + 
 
                                     "if (window.QL_player != null) { " + 
@@ -799,9 +830,35 @@ function showNotes(notesHTML, vId, gId, delimiter, notesData, notesTxtData) {
                 if (txtNote.length > 100) {
                     txtNote = txtNote.substring(0,97) + "...";
                 }
-                //alert(note);
+//alert(note);
                 $(this).after("&nbsp;" + txtNote + "&nbsp;");
-                $(this).parent().next().find("div:first-child").html(note);
+                $(this).parent().next().find("div:first-child").html(note); //this doesnt set the iframe content
+                var iframeElement = $(this).parent().next().find("div > span > span > iframe"); 
+
+                if (iframeElement != undefined && iframeElement.length > 0) {
+                    var iframeData = new Array();
+                    var startidx = 0, endidx = 0, iframeVal = '', colorstartidx=0, colorendidx=0;
+                    startidx = note.indexOf('<iframe', startidx); 
+//alert(iframeElement.length);
+                    for (j=0; j < iframeElement.length; j++) {
+                        startidx = note.indexOf('>', startidx) + 1;
+//alert('startidx ' + startidx);
+                        endidx = note.indexOf('</iframe>', startidx); 
+//alert('endidx ' + endidx);                    
+                        iframeVal = note.substring(startidx, endidx); //replace the color to white
+                        colorstartidx = iframeVal.indexOf('rgb(34, 34, 34)');
+                        if (colorstartidx > -1) {
+                            colorendidx = iframeVal.indexOf(';', colorstartidx);
+                            iframeVal = iframeVal.substring(0, colorstartidx) + 'white' + iframeVal.substring(colorendidx);
+                        }
+//alert(iframeVal);
+                        //iframeData.push(iframeVal);
+                        startidx = endidx;
+                        startidx = note.indexOf('<iframe', startidx); 
+                        iframeElement[j].contentWindow.document.write(iframeVal);
+                    }
+                }                
+                
                 $(this).parent().mousedown(function() {
                     //alert(this.id);
                     if (rtdisplayed != "" && rtdisplayed != $(this).attr("id")) {
