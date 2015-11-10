@@ -12,19 +12,19 @@ connecting it from the macbook (even with login and password) won't work. So, th
 
 //LOCAL INFO
 
-var GOOGLE_CLIENT_ID = "89641588136-4fkcm8mv0005mi0oubssdl077pv90p5p.apps.googleusercontent.com";
+/*var GOOGLE_CLIENT_ID = "89641588136-4fkcm8mv0005mi0oubssdl077pv90p5p.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "sauIpPYt5qkMUxisHGgPq0LC";
-var CALLBACK_URL =  "http://localhost:3000/auth/google/return";
+var CALLBACK_URL =  "http://localhost:3001/auth/google/return";*/
 //var API_KEY = "AIzaSyCciggh3go3UwUCZMQ6ILe9C4Oz2EXzGrk";
 //var REDIRECT_URL = "http://localhost:3000/oauth2callback";
 
 
 //heroku deployment info
-/*
+
 var GOOGLE_CLIENT_ID = "89641588136-djcp69o62ogb5nl3bb310ea6ngl94dbl.apps.googleusercontent.com";
 var GOOGLE_CLIENT_SECRET = "oIDAUGPLLuKMcK-L6wW08Q1j";
 var CALLBACK_URL =  'http://playnnote.herokuapp.com/auth/google/return';
-*/
+
 
 //var LOCAL_NEO4J_URL = "http://localhost:7474/db/data/cypher";
 var LOCAL_NEO4J_URL = "http://test:a6Wb1MQWXjgAe0PVVlAC@test.sb01.stations.graphenedb.com:24789/db/data/cypher";
