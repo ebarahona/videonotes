@@ -10,7 +10,7 @@
     "npm": "1.3.2"
   },
   "dependencies": {
-    "express": "3.2.6",
+    "express": "3.11.0",
     "googleapis":"0.7.0",
     "jade": "0.31.2",
     "mongodb":"1.3.10",
